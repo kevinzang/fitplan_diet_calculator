@@ -1,0 +1,23 @@
+<center>
+
+</center>
+<div id="results"></div>
+
+<script type="text/javascript">
+function displayResults(results) {
+	$('#results').html(results)
+}
+$('#search_food').click(function() {
+	food_query = $('#food').val()
+	json_request("/search_food",
+		{food: food_query},
+		function(result) {
+			displayResults(result);
+		},
+		function(error) {
+			alert('error occurred on request');
+		}
+	);
+	return false;
+});
+</script>

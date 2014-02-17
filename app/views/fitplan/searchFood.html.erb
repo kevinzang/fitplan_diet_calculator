@@ -1,0 +1,6 @@
+<center>
+	<h1>Search results for <%= @food %>:</h1>
+	<% @results.each do |result| %>
+	<div><%= strip_links(result) %></div>
+	<% end %>
+</center>
