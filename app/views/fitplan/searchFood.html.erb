@@ -1,6 +1,31 @@
 <center>
 	<h1>Search results for <%= @food %>:</h1>
-	<% @results.each do |result| %>
-	<div><%= strip_links(result) %></div>
+	<% for i in 0..@results.length-1 %>
+	<div onclick="getCalories(<%= i %>)"><%= strip_links(@results[i]) %></div>
+	<div id="<%= i %>" class="foodData">Hello World!</div>
 	<% end %>
 </center>
+<script type="text/javascript">
+$(".foodData").hide();
+
+function displayCalorie(selected_id, reply) {
+	var element = document.getElementById(selected_id);
+	if (reply.calorie != -1) {
+		$(element).html(reply.calorie + " calories");
+		$(element).show();
+	}
+}
+
+function getCalories(selected_id) {
+	send_json("/search_food/get_calorie",
+		{num: selected_id},
+		function(reply) {
+			return displayCalorie(selected_id, reply);
+		},
+		function(error) {
+			alert("error occurred on request");
+		}
+	);
+	return false;
+}
+</script>

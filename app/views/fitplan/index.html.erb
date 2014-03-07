@@ -1,3 +1,50 @@
 <center>
-	<h1>Welcome to Fitplan Diet Calculator</h1>
+	<h1>Welcome to Fitplan Diet Calculator!</h1>
+	<div id="message"></div>
+	<form id="register" action="" method="POST">
+  	Username: <input id="username" name="username" type="text"><br>
+  	Password: <input id="password" name="password" type="password"><br>
+  	<input id="login_submit" type="submit" value="Log in">
+  	<input id="signup_submit" type="submit" value="Sign up">
+  </form>
 </center>
+
+<script type="text/javascript">
+$(document).ready(setMessage);
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    document.body.style.display = "none";
+    location.reload();
+  }
+};
+function setMessage() {
+  $('#message').html("Log in or sign up:");
+}
+function register(result, url) {
+	if (result.result == "SUCCESS") {
+		window.location.href = url;
+	} else {
+		$('#message').html(result.result);
+	}
+}
+$('#login_submit').click(function() {
+  send_json("/login_submit",
+    $('#register').form_to_dict(),
+    function(result) {
+      return register(result, "/profile");
+    },
+    show_error
+  );
+  return false;
+});
+$('#signup_submit').click(function() {
+  send_json("/signup_submit",
+    $('#register').form_to_dict(),
+    function(result) {
+      return register(result, "/profile_form");
+    },
+    show_error
+  );
+  return false;
+});
+</script>

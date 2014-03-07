@@ -1,7 +1,11 @@
 Fitplan::Application.routes.draw do
-  root 'fitplan#index'
-  get '/profile' => 'fitplan#profile'
+  root :to => 'fitplan#index'
+  post '/login_submit' => 'fitplan#login_submit'
+  post '/signup_submit' => 'fitplan#signup_submit'
+  get  '/profile_form' => 'fitplan#profile_form'
+  get  '/profile' => 'fitplan#profile'
   post '/search_food' => 'fitplan#searchFood'
+  post '/search_food/get_calorie' => 'fitplan#getCalorie'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

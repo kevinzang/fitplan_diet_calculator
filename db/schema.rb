@@ -11,13 +11,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140217180811) do
+ActiveRecord::Schema.define(version: 20140305220221) do
 
   create_table "food_searches", force: true do |t|
     t.integer  "num"
     t.string   "link"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "searched"
+  end
+
+  create_table "user_profiles", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "username"
+    t.string   "password"
+    t.integer  "height"
+    t.integer  "weight"
+    t.integer  "desired_weight"
+    t.integer  "age"
+    t.integer  "foods"
+    t.integer  "calories"
+    t.text     "entries"
   end
 
 end
