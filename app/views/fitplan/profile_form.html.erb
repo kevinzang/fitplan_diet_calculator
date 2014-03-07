@@ -1,4 +1,41 @@
 <center>
-	<h1>Welcome, <%= user %>!</h1>
-	<h3><%= message %></h3>
+  <div id="message"></div>
+  <form id="register" action="" method="POST">
+  	Height: <input id="feet" name="feet" type="text"> feet
+  	        <input id="inches" name="inches" type="text"> inches<br>
+  	Weight: <input id="weight" name="weight" type="text"> lbs<br>
+  	Desired Weight: <input id="desired_weight" name="desired_weight" type="text"> lbs<br>
+  	Age: <input id="age" name="age" type="text">yrs<br>
+  	<input id="profile_submit" type="submit" value="Submit Profile">
+  </form>
 </center>
+
+<script type="text/javascript">
+$(document).ready(setMessage);
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    document.body.style.display = "none";
+    location.reload();
+  }
+};
+function setMessage() {
+  $('#message').html("Please fill out your profile:");
+}
+function register(result, url) {
+	if (result.result == "SUCCESS") {
+		window.location.href = url;
+	} else {
+		$('#message').html(result.result);
+	}
+}
+$('#profile_submit').click(function() {
+  send_json("/profile_form/submit",
+    $('#register').form_to_dict(),
+    function(result) {
+      return register(result, "/profile");
+    },
+    show_error
+  );
+  return false;
+});
+</script>

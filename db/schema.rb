@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140305220221) do
+ActiveRecord::Schema.define(version: 20140307190929) do
 
   create_table "food_searches", force: true do |t|
     t.integer  "num"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20140305220221) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "searched"
+    t.string   "food"
   end
 
   create_table "user_profiles", force: true do |t|
@@ -30,8 +31,6 @@ ActiveRecord::Schema.define(version: 20140305220221) do
     t.integer  "weight"
     t.integer  "desired_weight"
     t.integer  "age"
-    t.integer  "foods"
-    t.integer  "calories"
     t.text     "entries"
   end
 

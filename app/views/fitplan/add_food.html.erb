@@ -1,0 +1,46 @@
+<center>
+	<h1>Search results for <%= @food %>:</h1>
+	<% for i in 0..@results.length-1 %>
+	<div onclick="getCalories(<%= i %>)"><%= @results[i] %></div>
+	<div id="<%= i %>" class="foodData"></div>
+	<% end %>
+</center>
+<script type="text/javascript">
+$(".foodData").hide();
+
+function displayCalorie(selected_id, reply) {
+	var element = document.getElementById(selected_id);
+	if (reply.calorie != -1) {
+		$(element).html("<div>"+reply.calorie +" calories</div>"+
+		"<button type='button' onclick='addFood("+selected_id+", "+reply.calorie+")'>"+
+		"Add</button>");
+		$(element).show();
+	}
+}
+
+function addFood(selected_id, cal) {
+	send_json("/profile/add_food/get_calorie/add",
+		{num: selected_id, calorie: cal},
+		function(reply) {
+			if (reply.result == "SUCCESS") {
+				window.location.href = "/profile";
+			} else {
+				alert(reply.result);
+			}
+		},
+		show_error
+	);
+	return false;
+}
+
+function getCalories(selected_id) {
+	send_json("/profile/add_food/get_calorie",
+		{num: selected_id},
+		function(reply) {
+			return displayCalorie(selected_id, reply);
+		},
+		show_error
+	);
+	return false;
+}
+</script>
