@@ -1,4 +1,8 @@
-<center>
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
 	<h1>Profile Page</h1>
 	<div id="message"><%= @message %></div>
 	<a href="/profile/workout">Workout plan</a>
@@ -18,7 +22,7 @@
 	    </form>
 	<% end %>
 	<input id="delete_entries" type="submit" value="Delete selected entries">
-</center>
+  </body>
 
 <script type="text/javascript">
 window.onpageshow = function(event) {
@@ -51,3 +55,5 @@ $('#delete_entries').click(function() {
   return false;
 });
 </script>
+
+</html>

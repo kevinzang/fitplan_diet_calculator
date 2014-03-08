@@ -1,25 +1,21 @@
-<center>
-	<h1>Welcome to Fitplan Diet Calculator MOTHERFUCKERS!</h1>
-	<div id="message"></div>
-	<form id="register" action="" method="POST">
-  	Username: <input id="username" name="username" type="text"><br>
-  	Password: <input id="password" name="password" type="password"><br>
-  	<input id="login_submit" type="submit" value="Log in">
-  	<input id="signup_submit" type="submit" value="Sign up">
-  </form>
-</center>
+<!DOCTYPE html>
+<html>
 
 <script type="text/javascript">
-$(document).ready(setMessage);
-window.onpageshow = function(event) {
-  if (event.persisted) {
-    document.body.style.display = "none";
-    location.reload();
-  }
-};
+
+  $(document).ready(setMessage);
+
+  window.onpageshow = function(event) {
+    if (event.persisted) {
+      document.body.style.display = "none";
+      location.reload();
+    }
+  };
+
 function setMessage() {
   $('#message').html("Log in or sign up:");
 }
+
 function register(result, url) {
 	if (result.result == "SUCCESS") {
 		window.location.href = url;
@@ -27,6 +23,7 @@ function register(result, url) {
 		$('#message').html(result.result);
 	}
 }
+
 $('#login_submit').click(function() {
   send_json("/login_submit",
     $('#register').form_to_dict(),
@@ -37,6 +34,7 @@ $('#login_submit').click(function() {
   );
   return false;
 });
+
 $('#signup_submit').click(function() {
   send_json("/signup_submit",
     $('#register').form_to_dict(),
@@ -47,4 +45,23 @@ $('#signup_submit').click(function() {
   );
   return false;
 });
+
 </script>
+
+<head>
+</head>
+
+<body>
+  <h1>Welcome to Fitplan Diet Calculator MOTHERFUCKERS!</h1>
+  <div id="message"> </div>
+  <div id="inputForm">
+    <form id="register" action="" method="POST">
+      Username: <input id="username" name="username" type="text"><br/>
+      Password: <input id="password" name="password" type="password"><br/>
+      <input id="login_submit" type="submit" value="Log in">
+      <input id="signup_submit" type="submit" value="Sign up">
+    </form>
+  </div>
+</body>
+
+</html>
