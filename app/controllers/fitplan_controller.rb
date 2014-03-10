@@ -1,6 +1,7 @@
 require "UserProfileModel"
 require "FoodSearchModel"
 require 'date'
+require 'json'
 
 class FitplanController < ApplicationController
 
@@ -51,8 +52,8 @@ class FitplanController < ApplicationController
 
 	def profile
 		# profile page
-		@entries = UserProfileModel.getEntries("a")
 		@today = Date.today.to_s
+		@entries = UserProfileModel.getEntriesByDate("a", @today)
 		if @entries.class != Array
 			@message = @entries
 		else
@@ -93,10 +94,61 @@ class FitplanController < ApplicationController
 		return render(:json=>{"result"=>result}, status: 200)
     end
 
+    def delete_food
+    	if !valid_json?(["delete"])
+			return render(:json=>{}, status:500)
+		end
+		delete = JSON.parse(params["delete"])
+		result = UserProfileModel.deleteFood("a", delete)
+		return render(:json=>{"result"=>result}, status: 200)
+	end
+
     def workout
     	@target = UserProfileModel.getTarget("a")
     	@intake = UserProfileModel.getIntake("a", Date.today.to_s)
     	@recommended = UserProfileModel.getRecommended(@target, @intake)
+    end
+
+    def test
+    	if !valid_json?([])
+            return render(:json=>{}, status:500)
+        end
+        file = Tempfile.new(["rspec", ".txt"], "#{Rails.root}/tmp")
+        result = system("rspec #{Rails.root}/spec/requests "+
+            "--format documentation --out "+file.path)
+        begin
+            contents = file.readlines()
+            i = contents.length-1
+            line = ""
+            while i > 0
+                if contents[i].include?("failures")
+                    line = contents[i]
+                    break
+                end
+                i -= 1
+            end
+            fixline = ""
+            line.each_char {|c|
+                if c == '\n'
+                    fixline += " "
+                else
+                    fixline += c
+                end
+            }
+            line = fixline.split(" ")
+            total = line[line.index("examples,")-1].to_i
+            fails = line[line.index("failures")-1].to_i
+            file.close
+            output = contents.join()
+            if fails == 0
+            	output = "All tests pass"
+            end
+            return render(:json=>{"nrFailed"=>fails, "output"=>output,
+                "totalTests"=>total}, status:200)
+        rescue => err
+            return render(:json=>{"nrFailed"=>0, "output"=>"Unexpected error",
+            "totalTests"=>10}, status:200)
+        end
     end
 
 	private

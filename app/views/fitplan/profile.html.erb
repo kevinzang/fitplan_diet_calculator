@@ -3,13 +3,51 @@
 	<div id="message"><%= @message %></div>
 	<a href="/profile/workout">Workout plan</a>
 	<form action="/profile/add_food" method="post">
-		<input id="food" name="food" type="text"><input id="search_food" type="submit" value="Add Food">
+		<input id="food" name="food" type="text">
+		<input id="search_food" type="submit" value="Add Food">
 	</form>
-	<% for entry in @entries %>
-		<div style="display:inline-block">
-			<div style="float:left; padding:10px;"><%= entry[0] %></div>
-			<div style="float:left; padding:10px;"><%= entry[1] %> cal</div>
-			<div style="float:left; padding:10px;"><%= entry[2] %></div>
-		</div><br>
+	<% for i in 0..@entries.length-1 %>
+		<form id="register" action="" method="POST">
+		<div id="<%= @entries[i][0] %>" style="display:inline-block">
+			<div style="float:left; padding:10px;"><%= @entries[i][0] %></div>
+			<div style="float:left; padding:10px;"><%= @entries[i][1] %> cal</div>
+			<div style="float:left; padding:10px;"><%= @entries[i][2] %></div>
+			<input name="delete" class = "delete" type="checkbox">
+		</div>
+		<br>
+	    </form>
 	<% end %>
+	<input id="delete_entries" type="submit" value="Delete selected entries">
 </center>
+
+<script type="text/javascript">
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    document.body.style.display = "none";
+    location.reload();
+  }
+};
+function register(result) {
+	if (result.result == "SUCCESS") {
+		location.reload();
+	} else {
+		alert(result.result);
+	}
+}
+$('#delete_entries').click(function() {
+  var array = new Array();
+  $('.delete').each(function(i, obj) {
+    if (obj.checked) {
+    	array.push(obj.parentNode.id);
+    }
+  });
+  send_json("/profile/delete_food",
+	{"delete":JSON.stringify(array)},
+	function(reply) {
+		return register(reply);
+	},
+	show_error
+  );
+  return false;
+});
+</script>

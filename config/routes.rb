@@ -8,7 +8,9 @@ Fitplan::Application.routes.draw do
   post '/profile/add_food' => 'fitplan#add_food'
   post '/profile/add_food/get_calorie' => 'fitplan#get_calorie'
   post '/profile/add_food/get_calorie/add' => 'fitplan#add_food_submit'
+  post '/profile/delete_food' => 'fitplan#delete_food'
   get '/profile/workout' => 'fitplan#workout'
+  post '/test' => 'fitplan#test'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

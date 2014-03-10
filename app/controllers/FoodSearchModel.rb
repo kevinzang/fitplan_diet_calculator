@@ -13,7 +13,7 @@ class FoodSearchModel
 		# if results are found, save links in db and return list of results
 		# else return nil
 		FoodSearch.delete_all()
-		food = food.gsub(" ", "_")
+		food = food.gsub(" ", "+")
 		path = "http://caloriecount.about.com/cc/"+
 		"search.php?searchpro=#{food}&search_type=foods"
 		contents = readPage(path)
