@@ -1,4 +1,15 @@
 <center>
+	  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <ul class="nav">
+          <li class="active"><a href="/">Home</a></li>
+          <li><a href="/profile">Profile</a></li>
+          <li><a href="/profile/workout">Workout Plan</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
 	<h1>Search results for <%= @food %>:</h1>
 	<% for i in 0..@results.length-1 %>
 	<div onclick="getCalories(<%= i %>)"><%= @results[i] %></div>
