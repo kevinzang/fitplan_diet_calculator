@@ -1,20 +1,9 @@
 == README
 
-Heroku server: http://lit-tor-1709.herokuapp.com
-
-Running the functional tests and unit tests:
-make func_tests TEST_SERVER=http://lit-tor-1709.herokuapp.com
-
-Git repos:
-heroku	git@heroku.com:lit-tor-1709.git (fetch)
-heroku	git@heroku.com:lit-tor-1709.git (push)
-origin	https://github.com/kevinzang/fitplan.git (fetch)
-origin	https://github.com/kevinzang/fitplan.git (push)
+Heroku server: http://fitplan.herokuapp.com
 
 Testing with curl:
-curl -v -X POST  -H "Content-type: application/json" -d '{"user": "test3", "password": "pass1"}' -i http://localhost:5000/users/login
-
-
+curl -v -X POST -H "Content-type: application/json" -d '{}' -i http://fitplan.herokuapp.com/test
 
 Please feel free to use a different markup language if you do not plan to run
 <tt>rake doc:app</tt>.

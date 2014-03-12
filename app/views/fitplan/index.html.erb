@@ -1,5 +1,24 @@
-<!DOCTYPE html>
-<html>
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <ul class="nav">
+        <li class="active"><a href="/">Home</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/profile/workout">Workout Plan</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<h1>Welcome to Fitplan Diet Calculator!</h1>
+<div id="message"> </div>
+<div id="inputForm">
+  <form id="register" action="" method="POST">
+    Username: <input id="username" name="username" type="text"><br/>
+    Password: <input id="password" name="password" type="password"><br/>
+    <input id="login_submit" type="submit" value="Log in">
+    <input id="signup_submit" type="submit" value="Sign up">
+  </form>
+</div>
 
 <script type="text/javascript">
 
@@ -17,11 +36,11 @@ function setMessage() {
 }
 
 function register(result, url) {
-	if (result.result == "SUCCESS") {
-		window.location.href = url;
-	} else {
-		$('#message').html(result.result);
-	}
+  if (result.result == "SUCCESS") {
+    window.location.href = url;
+  } else {
+    $('#message').html(result.result);
+  }
 }
 
 $('#login_submit').click(function() {
@@ -47,32 +66,3 @@ $('#signup_submit').click(function() {
 });
 
 </script>
-
-<head>
-</head>
-
-<body>
-  <div class="navbar">
-    <div class="navbar-inner">
-      <div class="container">
-        <ul class="nav">
-          <li class="active"><a href="/">Home</a></li>
-          <li><a href="/profile">Profile</a></li>
-          <li><a href="/profile/workout">Workout Plan</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <h1>Welcome to Fitplan Diet Calculator!</h1>
-  <div id="message"> </div>
-  <div id="inputForm">
-    <form id="register" action="" method="POST">
-      Username: <input id="username" name="username" type="text"><br/>
-      Password: <input id="password" name="password" type="password"><br/>
-      <input id="login_submit" type="submit" value="Log in">
-      <input id="signup_submit" type="submit" value="Sign up">
-    </form>
-  </div>
-</body>
-
-</html>
