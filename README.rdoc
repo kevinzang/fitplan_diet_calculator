@@ -1,7 +1,9 @@
 == README
 
 Running the tests: (runs both unit and functional tests)
+
 send the following curl request to /test
+
 curl -v -X POST -H "Content-type: application/json" -d '{}' -i http://fitplan.herokuapp.com/test
 
 Running the application:
