@@ -1,0 +1,8 @@
+GUI tests for Fitplan Diet Calculator
+
+Go to fitplan.herokuapp.com (try with Chrome, Firefox, IE, etc)
+
+- make sure that the website is operational when it is deployed. 
+- make sure that switching between pages runs smoothly.
+- make sure that adding food to the food diary will actually update the food diary as far as the user is concerned. 
+- check that forms submit information properly by giving users invalid usernames	and seeing if anything errors.
