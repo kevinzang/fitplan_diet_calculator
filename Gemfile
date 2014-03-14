@@ -18,6 +18,7 @@ group :test, :production do
 end
 
 group :test do
+	gem 'simplecov', :require => false
 	gem 'selenium-webdriver', '2.35.1'
 end
 

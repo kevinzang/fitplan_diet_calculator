@@ -1,9 +1,13 @@
 == README
 
-Heroku server: http://fitplan.herokuapp.com
-
-Testing with curl:
+Running the tests: (runs both unit and functional tests)
+send the following curl request to /test
 curl -v -X POST -H "Content-type: application/json" -d '{}' -i http://fitplan.herokuapp.com/test
 
-Please feel free to use a different markup language if you do not plan to run
+Running the application:
+go to http://fitplan.herokuapp.com
+
+Getting the source code:
+git clone https://github.com/kevinzang/fitplan_diet_calculator.git
+
 <tt>rake doc:app</tt>.
