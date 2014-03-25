@@ -1,0 +1,26 @@
+
+#header,
+#message,
+#inputForm {
+  text-align: center;
+}
+
+#info,
+#signup {
+  background-color: #B4E7ED;
+  float: left;
+  margin-left: 1%;
+  padding: 10px;
+  width: 46%;
+}
+
+#info p {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#sitebody {
+  margin-top: 40px;
+}
+
+
