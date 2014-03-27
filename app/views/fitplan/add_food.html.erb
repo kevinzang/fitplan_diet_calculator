@@ -13,7 +13,7 @@
   </div>
 	<h1>Search results for <%= @food %>:</h1>
 	<% for i in 0..@results.length-1 %>
-	<div onclick="getCalories(<%= i %>)"><%= @results[i] %></div>
+	<div onclick="getCalories(<%= i %>)"><%= raw @results[i] %></div>
 	<div id="<%= i %>" class="foodData"></div>
 	<% end %>
 </center>
@@ -24,7 +24,6 @@ function displayCalorie(selected_id, reply) {
 	var element = document.getElementById(selected_id);
 	if (reply.calorie != -1) {
 		var serving_id = "serving"+selected_id;
-		alert("the serving id is "+serving_id);
 		$(element).html("<div>"+reply.calorie+" calories</div>"+
 		"<div>"+reply.serving+"</div>"+
 		"<input id='"+serving_id+"'> servings"+
@@ -35,9 +34,7 @@ function displayCalorie(selected_id, reply) {
 }
 
 function addFood(selected_id) {
-	alert("add button clicked with serving id="+selected_id);
 	var servings = document.getElementById("serving"+selected_id).value;
-	alert("num servings is "+servings);
 	send_json("/profile/add_food/get_calorie/add",
 		{num: selected_id, num_servings: servings},
 		function(reply) {
