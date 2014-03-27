@@ -3,7 +3,8 @@
     <div class="navbar-inner">
       <div class="container">
         <ul class="nav">
-          <li class="active"><a href="/">Home</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/profile_form">Edit Profile</a></li>
           <li><a href="/profile">Profile</a></li>
           <li><a href="/profile/workout">Workout Plan</a></li>
         </ul>
@@ -22,16 +23,23 @@ $(".foodData").hide();
 function displayCalorie(selected_id, reply) {
 	var element = document.getElementById(selected_id);
 	if (reply.calorie != -1) {
-		$(element).html("<div>"+reply.calorie +" calories</div>"+
-		"<button type='button' onclick='addFood("+selected_id+", "+reply.calorie+")'>"+
+		var serving_id = "serving"+selected_id;
+		alert("the serving id is "+serving_id);
+		$(element).html("<div>"+reply.calorie+" calories</div>"+
+		"<div>"+reply.serving+"</div>"+
+		"<input id='"+serving_id+"'> servings"+
+		"<button type='button' onclick='addFood("+selected_id+")'>"+
 		"Add</button>");
 		$(element).show();
 	}
 }
 
-function addFood(selected_id, cal) {
+function addFood(selected_id) {
+	alert("add button clicked with serving id="+selected_id);
+	var servings = document.getElementById("serving"+selected_id).value;
+	alert("num servings is "+servings);
 	send_json("/profile/add_food/get_calorie/add",
-		{num: selected_id, calorie: cal},
+		{num: selected_id, num_servings: servings},
 		function(reply) {
 			if (reply.result == "SUCCESS") {
 				window.location.href = "/profile";
