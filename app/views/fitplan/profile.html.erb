@@ -2,8 +2,9 @@
   <div class="navbar-inner">
     <div class="container">
       <ul class="nav">
-        <li class="active"><a href="/">Home</a></li>
-        <li><a href="/profile">Profile</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile_form">Edit Profile</a></li>
+        <li class="active"><a href="/profile">Profile</a></li>
         <li><a href="/profile/workout">Workout Plan</a></li>
       </ul>
     </div>
@@ -18,10 +19,12 @@
 </form>
 <% for i in 0..@entries.length-1 %>
   <form id="register" action="" method="POST">
-    <div id="<%= @entries[i][0] %>" style="display:inline-block">
-<div class="entry"><%= @entries[i][0] %></div>
-<div class="entry"><%= @entries[i][1] %> cal</div>
-<div class="entry"><%= @entries[i][2] %></div>
+    <div id="<%= @entries[i].food %>" style="display:inline-block">
+<div class="entry"><%= raw @entries[i].food %></div>
+<div class="entry"><%= @entries[i].calories %> cal</div>
+<div class="entry"><%= @entries[i].date %></div>
+<div class="entry"><%= @entries[i].serving %></div>
+<div class="entry"><%= @entries[i].numservings %></div>
 <input name="delete" class = "delete" type="checkbox">
     </div>
     <br/>

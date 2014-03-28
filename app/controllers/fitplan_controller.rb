@@ -1,5 +1,5 @@
-require "UserProfileModel"
-require "FoodSearchModel"
+require File.expand_path("../../models/user_profile", __FILE__)
+require File.expand_path("../../models/food_search", __FILE__)
 require 'date'
 require 'json'
 
@@ -16,7 +16,7 @@ class FitplanController < ApplicationController
 		end
 		username = params[:username]
 		password = params[:password]
-		result = UserProfileModel.login(username, password)
+		result = UserProfile.login(username, password)
 		@user = username
 		resp = {"result"=>result}
 		return render(:json=>resp, status:200)
@@ -29,7 +29,7 @@ class FitplanController < ApplicationController
 		end
 		username = params[:username]
 		password = params[:password]
-		result = UserProfileModel.signup(username, password)
+		result = UserProfile.signup(username, password)
 		@user = username
 		resp = {"result"=>result}
 		return render(:json=>resp, status:200)
@@ -45,7 +45,7 @@ class FitplanController < ApplicationController
 		if !valid_json?(fields)
 			return render(:json=>{}, status:500)
 		end
-		result = UserProfileModel.setProfile("a", fields, params)
+		result = UserProfile.setProfile("a", fields, params)
 		resp = {"result"=>result}
 		return render(:json=>resp, status:200)
 	end
@@ -53,8 +53,8 @@ class FitplanController < ApplicationController
 	def profile
 		# profile page
 		@today = Date.today.to_s
-		@entries = UserProfileModel.getEntriesByDate("a", @today)
-		if @entries.class != Array
+		@entries = UserProfile.getEntriesByDate("a", @today)
+		if @entries.class == String
 			@message = @entries
 		else
 			@message = "You have #{@entries.length} entries for #{@today}."
@@ -65,7 +65,7 @@ class FitplanController < ApplicationController
 		# respond to initial food search
 		if request.post?
 			@food = params["food"]
-			@results = FoodSearchModel.search(@food)
+			@results = FoodSearch.search(@food)
 			return
 		end
 	end
@@ -75,22 +75,21 @@ class FitplanController < ApplicationController
 		if !valid_json?(["num"])
 			return render(:json=>{}, status:500)
 		end
-		cal = FoodSearchModel.getCalorie(params["num"].to_i)
-		if cal == nil
-			return render(:json=>{"calorie"=>-1}, status:200)
+		entry = FoodSearch.getCalorie(params["num"].to_i)
+		if entry == nil
+			return render(:json=>{"calorie"=>-1, "serving"=>""}, status:200)
 		end
-		return render(:json=>{"calorie"=>cal}, status:200)
+		return render(:json=>{"calorie"=>entry.calories, "serving"=>entry.serving}, status:200)
 	end
 
 	def add_food_submit
 		# respond to JSON request to submit food entry
-		if !valid_json?(["num", "calorie"])
+		if !valid_json?(["num", "num_servings"])
 			return render(:json=>{}, status:500)
 		end
-		food = FoodSearchModel.getFood(params["num"].to_i)
-		cal = params["calorie"].to_i
-		date = Date.today.to_s
-		result = UserProfileModel.addFood("a", food, cal, date)
+		entry = FoodSearch.getEntry(params["num"].to_i)
+		result = UserProfile.addFood("a", entry.food, entry.calories, entry.date,
+			entry.serving, params["num_servings"])
 		return render(:json=>{"result"=>result}, status: 200)
     end
 
@@ -99,14 +98,14 @@ class FitplanController < ApplicationController
 			return render(:json=>{}, status:500)
 		end
 		delete = JSON.parse(params["delete"])
-		result = UserProfileModel.deleteFood("a", delete)
+		result = UserProfile.deleteFood("a", delete)
 		return render(:json=>{"result"=>result}, status: 200)
 	end
 
     def workout
-    	@target = UserProfileModel.getTarget("a")
-    	@intake = UserProfileModel.getIntake("a", Date.today.to_s)
-    	@recommended = UserProfileModel.getRecommended(@target, @intake)
+    	@target = UserProfile.getTarget("a")
+    	@intake = UserProfile.getIntake("a", Date.today.to_s)
+    	@recommended = UserProfile.getRecommended(@target, @intake)
     end
 
     def test
