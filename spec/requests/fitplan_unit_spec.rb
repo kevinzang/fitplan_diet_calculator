@@ -50,16 +50,39 @@ describe "Fitplan Unit Tests" do
 			UserProfile.signup("kevin", "secret")
 		}
 		it "should fail if fields contain negative values" do
-			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155", "desired_weight"=>"150", "age"=>"-20"}
+			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
+				"desired_weight"=>"150", "age"=>"-20", "gender"=>"female"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should fail if fields contain words" do
-			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155", "desired_weight"=>"150", "age"=>"twenty"}
+			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
+				"desired_weight"=>"150", "age"=>"twenty", "gender"=>"female"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should work if all fields are either blank or non-negative integers" do
-			fields = {"feet"=>"5", "inches"=>"0", "weight"=>"155", "desired_weight"=>"150", "age"=>"20"}
+			fields = {"feet"=>"5", "inches"=>"0", "weight"=>"155",
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"male"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
+		end
+	end
+	describe "set profile form preexisting values" do
+		before(:each) {
+			UserProfile.signup("kevin", "secret")
+		}
+		it "should initially have empty strings for defaults" do
+			defaults = UserProfile.getDefaults("kevin")
+			for value in defaults.values
+				value.should == ""
+			end
+		end
+		it "should remember the defaults" do
+			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"male"}
+			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
+			defaults = UserProfile.getDefaults("kevin")
+			for key in defaults.keys
+				defaults[key].should == fields[key]
+			end
 		end
 	end
 	describe "search for food to add" do
@@ -155,19 +178,34 @@ describe "Fitplan Unit Tests" do
 		end
 	end
 	describe "getting the workout plan" do
-		it "should return the exercise plan" do
+		it "should just report the intake if profile form incomplete" do
 			UserProfile.signup("kevin", "secret")
 			UserProfile.addFood("kevin", "chicken pot pie", "1000",
 				Date.today.to_s, "10 bells", "2")
 			UserProfile.addFood("kevin", "ice cream", "100",
 				(Date.today-1).to_s, "10 bells", "2")
-			UserProfile.addFood("kevin", "dragon tail", "2000",
+			UserProfile.addFood("kevin", "dragon tail", "200",
+				Date.today.to_s, "10 bells", "5")
+			target = UserProfile.getWorkout("kevin", Date.today.to_s)
+			target["intake"].should == 3000
+		end
+		it "should use profile details if they're filled out" do
+			UserProfile.signup("kevin", "secret")
+			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"female"}
+			UserProfile.setProfile("kevin", fields.keys, fields)
+			UserProfile.addFood("kevin", "chicken pot pie", "1000",
 				Date.today.to_s, "10 bells", "2")
-			target = UserProfile.getTarget("kevin")
-			target.should == 2000
-			intake = UserProfile.getIntake("kevin", Date.today.to_s)
-			intake.should == 3000
-			UserProfile.getRecommended(target, intake).should == 120
+			UserProfile.addFood("kevin", "ice cream", "100",
+				(Date.today-1).to_s, "10 bells", "2")
+			UserProfile.addFood("kevin", "dragon tail", "200",
+				Date.today.to_s, "10 bells", "5")
+			target = UserProfile.getWorkout("kevin", Date.today.to_s)
+			target["target"].should == 1520
+			target["intake"].should == 3000
+			target["normal"].should == 1540
+			target["rec_target"].should == 130
+			target["rec_normal"].should == 124
 		end
     end
 end

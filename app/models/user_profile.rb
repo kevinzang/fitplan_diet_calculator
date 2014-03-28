@@ -58,6 +58,28 @@ class UserProfile < ActiveRecord::Base
         return SUCCESS
     end
 
+    def self.getDefaults(username)
+        user = UserProfile.find_by(username:username)
+        if user == nil
+            return ERR_USER_NOT_FOUND
+        end
+        values = {}
+        for field in ["height", "weight", "desired_weight", "age", "gender"]
+            value = user.read_attribute(field)
+            if value == nil
+                values[field] = ""
+            else
+                if field == "height"
+                    values["feet"] = (value/12).to_s
+                    values["inches"] = (value%12).to_s
+                else
+                    values[field] = value.to_s
+                end
+            end
+        end
+        return values
+    end
+
     def self.setProfile(username, fields, params)
         valid = UserProfile.checkProfile(fields, params)
         if valid != SUCCESS
@@ -71,6 +93,7 @@ class UserProfile < ActiveRecord::Base
         user.weight = params["weight"].to_i
         user.desired_weight = params["desired_weight"].to_i
         user.age = params["age"].to_i
+        user.gender = params["gender"]
         user.save()
         return valid
     end
@@ -96,7 +119,10 @@ class UserProfile < ActiveRecord::Base
         if user == nil
             return ERR_USER_NOT_FOUND
         end
-        if num_servings != "" && num_servings.to_f.to_s != num_servings &&
+        if num_servings == ""
+            num_servings = "1"
+        end
+        if num_servings.to_f.to_s != num_servings &&
                num_servings.to_i.to_s != num_servings
             return "Error: must enter numeric value for number of servings"
         end
@@ -127,30 +153,33 @@ class UserProfile < ActiveRecord::Base
         return SUCCESS
     end
 
-    def self.getTarget(username)
-        return 2000
-    end
-
-    def self.getIntake(username, date)
-        # date = today's date
+    def self.getWorkout(username, date)
         user = UserProfile.find_by(username:username)
         if user == nil
             return ERR_USER_NOT_FOUND
         end
+        d = {}
         entries = FoodEntry.where(username:username, date:date.to_s)
         total = 0
         for entry in entries
-            total += entry.calories
+            total += entry.calories * entry.numservings
         end
-        return total
-    end
-
-    def self.getRecommended(target, intake)
-        diff = intake - target
-        if diff <= 0
-            return 0
+        d["intake"] = total
+        for field in ["height", "weight", "desired_weight", "age", "gender"]
+            if user.read_attribute(field) == nil || user.read_attribute(field) == 0
+                # profile not complete
+                d["target"] = -1
+                d["normal"] = -1
+                d["rec_target"] = -1
+                d["rec_normal"] = -1
+                return d
+            end
         end
-        return diff*60/500
+        d["target"] = self.getBMR(user.height, user.desired_weight, user.age, user.gender)
+        d["normal"] = self.getBMR(user.height, user.weight, user.age, user.gender)
+        d["rec_target"] = self.getRecommended(d["intake"]-d["target"], 10, user.desired_weight)
+        d["rec_normal"] = self.getRecommended(d["intake"]-d["normal"], 10, user.weight)
+        return d
     end
 
     def self.reset()
@@ -161,6 +190,9 @@ class UserProfile < ActiveRecord::Base
     private
     def self.checkProfile(fields, params)
         for key in fields
+            if key == "gender"
+                next
+            end
             val = params[key]
             if val != "" && val.to_f.to_s != val &&
                val.to_i.to_s != val
@@ -170,5 +202,27 @@ class UserProfile < ActiveRecord::Base
             end
         end
         return SUCCESS
+    end
+
+    private
+    def self.getBMR(height, weight, age, gender)
+        if gender == "male"
+            # bmr formula for men, rounded to nearest ten
+            return (65 + 13.8*weight/2.2 +
+            5*height*2.54 - 6.8*age).round(-1)
+        elsif gender == "female"
+            # bmr formula for women, rounded to nearest ten
+            return (655 + 9.6*weight/2.2 +
+            1.8*height*2.54 - 4.7*age).round(-1)
+        else
+            return 2000
+        end
+    end
+
+    private
+    def self.getRecommended(calories, rate, weight)
+        # [rate] = cal/(kg * hr)
+        # [weight] = lb
+        return [calories*2.2*60/10/weight, 0].max().round(0)
     end
 end

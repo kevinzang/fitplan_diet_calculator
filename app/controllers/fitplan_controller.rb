@@ -36,12 +36,13 @@ class FitplanController < ApplicationController
 	end
 
 	def profile_form
-		# profile form page
+		# profile form page, retrieve existing values
+		@defaults = UserProfile.getDefaults("a")
 	end
 
 	def profile_form_submit
 		# receive JSON, save profile form data
-		fields = ["feet", "inches", "weight", "desired_weight", "age"]
+		fields = ["feet", "inches", "weight", "desired_weight", "age", "gender"]
 		if !valid_json?(fields)
 			return render(:json=>{}, status:500)
 		end
@@ -103,9 +104,7 @@ class FitplanController < ApplicationController
 	end
 
     def workout
-    	@target = UserProfile.getTarget("a")
-    	@intake = UserProfile.getIntake("a", Date.today.to_s)
-    	@recommended = UserProfile.getRecommended(@target, @intake)
+    	@workout = UserProfile.getWorkout("a", Date.today.to_s)
     end
 
     def test

@@ -26,7 +26,7 @@ function displayCalorie(selected_id, reply) {
 		var serving_id = "serving"+selected_id;
 		$(element).html("<div>"+reply.calorie+" calories</div>"+
 		"<div>"+reply.serving+"</div>"+
-		"<input id='"+serving_id+"'> servings"+
+		"<input id='"+serving_id+"' value='1'> servings"+
 		"<button type='button' onclick='addFood("+selected_id+")'>"+
 		"Add</button>");
 		$(element).show();

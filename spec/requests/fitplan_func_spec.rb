@@ -35,10 +35,23 @@ describe "Fitplan Functional Tests" do
 		it "should submit profile" do
 			UserProfile.signup("a", "secret")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
-				"desired_weight"=>"140", "age"=>"20"}
+				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
 			resp = {"result"=>UserProfile::SUCCESS}
 			post '/profile_form/submit', req.to_json, session
 			response.body.should == resp.to_json
+		end
+	end
+	describe "set profile form preexisting values" do
+		it "should remember the defaults" do
+			UserProfile.signup("a", "secret")
+			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
+				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
+			UserProfile.setProfile("a", req.keys, req).should == UserProfile::SUCCESS
+			get '/profile_form'
+			defaults = assigns(:defaults)
+			for key in defaults
+				defaults[key].should == req[key]
+			end
 		end
 	end
 	describe "search for food to add" do
@@ -121,19 +134,24 @@ describe "Fitplan Functional Tests" do
 		end
 	end
 	describe "getting the workout plan" do
-		it "should set @target, @intake, and @recommended" do
+		it "should set @workout" do
 			UserProfile.signup("a", "secret")
+			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"female"}
+			UserProfile.setProfile("a", fields.keys, fields)
 			UserProfile.addFood("a", "chicken pot pie", "1000",
 				Date.today.to_s, "10 bells", "2")
 			UserProfile.addFood("a", "ice cream", "100",
 				(Date.today-1).to_s, "10 bells", "2")
-			UserProfile.addFood("a", "dragon tail", "2000",
-				Date.today.to_s, "10 bells", "2")
+			UserProfile.addFood("a", "dragon tail", "200",
+				Date.today.to_s, "10 bells", "5")
 			get '/profile/workout'
-			target = UserProfile.getTarget("")
-			assigns(:target).should == 2000
-			assigns(:intake).should == 3000
-			assigns(:recommended).should == 120
+			workout = assigns(:workout)
+			workout["target"].should == 1520
+			workout["intake"].should == 3000
+			workout["normal"].should == 1540
+			workout["rec_target"].should == 130
+			workout["rec_normal"].should == 124
 		end
     end
 end
