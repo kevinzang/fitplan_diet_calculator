@@ -4,18 +4,34 @@
 
 
 body {
-  color: #FFFFFF;
+  color: #505050;
   text-align: center;
   font-family: Verdana, Geneva, sans-serif;
   background-color: #45C4D3;
+  height: 100%;
 }
 
-h1, h2, h3, h4, form {
-  color: #505050;
-  background-color: #E0FFFF;
-  border: 2px solid gray;
+h1 {
+  background-color: #F0FFFF;
+  border: 3px solid gray;
+  margin: 30px;
+  padding: 20px;
+  display: inline-block;
+}
+
+h2, h3, h4, form {
+  background-color: #F0FFFF;
+  border: 1px solid gray;
   margin: 10px;
+  padding: 5px;
+  display: inline-block;
+}
+
+#login-container {
+  width: 600px;
+  background-color: #D0FFFF;
   padding: 15px;
+
   display: inline-block;
 }
 
