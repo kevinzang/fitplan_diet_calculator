@@ -11,8 +11,29 @@
       </div>
     </div>
   </div>
-	<div>Target intake: <%= @target %> cal</div>
-	<div>Today's intake: <%= @intake %> cal</div>
-	<div>Recommended: <%= @recommended %> minutes of exercise</div>
+	<div>Today's intake: <%= @workout["intake"] %> cal</div><br>
+  <div id="plan"></div><br>
 	<a href="/profile">Back to profile</a>
 </center>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    var target = <%= @workout["target"] %>;
+    var normal = <%= @workout["normal"] %>;
+    var rec_target = <%= @workout["rec_target"] %>;
+    var rec_normal = <%= @workout["rec_normal"] %>;
+    var plan = document.getElementById("plan");
+    if (target == -1) {
+      $(plan).html("Complete your profile to get a workout plan");
+    } else {
+      $(plan).html(
+        "<div>To reach your desired weight, your target is "+
+        target+" calories/day<br>"+
+        "Recommended: "+rec_target+" minutes of exercise</div><br><br>"+
+        "<div>To maintain your current weight, your target is "+
+        normal+" calories/day<br>"+
+        "Recommended: "+rec_normal+" minutes of exercise</div>"
+      );
+    }
+  });
+</script>

@@ -78,8 +78,12 @@ class FoodSearch < ActiveRecord::Base
 			serving = serving[0..endIndex-1]
 			serving.gsub!("\t", "")
 			serving.gsub!("\n", "")
+			endIndex = serving.length-1
+			while serving[endIndex] == " "
+				endIndex -= 1
+			end
+			serving = serving[serving.index("Serving")..endIndex]
 			serving = ActionController::Base.helpers.strip_tags(serving)
-
 			entry.searched = true
 			entry.calories = cal
 			entry.serving = serving
