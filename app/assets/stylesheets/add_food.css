@@ -1,13 +1,15 @@
 #food-listings {
   background-color: #B4E7ED;
   padding: 10px;
-  width: 1000px
+  width: 1000px;
+  border-radius: 40px;
 }
 
 .foodTitle {
+  text-align: left;
   background-color: #F0FFFF;
   padding: 1px;
-  margin: 4px;
+  margin: 2px;
   border-radius: 10px;
 }
 
@@ -18,7 +20,7 @@
 }
 
 .foodContainer {
-  margin: 4px;
+  margin: 2px;
   padding: 2px;
 }
 
@@ -30,7 +32,7 @@
 .info, .input {
   background-color: #FF7F24;
   float: left;
-  width: 475px;
+  width: 480px;
   height: 40px;
   padding: 5px;
   margin: 2px;
