@@ -1,4 +1,5 @@
 <center>
+
   <div class="navbar">
     <div class="navbar-inner">
       <div class="container">
@@ -11,24 +12,36 @@
       </div>
     </div>
   </div>
-	<h1>Search results for <%= @food %>:</h1>
-	<% for i in 0..@results.length-1 %>
-	<div onclick="getCalories(<%= i %>)"><%= raw @results[i] %></div>
-	<div id="<%= i %>" class="foodData"></div>
-	<% end %>
+
+  <h1>Search results for <%= @food %>:</h1>
+  <div id="food-listings">
+    <% for i in 0..@results.length-1 %>
+      <div id="food-container-<%= i %>" class="foodContainer">
+        <div id="food-title-<%= i %>" class="foodTitle" onclick="getCalories(<%= i %>)"><%= raw @results[i] %></div>
+        <div id="<%= i %>" class="foodData"></div>
+      </div>
+    <% end %>
+  <div>
+
 </center>
+
 <script type="text/javascript">
 $(".foodData").hide();
 
 function displayCalorie(selected_id, reply) {
 	var element = document.getElementById(selected_id);
+    var food_title = document.getElementById("food-title-"+selected_id);
+    var food_container = document.getElementById("food-container-"+selected_id);
 	if (reply.calorie != -1) {
 		var serving_id = "serving"+selected_id;
-		$(element).html("<div>"+reply.calorie+" calories</div>"+
-		"<div>"+reply.serving+"</div>"+
-		"<input id='"+serving_id+"'> servings"+
-		"<button type='button' onclick='addFood("+selected_id+")'>"+
-		"Add</button>");
+		$(element).html("<div class='info'><div>"+reply.calorie+" calories</div>"+
+		"<div>"+reply.serving+"</div></div>"+
+		"<div class='input'><input id='"+serving_id+"'> servings"+
+		"&nbsp;&nbsp;<button type='button' onclick='addFood("+selected_id+")'>"+
+		"Add</button></div>");
+        $(food_title).css("background-color","#FF7F24");
+        $(food_container).css("background-color","#F0FFFF");
+        $(food_container).css("border-radius","20px");
 		$(element).show();
 	}
 }

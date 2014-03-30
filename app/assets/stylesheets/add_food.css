@@ -1,0 +1,38 @@
+#food-listings {
+  background-color: #B4E7ED;
+  padding: 10px;
+  width: 1000px
+}
+
+.foodTitle {
+  background-color: #F0FFFF;
+  padding: 1px;
+  margin: 4px;
+  border-radius: 10px;
+}
+
+.foodTitle:hover {
+  cursor: pointer;
+  background-color: #FF7F24;
+  margin 5px;
+}
+
+.foodContainer {
+  margin: 4px;
+  padding: 2px;
+}
+
+.foodData {
+  padding: 2px;
+  display: inline-block;
+}
+
+.info, .input {
+  background-color: #FF7F24;
+  float: left;
+  width: 475px;
+  height: 40px;
+  padding: 5px;
+  margin: 2px;
+  border-radius: 20px;
+}
