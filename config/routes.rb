@@ -1,7 +1,9 @@
 Fitplan::Application.routes.draw do
+  # resources :sessions, only: [:new, :create, :destroy]
   root 'fitplan#index'
   post '/login_submit' => 'fitplan#login_submit'
   post '/signup_submit' => 'fitplan#signup_submit'
+  post '/signout_submit' => 'fitplan#signout_submit'
   get  '/profile_form' => 'fitplan#profile_form'
   post '/profile_form/submit' => 'fitplan#profile_form_submit'
   get  '/profile' => 'fitplan#profile'
