@@ -1,0 +1,67 @@
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <ul class="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/profile_form">Edit Profile</a></li>
+        <li class="active"><a href="/profile">Profile</a></li>
+        <li><a href="/profile/workout">Workout Plan</a></li>
+        <li id="signout_submit"><a href="/">Sign out</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<h1>Profile Page</h1><br>
+<h1>Welcome, <%= @user %></h1>
+<div id="message"><%= @message %></div>
+<a href="/profile/workout">Workout plan</a>
+<form action="/profile/add_food" method="post">
+  <input id="food" name="food" type="text">
+  <input id="search_food" type="submit" value="Add Food">
+</form>
+<% for i in 0..@entries.length-1 %>
+  <form id="register" action="" method="POST">
+    <div id="<%= @entries[i].food %>" style="display:inline-block">
+<div class="entry"><%= raw @entries[i].food %></div>
+<div class="entry"><%= @entries[i].calories %> cal</div>
+<div class="entry"><%= @entries[i].date %></div>
+<div class="entry"><%= @entries[i].serving %></div>
+<div class="entry"><%= @entries[i].numservings %></div>
+<input name="delete" class = "delete" type="checkbox">
+    </div>
+    <br/>
+  </form>
+<% end %>
+<input id="delete_entries" type="submit" value="Delete selected entries">
+
+<script type="text/javascript">
+window.onpageshow = function(event) {
+  if (event.persisted) {
+    document.body.style.display = "none";
+    location.reload();
+  }
+};
+function register(result) {
+	if (result.result == "SUCCESS") {
+		location.reload();
+	} else {
+		alert(result.result);
+	}
+}
+$('#delete_entries').click(function() {
+  var array = new Array();
+  $('.delete').each(function(i, obj) {
+    if (obj.checked) {
+    	array.push(obj.parentNode.id);
+    }
+  });
+  send_json("/profile/delete_food",
+	{"delete":JSON.stringify(array)},
+	function(reply) {
+		return register(reply);
+	},
+	show_error
+  );
+  return false;
+});
+</script>
