@@ -182,6 +182,30 @@ class UserProfile < ActiveRecord::Base
         return d
     end
 
+    def self.calorieIntakeChartData(username, range_in_months)
+      foodEntries = UserProfile.getEntries(username)
+      if foodEntries == ERR_USER_NOT_FOUND
+        return nil
+      end
+      if range_in_months < 0
+        return {}
+      end
+      if range_in_months > 12
+        range_in_months = 12
+      end
+      chartData = {}
+      for foodEntry in foodEntries
+        if !(foodEntry.date.to_date < Date.today - range_in_months.months)
+          if chartData.has_key?(foodEntry.date)
+            chartData[foodEntry.date] += foodEntry.calories * foodEntry.numservings
+          else
+            chartData[foodEntry.date] = foodEntry.calories * foodEntry.numservings
+          end
+        end
+      end
+      return chartData
+    end
+
     def self.reset()
         UserProfile.delete_all()
         FoodEntry.delete_all()
