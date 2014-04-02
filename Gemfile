@@ -19,7 +19,7 @@ end
 
 group :test do
 	gem 'simplecov', :require => false
-	gem 'selenium-webdriver', '2.35.1'
+	gem 'selenium-webdriver', '2.41.0'
 end
 
 # Use SCSS for stylesheets
