@@ -233,6 +233,11 @@ class UserProfile < ActiveRecord::Base
       return chartData
     end
 
+    def caloriesNeededMaintainWeight()
+      bmr = UserProfile.getBMR(height, weight, age, gender)
+      return bmr * 1.2 # use default for now (little to no exercise)
+    end
+
     def self.reset()
         UserProfile.delete_all()
         FoodEntry.delete_all()
