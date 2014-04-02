@@ -1,0 +1,25 @@
+<%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
+
+<!-- Nav Bar -->
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <ul class="nav">
+        <li class="active"><a href="/">Home</a></li>
+        <li><a href="/profile_form">Edit Profile</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/profile/workout">Workout Plan</a></li>
+        <li><a href="/progress">Progress</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h1>Progress</h1>
+
+<div style="width:800px; margin:0 auto">
+  <p style="font-weight:bold">Calorie Intake</p>
+  <%= line_chart @calorieIntakeChartData, discrete: true, height: '400px', name: 'Calories' %>
+  <br>
+  <br>
+</div>
