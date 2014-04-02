@@ -4,8 +4,7 @@
 
 <!-- Heading div -->
 <div id="header">
-  <h1>Welcome to Fitplan Diet Calculator!</h1>
-  <h4>You Can Do It.</h4>
+<h1>Welcome to Fitplan Diet Calculator!</h1>
 </div>
 
 <!-- Body div -->
@@ -32,13 +31,6 @@
   </div>
 </div>
 <!-- End Signup div on right -->
-
-<!--What's new on bottom -->
-<div id="new">
-  <h4>What's New</h4>
-  <p>In this iteration, we've prettied up the site.  Let us know if there is anything we can do to make your experience more aesthetically pleasing.  We've also updated authentication so you can sign in and we'll know who you are.</p>
-</div>
-<!--end What's new -->
 <!-- End Body div -->
 </div>
 

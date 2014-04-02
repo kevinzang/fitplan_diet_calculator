@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 ruby '2.1.0'
 
+gem 'execjs'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.2'
 gem 'rspec'
@@ -18,8 +20,7 @@ group :test, :production do
 end
 
 group :test do
-	gem 'simplecov', :require => false
-	gem 'selenium-webdriver', '2.41.0'
+	gem 'selenium-webdriver', '2.35.1'
 end
 
 # Use SCSS for stylesheets
@@ -42,8 +43,6 @@ gem 'turbolinks', '1.1.1'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '1.0.2'
-
-gem 'chartkick'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
