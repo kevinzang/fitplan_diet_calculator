@@ -5,16 +5,28 @@
   text-align: center;
 }
 
+#header h4 {
+  font-style: italic;
+}
+
 #info,
 #signup {
   background-color: #B4E7ED;
   float: left;
+  height: 250px;
   margin-left: 1%;
   padding: 10px;
   width: 46%;
 }
 
-#info p {
+#new {
+  background-color: #B4E7ED;
+  float: left;
+  margin: 1%;
+  padding: 1%;
+}
+
+p {
   font-size: 18px;
   font-weight: bold;
 }
