@@ -1,0 +1,76 @@
+<center>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <ul class="nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/profile_form">Edit Profile</a></li>
+          <li><a href="/profile">Profile</a></li>
+          <li><a href="/profile/workout">Workout Plan</a></li>
+          <li id="signout_submit"><a href="/">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h1>Search results for <%= @food %>:</h1>
+  <div id="food-listings">
+    <% for i in 0..@results.length-1 %>
+      <div id="food-container-<%= i %>" class="foodContainer">
+        <div id="food-title-<%= i %>" class="foodTitle" onclick="getCalories(<%= i %>)"><button type="button" id="food-button"><%= raw @results[i] %></button></div>
+        <div id="<%= i %>" class="foodData"></div>
+      </div>
+    <% end %>
+  <div>
+
+</center>
+
+<script type="text/javascript">
+$(".foodData").hide();
+
+function displayCalorie(selected_id, reply) {
+	var element = document.getElementById(selected_id);
+    var food_title = document.getElementById("food-title-"+selected_id);
+    var food_container = document.getElementById("food-container-"+selected_id);
+	if (reply.calorie != -1) {
+		var serving_id = "serving"+selected_id;
+		$(element).html("<div class='info'><div>"+reply.calorie+" calories</div>"+
+		"<div>"+reply.serving+"</div></div>"+
+		"<div class='input'><input id='"+serving_id+"' value='1'> servings"+
+		"&nbsp;&nbsp;<button type='button' onclick='addFood("+selected_id+")'>"+
+		"Add</button></div>");
+        $(food_title).css("background-color","#FF7F24");
+        $(food_container).css("background-color","#F0FFFF");
+        $(food_container).css("border-radius","20px");
+		$(element).show();
+	}
+}
+
+function addFood(selected_id) {
+	var servings = document.getElementById("serving"+selected_id).value;
+	send_json("/profile/add_food/get_calorie/add",
+		{num: selected_id, num_servings: servings},
+		function(reply) {
+			if (reply.result == "SUCCESS") {
+				window.location.href = "/profile";
+			} else {
+				alert(reply.result);
+			}
+		},
+		show_error
+	);
+	return false;
+}
+
+function getCalories(selected_id) {
+	send_json("/profile/add_food/get_calorie",
+		{num: selected_id},
+		function(reply) {
+			return displayCalorie(selected_id, reply);
+		},
+		show_error
+	);
+	return false;
+}
+</script>
