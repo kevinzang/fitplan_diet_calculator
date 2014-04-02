@@ -5,8 +5,13 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'capybara/rspec'
 require 'capybara/rails'
+
+# for test coverage, uncomment the following two lines
+# run the tests normally and a coverage report will be generated
+# comment them out when pushing to Heroku
 # require 'simplecov'
 # SimpleCov.start
+
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
