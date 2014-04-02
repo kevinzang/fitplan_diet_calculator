@@ -226,7 +226,7 @@ describe "Fitplan Unit Tests" do
       UserProfile.calorieIntakeChartData("derp", 12).should == nil
     end
     it "should return {} if range_in_months < 0" do
-      UserProfile.signup("kevin", "secret")
+      UserProfile.signup("kevin", "secret", "0")
       UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
       UserProfile.addFood("kevin", "french fries", "700", Date.today.to_s, "serving", "1")
       UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
@@ -234,7 +234,7 @@ describe "Fitplan Unit Tests" do
       chartData.should == {}
     end
     it "should set range_in_months to 12 if range_in_months > 12" do
-      UserProfile.signup("kevin", "secret")
+      UserProfile.signup("kevin", "secret", "0")
       UserProfile.addFood("kevin", "french fries", "700", (Date.today - 11.months).to_s, "serving", "1")
       UserProfile.addFood("kevin", "pho", "700", (Date.today - 19.months).to_s, "serving", "1")
       chartData = UserProfile.calorieIntakeChartData("kevin", 20)
@@ -243,7 +243,7 @@ describe "Fitplan Unit Tests" do
       chartData.has_key?((Date.today - 19.months).to_s).should == false
     end
     it "should combine foods in the same day" do
-      UserProfile.signup("kevin", "secret")
+      UserProfile.signup("kevin", "secret", "0")
       UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
       UserProfile.addFood("kevin", "french fries", "700", Date.today.to_s, "serving", "1")
       UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
@@ -251,13 +251,13 @@ describe "Fitplan Unit Tests" do
       chartData[Date.today.to_s].should == 2700
     end
     it "should multiply calories by number of servings" do
-      UserProfile.signup("kevin", "secret")
+      UserProfile.signup("kevin", "secret", "0")
       UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "7")
       chartData = UserProfile.calorieIntakeChartData("kevin", 12)
       chartData[Date.today.to_s].should == 7000
     end
     it "should ignore entries outside of search range" do
-      UserProfile.signup("kevin", "secret")
+      UserProfile.signup("kevin", "secret", "0")
       UserProfile.addFood("kevin", "ice cream", "1000", (Date.today - 4.months).to_s, "serving", "7")
       chartData = UserProfile.calorieIntakeChartData("kevin", 3)
       chartData.has_key?(Date.today - 4.months).should == false

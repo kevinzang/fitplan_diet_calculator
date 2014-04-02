@@ -36,10 +36,7 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
-<<<<<<< HEAD
     chartkick (1.2.4)
-=======
->>>>>>> 571c35233c811ba5b3b1fe49065f56cf4b416ddc
     childprocess (0.5.2)
       ffi (~> 1.0, >= 1.0.11)
     coffee-rails (4.0.1)
@@ -112,13 +109,8 @@ GEM
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
       rspec-mocks (~> 2.13.0)
-<<<<<<< HEAD
-    rubyzip (0.9.9)
-    sass (3.2.18)
-=======
     rubyzip (1.1.2)
     sass (3.2.15)
->>>>>>> 571c35233c811ba5b3b1fe49065f56cf4b416ddc
     sass-rails (4.0.2)
       railties (>= 4.0.0, < 5.0)
       sass (~> 3.2.0)

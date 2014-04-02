@@ -180,7 +180,7 @@ describe "Fitplan Functional Tests" do
     end
   describe "getting calorie intake chart data" do
     it "should set @calorieIntakeChartData" do
-      UserProfile.signup("a", "secret")
+      UserProfile.signup("a", "secret", "0")
       start_date = Date.today
       (0..20).each do |offset|
         key = (start_date - offset.days).to_s
