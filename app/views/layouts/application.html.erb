@@ -16,7 +16,6 @@ $('#signout_submit').click(function() {
   send_json("/signout_submit",
     {},
     function(result) {
-      alert("response");
       if (result.result == "SUCCESS") {
         window.location.href = "/";
       } else {
