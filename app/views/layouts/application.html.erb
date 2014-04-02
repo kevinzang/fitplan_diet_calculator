@@ -11,4 +11,19 @@
 <body>
 <%= yield %>
 </body>
+<script type="text/javascript">
+$('#signout_submit').click(function() {
+  send_json("/signout_submit",
+    {},
+    function(result) {
+      if (result.result == "SUCCESS") {
+        window.location.href = "/";
+      } else {
+        alert("Things went terribly wrong.");
+      }
+    },
+    show_error
+  );
+});
+</script>
 </html>

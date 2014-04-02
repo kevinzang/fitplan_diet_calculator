@@ -16,7 +16,6 @@
 .foodTitle:hover {
   cursor: pointer;
   background-color: #FF7F24;
-  margin: 5px;
 }
 
 .foodContainer {
@@ -37,4 +36,10 @@
   padding: 5px;
   margin: 2px;
   border-radius: 20px;
+}
+
+
+#food-button {
+    background: transparent;
+    border: none !important;
 }

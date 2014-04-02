@@ -36,7 +36,10 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
+<<<<<<< HEAD
     chartkick (1.2.4)
+=======
+>>>>>>> 571c35233c811ba5b3b1fe49065f56cf4b416ddc
     childprocess (0.5.2)
       ffi (~> 1.0, >= 1.0.11)
     coffee-rails (4.0.1)
@@ -109,8 +112,13 @@ GEM
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
       rspec-mocks (~> 2.13.0)
+<<<<<<< HEAD
     rubyzip (0.9.9)
     sass (3.2.18)
+=======
+    rubyzip (1.1.2)
+    sass (3.2.15)
+>>>>>>> 571c35233c811ba5b3b1fe49065f56cf4b416ddc
     sass-rails (4.0.2)
       railties (>= 4.0.0, < 5.0)
       sass (~> 3.2.0)
@@ -119,10 +127,10 @@ GEM
     sdoc (0.4.0)
       json (~> 1.8)
       rdoc (~> 4.0, < 5.0)
-    selenium-webdriver (2.35.1)
-      childprocess (>= 0.2.5)
+    selenium-webdriver (2.41.0)
+      childprocess (>= 0.5.0)
       multi_json (~> 1.0)
-      rubyzip (< 1.0.0)
+      rubyzip (~> 1.0)
       websocket (~> 1.0.4)
     simplecov (0.8.2)
       docile (~> 1.1.0)
@@ -173,7 +181,7 @@ DEPENDENCIES
   rspec-rails (= 2.13.1)
   sass-rails (~> 4.0.1)
   sdoc
-  selenium-webdriver (= 2.35.1)
+  selenium-webdriver (= 2.41.0)
   simplecov
   sqlite3 (= 1.3.8)
   turbolinks (= 1.1.1)

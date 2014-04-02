@@ -13,41 +13,41 @@ describe "Fitplan Unit Tests" do
 	}
 	describe "add new user" do
 		it "should not have a blank username" do
-			result = UserProfile.signup("", "secret")
+			result = UserProfile.signup("", "secret", "0")
 			result.should == UserProfile::ERR_BAD_USERNAME
 		end
 		it "should not have a username that is too long" do
 			name = "a"*(UserProfile::MAX_USERNAME_LENGTH+1)
-			UserProfile.signup(name, "secret").should == UserProfile::ERR_BAD_USERNAME
+			UserProfile.signup(name, "secret", "0").should == UserProfile::ERR_BAD_USERNAME
 		end
 		it "can have a blank password" do
-			UserProfile.signup("kevin", "").should == UserProfile::SUCCESS
+			UserProfile.signup("kevin", "", "0").should == UserProfile::SUCCESS
 		end
 		it "should not have a password that is too long" do
 			pass = "a"*(UserProfile::MAX_PASSWORD_LENGTH+1)
-			UserProfile.signup("kevin", pass).should == UserProfile::ERR_BAD_PASSWORD
+			UserProfile.signup("kevin", pass, "0").should == UserProfile::ERR_BAD_PASSWORD
 		end
 		it "should not add an already registered user" do
-			UserProfile.signup("kevin", "secret").should == UserProfile::SUCCESS
-			UserProfile.signup("kevin", "secret").should == UserProfile::ERR_USER_EXISTS
+			UserProfile.signup("kevin", "secret", "0").should == UserProfile::SUCCESS
+			UserProfile.signup("kevin", "secret", "0").should == UserProfile::ERR_USER_EXISTS
 		end
 	end
 	describe "log in returning user" do
 		it "should fail if user does not exist" do
-			UserProfile.login("kevin", "secret").should == UserProfile::ERR_BAD_CREDENTIALS
+			UserProfile.login("kevin", "secret", "0").should == UserProfile::ERR_BAD_CREDENTIALS
 		end
 		it "should fail if password is incorrect" do
-			UserProfile.signup("kevin", "secret")
-			UserProfile.login("kevin", "Secret").should == UserProfile::ERR_BAD_CREDENTIALS
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.login("kevin", "Secret", "0").should == UserProfile::ERR_BAD_CREDENTIALS
 		end
 		it "should work if username/password combo is correct" do
-			UserProfile.signup("kevin", "secret")
-			UserProfile.login("kevin", "secret").should == UserProfile::SUCCESS
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.login("kevin", "secret", "0").should == UserProfile::SUCCESS
 		end
 	end
 	describe "submit profile form" do
 		before(:each) {
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 		}
 		it "should fail if fields contain negative values" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
@@ -67,7 +67,7 @@ describe "Fitplan Unit Tests" do
 	end
 	describe "set profile form preexisting values" do
 		before(:each) {
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 		}
 		it "should initially have empty strings for defaults" do
 			defaults = UserProfile.getDefaults("kevin")
@@ -116,7 +116,7 @@ describe "Fitplan Unit Tests" do
 				"2014-01-01", "10 bells", "2").should_not == UserProfile::SUCCESS
 		end
 		it "should work if user is registered" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			UserProfile.addFood("kevin", "chicken", "150", "2014-01-01",
 				"10 oolongs", "9000").should == UserProfile::SUCCESS
 			entries = UserProfile.getEntries("kevin")
@@ -128,7 +128,7 @@ describe "Fitplan Unit Tests" do
 			entries[0].numservings.should == 9000
 		end
 		it "should not allow num servings to be non-numeric or non-positive" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			UserProfile.addFood("kevin", "chicken", "150", "2014-01-01",
 				"10 oolongs", "moonwalk").should_not == UserProfile::SUCCESS
 			UserProfile.addFood("kevin", "chicken", "150", "2014-01-01",
@@ -140,7 +140,7 @@ describe "Fitplan Unit Tests" do
 			UserProfile.deleteFood("kevin", ["chicken"]).should_not == UserProfile::SUCCESS
 		end
 		it "should not have any effect if food not in list" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			UserProfile.addFood("kevin", "chicken", "150",
 				"2014-01-01", "10 bells", "2")
 			UserProfile.deleteFood("kevin", ["beans"]).should == UserProfile::SUCCESS
@@ -151,7 +151,7 @@ describe "Fitplan Unit Tests" do
 			entries[0].date.should == "2014-01-01"
 		end
 		it "should delete entries one at a time" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			UserProfile.addFood("kevin", "chicken pot pie", "150",
 				"2014-01-01", "10 bells", "2")
 			UserProfile.addFood("kevin", "chicken pot pie", "150",
@@ -163,7 +163,7 @@ describe "Fitplan Unit Tests" do
 	end
 	describe "getting today's entries" do
 		it "should only retrieve today's entries" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			UserProfile.addFood("kevin", "chicken pot pie", "150",
 				Date.today.to_s, "10 bells", "2")
 			UserProfile.addFood("kevin", "ice cream", "175",
@@ -176,10 +176,10 @@ describe "Fitplan Unit Tests" do
 			todays_entries[0].calories.should == 150
 			todays_entries[0].date.should == Date.today.to_s
 		end
-  end
+	end
 	describe "getting the workout plan" do
 		it "should just report the intake if profile form incomplete" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			UserProfile.addFood("kevin", "chicken pot pie", "1000",
 				Date.today.to_s, "10 bells", "2")
 			UserProfile.addFood("kevin", "ice cream", "100",
@@ -190,7 +190,7 @@ describe "Fitplan Unit Tests" do
 			target["intake"].should == 3000
 		end
 		it "should use profile details if they're filled out" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"20", "gender"=>"female"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
@@ -207,7 +207,20 @@ describe "Fitplan Unit Tests" do
 			target["rec_target"].should == 130
 			target["rec_normal"].should == 124
 		end
-  end
+    end
+    describe "user authentication" do
+    	it "should set the remember token" do
+    		UserProfile.signup("kevin", "secret", "0")
+    		username = UserProfile.getUsername("0")
+    		username.should == "kevin"
+    	end
+    	it "should sign out" do
+    		UserProfile.signup("kevin", "secret", "0")
+    		UserProfile.signout("0")
+    		user = UserProfile.find_by(username:"kevin")
+    		user.remember_token.should == nil
+    	end
+    end
   describe "getting calorie intake chart data" do
     it "should return nil if user does not exist" do
       UserProfile.calorieIntakeChartData("derp", 12).should == nil

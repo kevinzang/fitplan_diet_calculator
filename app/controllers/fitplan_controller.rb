@@ -16,8 +16,11 @@ class FitplanController < ApplicationController
 		end
 		username = params[:username]
 		password = params[:password]
-		result = UserProfile.login(username, password)
-		@user = username
+		token = UserProfile.getNewToken()
+		result = UserProfile.login(username, password, token)
+		if result == UserProfile::SUCCESS
+			cookies.permanent[:remember_token] = token
+		end
 		resp = {"result"=>result}
 		return render(:json=>resp, status:200)
 	end
@@ -29,15 +32,27 @@ class FitplanController < ApplicationController
 		end
 		username = params[:username]
 		password = params[:password]
-		result = UserProfile.signup(username, password)
-		@user = username
+		token = UserProfile.getNewToken()
+		result = UserProfile.signup(username, password, token)
+		if result == UserProfile::SUCCESS
+			cookies.permanent[:remember_token] = token
+		end
+		resp = {"result"=>result}
+		return render(:json=>resp, status:200)
+	end
+
+	def signout_submit
+		# receive JSON, sign up new user
+		result = UserProfile.signout(cookies[:remember_token])
+		cookies.delete(:remember_token)
 		resp = {"result"=>result}
 		return render(:json=>resp, status:200)
 	end
 
 	def profile_form
 		# profile form page, retrieve existing values
-		@defaults = UserProfile.getDefaults("a")
+		@user = getUser(cookies[:remember_token])
+		@defaults = UserProfile.getDefaults(@user)
 	end
 
 	def profile_form_submit
@@ -53,8 +68,9 @@ class FitplanController < ApplicationController
 
 	def profile
 		# profile page
+		@user = getUser(cookies[:remember_token])
 		@today = Date.today.to_s
-		@entries = UserProfile.getEntriesByDate("a", @today)
+		@entries = UserProfile.getEntriesByDate(@user, @today)
 		if @entries.class == String
 			@message = @entries
 		else
@@ -64,6 +80,7 @@ class FitplanController < ApplicationController
 
 	def add_food
 		# respond to initial food search
+		@user = getUser(cookies[:remember_token])
 		if request.post?
 			@food = params["food"]
 			@results = FoodSearch.search(@food)
@@ -85,27 +102,30 @@ class FitplanController < ApplicationController
 
 	def add_food_submit
 		# respond to JSON request to submit food entry
+		@user = getUser(cookies[:remember_token])
 		if !valid_json?(["num", "num_servings"])
 			return render(:json=>{}, status:500)
 		end
 		entry = FoodSearch.getEntry(params["num"].to_i)
-		result = UserProfile.addFood("a", entry.food, entry.calories, entry.date,
+		result = UserProfile.addFood(@user, entry.food, entry.calories, entry.date,
 			entry.serving, params["num_servings"])
 		return render(:json=>{"result"=>result}, status: 200)
     end
 
     def delete_food
+    	@user = getUser(cookies[:remember_token])
     	if !valid_json?(["delete"])
 			return render(:json=>{}, status:500)
 		end
 		delete = JSON.parse(params["delete"])
-		result = UserProfile.deleteFood("a", delete)
+		result = UserProfile.deleteFood(@user, delete)
 		return render(:json=>{"result"=>result}, status: 200)
 	end
 
-  def workout
-    @workout = UserProfile.getWorkout("a", Date.today.to_s)
-  end
+    def workout
+    	@user = getUser(cookies[:remember_token])
+    	@workout = UserProfile.getWorkout(@user, Date.today.to_s)
+    end
 
   def progress
     @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
@@ -166,4 +186,16 @@ class FitplanController < ApplicationController
 		end
 		return true
 	end
+
+	private
+	def getUser(token)
+		user = UserProfile.getUsername(token)
+		if user == nil
+			render('not_signed_in')
+			return nil
+		else
+			return user
+		end
+	end
+
 end

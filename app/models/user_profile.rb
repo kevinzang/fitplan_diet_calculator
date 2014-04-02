@@ -31,7 +31,22 @@ class UserProfile < ActiveRecord::Base
         return UserProfile.find_by(username:username) != nil
     end
 
-	def self.signup(username, password)
+    def self.getNewToken()
+        return SecureRandom.urlsafe_base64()
+    end
+
+    def self.getUsername(token)
+        if token == nil
+            return nil
+        end
+        user = UserProfile.find_by(remember_token:UserProfile.hash(token))
+        if user == nil
+            return nil
+        end
+        return user.username
+    end
+
+	def self.signup(username, password, token)
 		new_user = UserProfile.find_by(username:username)
         if new_user != nil
             return ERR_USER_EXISTS
@@ -42,18 +57,30 @@ class UserProfile < ActiveRecord::Base
         if !UserProfile.validPassword?(password)
             return ERR_BAD_PASSWORD
         end
-        new_user = UserProfile.new(username:username, password:password)
+        new_user = UserProfile.new(username:username, password:password,
+            remember_token:UserProfile.hash(token))
  		new_user.save()
  		return SUCCESS
     end
 
-    def self.login(username, password)
+    def self.login(username, password, token)
         reg_user = UserProfile.find_by(username:username)
         if reg_user == nil
             return ERR_BAD_CREDENTIALS
         end
         if reg_user.password != password
             return ERR_BAD_CREDENTIALS
+        end
+        reg_user.remember_token = UserProfile.hash(token)
+        reg_user.save()
+        return SUCCESS
+    end
+
+    def self.signout(token)
+        user = UserProfile.find_by(remember_token:UserProfile.hash(token))
+        if user != nil
+            user.remember_token = nil
+            user.save()
         end
         return SUCCESS
     end
@@ -248,5 +275,10 @@ class UserProfile < ActiveRecord::Base
         # [rate] = cal/(kg * hr)
         # [weight] = lb
         return [calories*2.2*60/10/weight, 0].max().round(0)
+    end
+
+    private
+    def self.hash(token)
+        return Digest::SHA1.hexdigest(token.to_s)
     end
 end

@@ -1,17 +1,7 @@
 <center>
-  <div class="navbar">
-    <div class="navbar-inner">
-      <div class="container">
-        <ul class="nav">
-          <li><a href="/">Home</a></li>
-          <li><a href="/profile_form">Edit Profile</a></li>
-          <li><a href="/profile">Profile</a></li>
-          <li class="active"><a href="/profile/workout">Workout Plan</a></li>
-          <li><a href="/progress">Progress</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+
+<%= render '/layouts/navbar' %>
+
 	<div>Today's intake: <%= @workout["intake"] %> cal</div><br>
   <div id="plan"></div><br>
 	<a href="/profile">Back to profile</a>

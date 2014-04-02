@@ -11,7 +11,8 @@ describe "Fitplan Functional Tests" do
 	after(:each) {
 		UserProfile.reset()
 	}
-	session = {'CONTENT_TYPE'=>'application/json', 'ACCEPT' => 'application/json'}
+	session = {'CONTENT_TYPE'=>'application/json',
+		'ACCEPT' => 'application/json'}
 	describe "add new user" do
 		it "should add new user" do
 			UserProfile.isRegistered?("kevin").should == false
@@ -24,7 +25,7 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "log in returning user" do
 		it "should log in user" do
-			UserProfile.signup("kevin", "secret")
+			UserProfile.signup("kevin", "secret", "0")
 			req = {"username"=>"kevin", "password"=>"secret"}
 			resp = {"result"=>UserProfile::SUCCESS}
 			post '/login_submit', req.to_json, session
@@ -33,7 +34,7 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "submit profile form" do
 		it "should submit profile" do
-			UserProfile.signup("a", "secret")
+			UserProfile.signup("a", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
 				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
 			resp = {"result"=>UserProfile::SUCCESS}
@@ -43,7 +44,8 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "set profile form preexisting values" do
 		it "should remember the defaults" do
-			UserProfile.signup("a", "secret")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
 				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
 			UserProfile.setProfile("a", req.keys, req).should == UserProfile::SUCCESS
@@ -74,7 +76,8 @@ describe "Fitplan Functional Tests" do
     end
     describe "add food" do
 		it "should add the food entry" do
-			UserProfile.signup("a", "secret")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
 			entries = UserProfile.getEntries("a")
 			entries.length.should == 0
 			FoodSearch.search("mashed potatoes")
@@ -94,7 +97,8 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "delete food" do
 		it "should delete the entries" do
-			UserProfile.signup("a", "secret")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
 			UserProfile.addFood("a", "chicken pot pie", "150",
 				"2014-01-01", "10 bells", "2")
 			UserProfile.addFood("a", "chicken pot pie", "150",
@@ -117,7 +121,8 @@ describe "Fitplan Functional Tests" do
 			@message = "You have #{@entries.length} entries for #{@today}."
 		end
 		it "should set @today and @entries" do
-			UserProfile.signup("a", "secret")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
 			UserProfile.addFood("a", "chicken pot pie", "150",
 				Date.today.to_s, "10 bells", "2")
 			UserProfile.addFood("a", "ice cream", "175",
@@ -135,7 +140,8 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "getting the workout plan" do
 		it "should set @workout" do
-			UserProfile.signup("a", "secret")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"20", "gender"=>"female"}
 			UserProfile.setProfile("a", fields.keys, fields)
@@ -153,7 +159,25 @@ describe "Fitplan Functional Tests" do
 			workout["rec_target"].should == 130
 			workout["rec_normal"].should == 124
 		end
-  end
+    end
+    describe "user authentication" do
+    	it "should remember the user" do
+    		cookies[:remember_token] = "blastoise"
+    		UserProfile.signup("squirtle", "wartortle", "blastoise")
+    		get '/profile'
+    		assigns(:user).should == "squirtle"
+    	end
+    	it "should sign the user out" do
+    		cookies[:remember_token] = "blastoise"
+    		UserProfile.signup("squirtle", "wartortle", "blastoise")
+    		req = {}
+			resp = {"result"=>UserProfile::SUCCESS}
+			post '/signout_submit', req.to_json, session
+			response.body.should == resp.to_json
+    		get '/profile'
+    		assigns(:user).should == nil
+    	end
+    end
   describe "getting calorie intake chart data" do
     it "should set @calorieIntakeChartData" do
       UserProfile.signup("a", "secret")

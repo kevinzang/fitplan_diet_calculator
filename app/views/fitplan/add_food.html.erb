@@ -1,24 +1,12 @@
 <center>
 
-  <div class="navbar">
-    <div class="navbar-inner">
-      <div class="container">
-        <ul class="nav">
-          <li><a href="/">Home</a></li>
-          <li><a href="/profile_form">Edit Profile</a></li>
-          <li><a href="/profile">Profile</a></li>
-          <li><a href="/profile/workout">Workout Plan</a></li>
-          <li><a href="/progress">Progress</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
+<%= render '/layouts/navbar' %>
 
   <h1>Search results for <%= @food %>:</h1>
   <div id="food-listings">
     <% for i in 0..@results.length-1 %>
       <div id="food-container-<%= i %>" class="foodContainer">
-        <div id="food-title-<%= i %>" class="foodTitle" onclick="getCalories(<%= i %>)"><%= raw @results[i] %></div>
+        <div id="food-title-<%= i %>" class="foodTitle" onclick="getCalories(<%= i %>)"><button type="button" id="food-button"><%= raw @results[i] %></button></div>
         <div id="<%= i %>" class="foodData"></div>
       </div>
     <% end %>

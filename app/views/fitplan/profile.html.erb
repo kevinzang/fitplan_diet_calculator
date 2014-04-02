@@ -1,17 +1,7 @@
-<div class="navbar">
-  <div class="navbar-inner">
-    <div class="container">
-      <ul class="nav">
-        <li><a href="/">Home</a></li>
-        <li><a href="/profile_form">Edit Profile</a></li>
-        <li class="active"><a href="/profile">Profile</a></li>
-        <li><a href="/profile/workout">Workout Plan</a></li>
-        <li><a href="/progress">Progress</a></li>
-      </ul>
-    </div>
-  </div>
-</div>
-<h1>Profile Page</h1>
+<%= render '/layouts/navbar' %>
+
+<h1>Profile Page</h1><br>
+<h1>Welcome, <%= @user %></h1>
 <div id="message"><%= @message %></div>
 <a href="/profile/workout">Workout plan</a>
 <form action="/profile/add_food" method="post">
