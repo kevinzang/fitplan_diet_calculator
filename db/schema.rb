@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140331002229) do
+ActiveRecord::Schema.define(version: 20140402041837) do
 
   create_table "food_entries", force: true do |t|
     t.string   "username"
@@ -50,5 +50,13 @@ ActiveRecord::Schema.define(version: 20140331002229) do
   end
 
   add_index "user_profiles", ["remember_token"], name: "index_user_profiles_on_remember_token"
+
+  create_table "weight_entries", force: true do |t|
+    t.string   "username"
+    t.string   "date"
+    t.integer  "weight"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

@@ -178,4 +178,24 @@ describe "Fitplan Functional Tests" do
     		assigns(:user).should == nil
     	end
     end
+  describe "getting calorie intake chart data" do
+    it "should set @calorieIntakeChartData" do
+      UserProfile.signup("a", "secret", "0")
+      start_date = Date.today
+      (0..20).each do |offset|
+        key = (start_date - offset.days).to_s
+        UserProfile.addFood("a", "cereal", "156", key, "serving", "2")
+        UserProfile.addFood("a", "salad", "483", key, "serving", "1")
+        UserProfile.addFood("a", "snack", "92", key, "serving", "3")
+        UserProfile.addFood("a", "pho", "855", key, "serving", "1")
+      end
+      get '/progress'
+      chartData = assigns(:calorieIntakeChartData)
+      (0..20).each do |offset|
+        key = (start_date - offset.days).to_s
+        chartData.has_key?(key).should == true
+        chartData[key].should == 2 * 156 + 483 + 3 * 92 + 855
+      end
+    end
+  end
 end

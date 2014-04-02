@@ -127,7 +127,11 @@ class FitplanController < ApplicationController
     	@workout = UserProfile.getWorkout(@user, Date.today.to_s)
     end
 
-    def test
+  def progress
+    @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
+  end
+
+  def test
     	if !valid_json?([])
             return render(:json=>{}, status:500)
         end
