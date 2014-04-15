@@ -8,9 +8,11 @@ require 'date'
 describe "Fitplan Unit Tests" do
 	before(:each) {
 		UserProfile.reset()
+    WeightEntry.delete_all()
 	}
 	after(:each) {
 		UserProfile.reset()
+    WeightEntry.delete_all()
 	}
 	describe "add new user" do
 		it "should not have a blank username" do
@@ -52,17 +54,20 @@ describe "Fitplan Unit Tests" do
 		}
 		it "should fail if fields contain negative values" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"-20", "gender"=>"female"}
+				"desired_weight"=>"150", "age"=>"-20", "gender"=>"female",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should fail if fields contain words" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"twenty", "gender"=>"female"}
+				"desired_weight"=>"150", "age"=>"twenty", "gender"=>"female",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should work if all fields are either blank or non-negative integers" do
 			fields = {"feet"=>"5", "inches"=>"0", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 		end
 	end
@@ -78,7 +83,8 @@ describe "Fitplan Unit Tests" do
 		end
 		it "should remember the defaults" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 			defaults = UserProfile.getDefaults("kevin")
 			for key in defaults.keys
@@ -192,7 +198,8 @@ describe "Fitplan Unit Tests" do
 		it "should report the target and normal for completed profile form" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			UserProfile.addFood("kevin", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -211,7 +218,8 @@ describe "Fitplan Unit Tests" do
 		it "should figure out rec_target and rec_normal" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"", "inches"=>"", "weight"=>"165",
-				"desired_weight"=>"", "age"=>"", "gender"=>""}
+				"desired_weight"=>"", "age"=>"", "gender"=>"",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			rec = UserProfile.getRecommended("kevin", 2000, 1500,
 				"Running, 6 mph (10 min mile)")
@@ -253,7 +261,8 @@ describe "Fitplan Unit Tests" do
   	it "should add entry for valid entry" do
   		UserProfile.signup("a", "secret", "0")
   		fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-			"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+			"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+      "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 		UserProfile.setProfile("a", fields.keys, fields)
   		result = UserProfile.addWorkoutEntry("a",
   			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
@@ -318,6 +327,119 @@ describe "Fitplan Unit Tests" do
       chartData.has_key?(Date.today - 4.months).should == false
       chartData = UserProfile.calorieIntakeChartData("kevin", 5)
       chartData.has_key?((Date.today - 4.months).to_s).should == true
+    end
+  end
+  describe "UserProfile.addWeightEntry(...)" do
+    before(:each) {
+      UserProfile.delete_all()
+      WeightEntry.delete_all()
+    }
+    it "should error for invalid user" do
+      result = UserProfile.addWeightEntry("kevin", 1, Date.today.to_s)
+      result.should == "Error: user not found"
+    end
+    it "should error for weight < 0" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addWeightEntry("kevin", -1, Date.today.to_s)
+      result.should == "Error: weight must be positive"
+      WeightEntry.find_by(username: "kevin").should == nil
+    end
+    it "should error for weight > 1000" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addWeightEntry("kevin", 1001, Date.today.to_s)
+      result.should == "Error: max weight is 1000"
+      WeightEntry.find_by(username: "kevin").should == nil
+    end
+    it "should succeed if weight and user are valid" do
+      date = Date.today
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addWeightEntry("kevin", 211, date.to_s)
+      result.should == "SUCCESS"
+      entry = WeightEntry.find_by(username: "kevin")
+      entry.should_not == nil
+      entry.username.should == "kevin"
+      entry.weight.should == 211
+      entry.date.should == date.to_s
+    end
+  end
+  describe "UserProfile.getWeightEntries(...)" do
+    it "should return all weight entries, lowest weight for each day" do
+      date = Date.today
+      UserProfile.signup("kevin", "secret", "0")
+      UserProfile.addWeightEntry("kevin", 211, date.to_s)
+      UserProfile.addWeightEntry("kevin", 210, date.to_s)
+      UserProfile.addWeightEntry("kevin", 209, (date + 1.days).to_s)
+      entries = UserProfile.getWeightEntries("kevin")
+      entries.length.should == 2
+      entries[0].weight.should == 210
+      entries[1].weight.should == 209
+    end
+  end
+  describe "UserProfile.getWeightEntriesInRange(...)" do
+    it "should return only weight entries in range" do
+      current_date = Date.today
+      out_of_range_date = current_date - 5.months
+      UserProfile.signup("kevin", "secret", "0")
+      UserProfile.addWeightEntry("kevin", 211, (current_date - 5.days).to_s)
+      UserProfile.addWeightEntry("kevin", 5, out_of_range_date.to_s)
+      entries = UserProfile.getWeightEntriesInRange("kevin", 3)
+      entries.length.should == 1
+      entries[0].weight.should == 211
+    end
+  end
+  describe "UserProfile.weightChartData(...)" do
+    it "should return all weight entries in range, in format requested by chartkick gem" do
+      date = Date.today
+      UserProfile.signup("kevin", "secret", "0")
+      UserProfile.addWeightEntry("kevin", 211, date.to_s)
+      UserProfile.addWeightEntry("kevin", 212, (date - 3.days).to_s)
+      UserProfile.addWeightEntry("kevin", 216, (date - 10.days).to_s)
+      UserProfile.addWeightEntry("kevin", 999, (date - 5.months).to_s)
+      chartData = UserProfile.weightChartData("kevin", 3)
+      chartData.size.should == 3
+      chartData[date.to_s].should == 211
+      chartData[(date - 3.days).to_s].should == 212
+      chartData[(date - 10.days).to_s].should == 216
+      chartData[(date - 5.months).to_s].should == nil
+    end
+  end
+  describe "UserProfile.recommendedCalorieIntake(...)" do
+    it "should return the correct number of calories" do
+      UserProfile.signup("kevin", "secret", "0")
+      user = UserProfile.find_by(username: "kevin")
+      for height in 66..67
+        for weight in 130..131
+          for age in 23..24
+            for gender in ["male", "female"]
+              for activity_level in [0, 1, 2, 3, 4]
+                for weight_change_per_week_goal in [0.0, 0.5, 1.0, 1.5, 2.0]
+                  # expected
+                  bmr = nil
+                  if gender == "male"
+                    bmr = (65 + 13.8*weight/2.2 + 5*height*2.54 - 6.8*age).round(-1)
+                  else # gender == "female"
+                    bmr = (655 + 9.6*weight/2.2 + 1.8*height*2.54 - 4.7*age).round(-1)
+                  end
+                  scale_factor = 1.2 + 0.175 * activity_level
+                  calorie_change_per_week = 3500 * weight_change_per_week_goal
+                  calorie_change_per_day = calorie_change_per_week / 7
+                  expected = scale_factor * bmr + calorie_change_per_day
+                  # actual
+                  user.height = height
+                  user.weight = weight
+                  user.age = age
+                  user.gender = gender
+                  user.activity_level = activity_level
+                  user.weight_change_per_week_goal = weight_change_per_week_goal
+                  user.save()
+                  actual = UserProfile.recommendedCalorieIntake("kevin")
+                  actual.should == expected
+                end
+              end
+            end
+          end
+        end
+      end
     end
   end
 end

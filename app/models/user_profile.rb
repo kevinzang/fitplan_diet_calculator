@@ -94,7 +94,7 @@ class UserProfile < ActiveRecord::Base
             return ERR_USER_NOT_FOUND
         end
         values = {}
-        for field in ["height", "weight", "desired_weight", "age", "gender"]
+        for field in ["height", "weight", "desired_weight", "age", "gender", "activity_level", "weight_change_per_week_goal"]
             value = user.read_attribute(field)
             if value == nil
                 values[field] = ""
@@ -124,6 +124,8 @@ class UserProfile < ActiveRecord::Base
         user.desired_weight = params["desired_weight"].to_i
         user.age = params["age"].to_i
         user.gender = params["gender"]
+        user.activity_level = params["activity_level"].to_i
+        user.weight_change_per_week_goal = params["weight_change_per_week_goal"].to_f
         user.save()
         return valid
     end
@@ -142,6 +144,39 @@ class UserProfile < ActiveRecord::Base
             return ERR_USER_NOT_FOUND
         end
         return FoodEntry.where(username:username, date:date.to_s)
+    end
+
+    def self.getWeightEntries(username)
+      user = UserProfile.find_by(username:username)
+      if user == nil
+        return ERR_USER_NOT_FOUND
+      end
+      return WeightEntry.where(username: username)
+    end
+
+    def self.getWeightEntriesInRange(username, range_in_months)
+      return getWeightEntries(username).select{|entry| entry.date.to_date() >= Date.today - range_in_months.months}
+    end
+
+    def self.addWeightEntry(username, weight, date)
+      user = UserProfile.find_by(username:username)
+      if user.nil?
+        return ERR_USER_NOT_FOUND
+      end
+      if weight < 0
+        return "Error: weight must be positive"
+      end
+      if weight > 1000
+        return "Error: max weight is 1000"
+      end
+      entry = WeightEntry.find_by(:username => username, :date => date)
+      if entry.nil?
+        entry = WeightEntry.new(username: username, date: date, weight: weight)
+      else
+        entry.update_attributes(:weight => weight)
+      end
+      entry.save()
+      return SUCCESS
     end
 
     def self.addFood(username, food, calorie, date, serving, num_servings)
@@ -274,6 +309,25 @@ class UserProfile < ActiveRecord::Base
         return total
     end
 
+    def self.weightChartData(username, range_in_months)
+      weightEntries = getWeightEntriesInRange(username, range_in_months)
+      if weightEntries == ERR_USER_NOT_FOUND
+        return {}
+      end
+      if range_in_months < 0
+        return {}
+      end
+      chartData = {}
+      for weightEntry in weightEntries
+        if chartData.has_key?(weightEntry.date)
+          chartData[weightEntry.date] = max chartData[weightEntry.date], weightEntry.weight
+        else
+          chartData[weightEntry.date] = weightEntry.weight
+        end
+      end
+      return chartData
+    end
+
     def self.calorieIntakeChartData(username, range_in_months)
       foodEntries = UserProfile.getEntries(username)
       if foodEntries == ERR_USER_NOT_FOUND
@@ -298,9 +352,17 @@ class UserProfile < ActiveRecord::Base
       return chartData
     end
 
-    def caloriesNeededMaintainWeight()
-      bmr = UserProfile.getBMR(height, weight, age, gender)
-      return bmr * 1.2 # use default for now (little to no exercise)
+    def self.recommendedCalorieIntake(username)
+      user = find_by(username: username)
+      if user.nil?
+        return nil
+      end
+      bmr = self.getBMR(user.height, user.weight, user.age, user.gender)
+      scale_factor = 1.2 + 0.175 * user.activity_level
+      # one pound of body weight is roughly equivalent to 3500 calories
+      calorie_change_per_week = 3500 * user.weight_change_per_week_goal
+      calorie_change_per_day = calorie_change_per_week / 7
+      return scale_factor * bmr + calorie_change_per_day
     end
 
     def self.reset()
