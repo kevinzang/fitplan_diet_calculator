@@ -8,9 +8,11 @@ require 'date'
 describe "Fitplan Unit Tests" do
 	before(:each) {
 		UserProfile.reset()
+    WeightEntry.delete_all()
 	}
 	after(:each) {
 		UserProfile.reset()
+    WeightEntry.delete_all()
 	}
 	describe "add new user" do
 		it "should not have a blank username" do
@@ -328,6 +330,10 @@ describe "Fitplan Unit Tests" do
     end
   end
   describe "UserProfile.addWeightEntry(...)" do
+    before(:each) {
+      UserProfile.delete_all()
+      WeightEntry.delete_all()
+    }
     it "should error for invalid user" do
       result = UserProfile.addWeightEntry("kevin", 1, Date.today.to_s)
       result.should == "Error: user not found"
@@ -354,6 +360,31 @@ describe "Fitplan Unit Tests" do
       entry.username.should == "kevin"
       entry.weight.should == 211
       entry.date.should == date.to_s
+    end
+  end
+  describe "UserProfile.getWeightEntries(...)" do
+    it "should return all weight entries, lowest weight for each day" do
+      date = Date.today
+      UserProfile.signup("kevin", "secret", "0")
+      UserProfile.addWeightEntry("kevin", 211, date.to_s)
+      UserProfile.addWeightEntry("kevin", 210, date.to_s)
+      UserProfile.addWeightEntry("kevin", 209, (date + 1.days).to_s)
+      entries = UserProfile.getWeightEntries("kevin")
+      entries.length.should == 2
+      entries[0].weight.should == 210
+      entries[1].weight.should == 209
+    end
+  end
+  describe "UserProfile.getWeightEntriesInRange(...)" do
+    it "should return only weight entries in range" do
+      current_date = Date.today
+      out_of_range_date = current_date - 5.months
+      UserProfile.signup("kevin", "secret", "0")
+      UserProfile.addWeightEntry("kevin", 211, (current_date - 5.days).to_s)
+      UserProfile.addWeightEntry("kevin", 5, out_of_range_date.to_s)
+      entries = UserProfile.getWeightEntriesInRange("kevin", 3)
+      entries.length.should == 1
+      entries[0].weight.should == 211
     end
   end
 end

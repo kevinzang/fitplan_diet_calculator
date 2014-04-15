@@ -147,6 +147,10 @@ class UserProfile < ActiveRecord::Base
     end
 
     def self.getWeightEntries(username)
+      user = UserProfile.find_by(username:username)
+      if user == nil
+        return ERR_USER_NOT_FOUND
+      end
       return WeightEntry.where(username: username)
     end
 
@@ -165,7 +169,7 @@ class UserProfile < ActiveRecord::Base
       if weight > 1000
         return "Error: max weight is 1000"
       end
-      entry = WeightEntry.find_by(:username => user, :date => date)
+      entry = WeightEntry.find_by(:username => username, :date => date)
       if entry.nil?
         entry = WeightEntry.new(username: username, date: date, weight: weight)
       else
@@ -303,6 +307,25 @@ class UserProfile < ActiveRecord::Base
             total += entry.burned
         end
         return total
+    end
+
+    def self.weightChartData(username, range_in_months)
+      weightEntries = getWeightEntries(username)
+      if weightEntries == ERR_USER_NOT_FOUND
+        return {}
+      end
+      if range_in_months < 0
+        return {}
+      end
+      chartData = {}
+      for weightEntry in weightEntries
+        if chartData.has_key?(weightEntry.date)
+          chartData[weightEntry.date] = max chartData[weightEntry.date], weightEntry.weight
+        else
+          chartData[weightEntry.date] = weightEntry.weight
+        end
+      end
+      return chartData
     end
 
     def self.calorieIntakeChartData(username, range_in_months)
