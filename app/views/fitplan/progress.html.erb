@@ -4,11 +4,16 @@
 
 <h1>Progress</h1>
 
-<div style="width:800px; margin:0 auto">
-  <p>Starting Weight: <%= @userModel.weight.to_s + ' lbs.' if !@userModel.nil? %>&nbsp;&nbsp;&nbsp;&nbsp;
-    Desired Weight: <%= @userModel.desired_weight.to_s + ' lbs.' if !@userModel.nil? %></p>
-  <p style="font-weight:bold">Weight</p>
+<div id="weight_info">
+  <p>Starting Weight: <%= @userModel.weight.to_s + ' lbs.' if !@userModel.nil? %></p>
+  <p>Desired Weight: <%= @userModel.desired_weight.to_s + ' lbs.' if !@userModel.nil? %></p>
+</div>
+
+<p>See your <a href="/workout_plan">workout plan</a></p>
+
+<div id="chart">
+  <p>Weight Progess</p>
   <%= line_chart @weightChartData, discrete: true, height: '400px', name: 'Calories' %>
-  <br>
-  <br>
+  <br />
+  <br />
 </div>
