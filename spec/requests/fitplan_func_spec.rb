@@ -34,12 +34,19 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "submit profile form" do
 		it "should submit profile" do
-			UserProfile.signup("a", "secret", "0")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("dragon", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
 				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
 			resp = {"result"=>UserProfile::SUCCESS}
 			post '/profile_form/submit', req.to_json, session
 			response.body.should == resp.to_json
+			record = UserProfile.find_by(username:"dragon")
+			record.height.should == 60
+			record.weight.should == 150
+			record.desired_weight.should == 140
+			record.age.should == 20
+			record.gender.should == "male"
 		end
 	end
 	describe "set profile form preexisting values" do

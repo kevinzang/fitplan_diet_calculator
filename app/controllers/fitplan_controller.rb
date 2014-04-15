@@ -61,11 +61,15 @@ class FitplanController < ApplicationController
 
 	def profile_form_submit
 		# receive JSON, save profile form data
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
 		fields = ["feet", "inches", "weight", "desired_weight", "age", "gender"]
 		if !valid_json?(fields)
 			return render(:json=>{}, status:500)
 		end
-		result = UserProfile.setProfile("a", fields, params)
+		result = UserProfile.setProfile(@user, fields, params)
 		resp = {"result"=>result}
 		return render(:json=>resp, status:200)
 	end
