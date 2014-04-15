@@ -146,6 +146,35 @@ class UserProfile < ActiveRecord::Base
         return FoodEntry.where(username:username, date:date.to_s)
     end
 
+    def self.getWeightEntries(username)
+      return WeightEntry.where(username: username)
+    end
+
+    def self.getWeightEntriesInRange(username, range_in_months)
+      return getWeightEntries(username).select{|entry| entry.date.to_date() >= Date.today - range_in_months.months}
+    end
+
+    def self.addWeightEntry(username, weight, date)
+      user = UserProfile.find_by(username:username)
+      if user.nil?
+        return ERR_USER_NOT_FOUND
+      end
+      if weight < 0
+        return "Error: weight must be positive"
+      end
+      if weight > 1000
+        return "Error: max weight is 1000"
+      end
+      entry = WeightEntry.find_by(:username => user, :date => date)
+      if entry.nil?
+        entry = WeightEntry.new(username: username, date: date, weight: weight)
+      else
+        entry.update_attributes(:weight => weight)
+      end
+      entry.save()
+      return SUCCESS
+    end
+
     def self.addFood(username, food, calorie, date, serving, num_servings)
         user = UserProfile.find_by(username:username)
         if user == nil

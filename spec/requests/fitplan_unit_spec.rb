@@ -327,4 +327,33 @@ describe "Fitplan Unit Tests" do
       chartData.has_key?((Date.today - 4.months).to_s).should == true
     end
   end
+  describe "UserProfile.addWeightEntry(...)" do
+    it "should error for invalid user" do
+      result = UserProfile.addWeightEntry("kevin", 1, Date.today.to_s)
+      result.should == "Error: user not found"
+    end
+    it "should error for weight < 0" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addWeightEntry("kevin", -1, Date.today.to_s)
+      result.should == "Error: weight must be positive"
+      WeightEntry.find_by(username: "kevin").should == nil
+    end
+    it "should error for weight > 1000" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addWeightEntry("kevin", 1001, Date.today.to_s)
+      result.should == "Error: max weight is 1000"
+      WeightEntry.find_by(username: "kevin").should == nil
+    end
+    it "should succeed if weight and user are valid" do
+      date = Date.today
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addWeightEntry("kevin", 211, date.to_s)
+      result.should == "SUCCESS"
+      entry = WeightEntry.find_by(username: "kevin")
+      entry.should_not == nil
+      entry.username.should == "kevin"
+      entry.weight.should == 211
+      entry.date.should == date.to_s
+    end
+  end
 end
