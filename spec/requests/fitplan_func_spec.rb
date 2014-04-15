@@ -171,6 +171,66 @@ describe "Fitplan Functional Tests" do
 			activities.include?("Canoeing, camping trip").should == true
         end
     end
+    describe "getting a recommendation" do
+    	it "should get a recommendation" do
+    		cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+			UserProfile.setProfile("a", fields.keys, fields)
+			UserProfile.addFood("a", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
+			get '/profile/workout'
+			workout = assigns(:workout)
+			# workout["target"].should == 1760
+			# workout["intake"].should == 2660
+			# workout["normal"].should == 1800
+			# workout["rec_target"].should == 74
+			# workout["rec_normal"].should == 71
+			req = {"activity" => "Bird watching",
+				"target_cal" => 1760, "normal_cal" => 1800} # rate=1.14
+			resp = {"rec_target" => 579, "rec_normal" => 592}
+			post '/profile/workout/get_recommended', req.to_json, session
+			response.body.should == resp.to_json
+		end
+	end
+    describe "adding workout entries" do
+    	it "should add workout entry" do
+    		cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+			UserProfile.setProfile("a", fields.keys, fields)
+			UserProfile.addFood("a", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
+			get '/profile/workout'
+			workout = assigns(:workout)
+			# original plan
+			# workout["target"].should == 1760
+			# workout["intake"].should == 2660
+			# workout["normal"].should == 1800
+			# workout["rec_target"].should == 74
+			# workout["rec_normal"].should == 71
+			workout["burned"].should == 0
+
+			# add a WorkoutEntry
+			req = {"activity" => "Bird watching", # rate=1.14
+				"minutes" => "30"}
+			resp = {"result" => UserProfile::SUCCESS, "burned" => 91}
+			post '/profile/workout/add_entry', req.to_json, session
+			response.body.should == resp.to_json
+
+			# check that new plan accounts for new WorkoutEntry
+			get '/profile/workout'
+			workout = assigns(:workout)
+			workout["target"].should == 1760
+			workout["intake"].should == 2660
+			workout["normal"].should == 1800
+			workout["rec_target"].should == 67
+			workout["rec_normal"].should == 64
+			workout["burned"].should == 91
+		end
+	end
     describe "user authentication" do
     	it "should remember the user" do
     		cookies[:remember_token] = "blastoise"

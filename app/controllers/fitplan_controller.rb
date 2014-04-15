@@ -156,7 +156,25 @@ class FitplanController < ApplicationController
 		@workout["rec_normal"] = rec["rec_normal"] # maintain current weight
 	end
 
-	def get_recommended()
+	def add_workout_entry
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
+		result = UserProfile.addWorkoutEntry(@user,
+			params[:activity], params[:minutes], Date.today.to_s)
+		d = {}
+		if result.class == String
+			d["result"] = result
+			d["burned"] = -1
+		else
+			d["result"] = UserProfile::SUCCESS
+			d["burned"] = result
+		end
+		return render(:json=>d, status:200)
+	end
+
+	def get_recommended
 		# [rate] = cal/(lb * hr)
 		# [weight] = lb
 		@user = getUser(cookies[:remember_token])

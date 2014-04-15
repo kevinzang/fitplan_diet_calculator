@@ -213,7 +213,8 @@ describe "Fitplan Unit Tests" do
 			fields = {"feet"=>"", "inches"=>"", "weight"=>"165",
 				"desired_weight"=>"", "age"=>"", "gender"=>""}
 			UserProfile.setProfile("kevin", fields.keys, fields)
-			rec = UserProfile.getRecommended("kevin", 2000, 1500, "Running, 6 mph (10 min mile)")
+			rec = UserProfile.getRecommended("kevin", 2000, 1500,
+				"Running, 6 mph (10 min mile)")
 			rec["rec_target"].should == 160 # target: need to burn 2000
 			rec["rec_normal"].should == 120 # normal: need to burn 1500
 		end
@@ -229,6 +230,37 @@ describe "Fitplan Unit Tests" do
   		WorkoutEntry.getRate("Aerobics, general").should == 2.95
 			WorkoutEntry.getRate("Ballet, twist, jazz, tap").should == 2.04
 			WorkoutEntry.getRate("Canoeing, camping trip").should == 1.81
+  	end
+  end
+  describe "adding workout entries" do
+  	it "should return error for nonexistant user" do
+  		result = UserProfile.addWorkoutEntry("phantom",
+  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+  		result.should == UserProfile::ERR_USER_NOT_FOUND
+  	end
+  	it "should return error for nonexistant activity" do
+  		UserProfile.signup("a", "secret", "0")
+  		result = UserProfile.addWorkoutEntry("a",
+  			"underwater basket weaving", "30", Date.today.to_s)
+  		result.should == UserProfile::ERR_ACTIVITY_NOT_FOUND
+  	end
+  	it "should return error if user has no weight" do
+  		UserProfile.signup("a", "secret", "0")
+  		result = UserProfile.addWorkoutEntry("a",
+  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+  		result.class.should == String
+  	end
+  	it "should add entry for valid entry" do
+  		UserProfile.signup("a", "secret", "0")
+  		fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+			"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+		UserProfile.setProfile("a", fields.keys, fields)
+  		result = UserProfile.addWorkoutEntry("a",
+  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+  		result.should == 363
+  		result = UserProfile.addWorkoutEntry("a",
+  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+  		result.should == 726
   	end
   end
   describe "user authentication" do

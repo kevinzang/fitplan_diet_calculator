@@ -20,6 +20,8 @@ class UserProfile < ActiveRecord::Base
 
     ERR_USER_NOT_FOUND = "Error: user not found"
 
+    ERR_ACTIVITY_NOT_FOUND = "Error: activity not found"
+
 	def self.validUsername?(username)
 		return username != "" && username.length() <= MAX_USERNAME_LENGTH
 	end
@@ -196,7 +198,7 @@ class UserProfile < ActiveRecord::Base
         entries = WorkoutEntry.where(username:username, date:date.to_s)
         total = 0
         for entry in entries
-            total += WorkoutEntry.getBurned(entry)
+            total += entry.burned
         end
         d["burned"] = total
         for field in ["height", "age", "gender"]
@@ -235,6 +237,41 @@ class UserProfile < ActiveRecord::Base
             rec["rec_normal"] = [normal_cal*60/rate/user.weight, 0].max().round(0)
         end
         return rec
+    end
+
+    def self.addWorkoutEntry(username, activity, minutes, date)
+        user = UserProfile.find_by(username:username)
+        if user == nil
+            return ERR_USER_NOT_FOUND
+        end
+        rate = WorkoutEntry.getRate(activity)
+        if rate == nil
+            return ERR_ACTIVITY_NOT_FOUND
+        end
+        if minutes == ""
+            return "Must enter minutes of exercise"
+        end
+        if minutes.to_f.to_s != minutes &&
+            minutes.to_i.to_s != minutes
+            return "Minutes must be numeric value"
+        end
+        min = minutes.to_i
+        if min <= 0
+            return "Minutes must be positive"
+        end
+        if user.weight == nil || user.weight == 0
+            return "Must enter your weight on your Profile Form"
+        end
+        entry = WorkoutEntry.new(username:username,
+            activity:activity, minutes:min, date:date)
+        entry.burned = (rate * user.weight / 60.0 * min).round(0).to_i
+        entry.save()
+        entries = WorkoutEntry.where(username:username, date:date.to_s)
+        total = 0
+        for entry in entries
+            total += entry.burned
+        end
+        return total
     end
 
     def self.calorieIntakeChartData(username, range_in_months)
