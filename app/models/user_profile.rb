@@ -310,7 +310,7 @@ class UserProfile < ActiveRecord::Base
     end
 
     def self.weightChartData(username, range_in_months)
-      weightEntries = getWeightEntries(username)
+      weightEntries = getWeightEntriesInRange(username, range_in_months)
       if weightEntries == ERR_USER_NOT_FOUND
         return {}
       end

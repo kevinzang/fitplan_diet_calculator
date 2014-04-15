@@ -387,4 +387,20 @@ describe "Fitplan Unit Tests" do
       entries[0].weight.should == 211
     end
   end
+  describe "UserProfile.weightChartData(...)" do
+    it "should return all weight entries in range, in format requested by chartkick gem" do
+      date = Date.today
+      UserProfile.signup("kevin", "secret", "0")
+      UserProfile.addWeightEntry("kevin", 211, date.to_s)
+      UserProfile.addWeightEntry("kevin", 212, (date - 3.days).to_s)
+      UserProfile.addWeightEntry("kevin", 216, (date - 10.days).to_s)
+      UserProfile.addWeightEntry("kevin", 999, (date - 5.months).to_s)
+      chartData = UserProfile.weightChartData("kevin", 3)
+      chartData.size.should == 3
+      chartData[date.to_s].should == 211
+      chartData[(date - 3.days).to_s].should == 212
+      chartData[(date - 10.days).to_s].should == 216
+      chartData[(date - 5.months).to_s].should == nil
+    end
+  end
 end
