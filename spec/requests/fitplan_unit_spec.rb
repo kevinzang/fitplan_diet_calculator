@@ -403,4 +403,43 @@ describe "Fitplan Unit Tests" do
       chartData[(date - 5.months).to_s].should == nil
     end
   end
+  describe "UserProfile.recommendedCalorieIntake(...)" do
+    it "should return the correct number of calories" do
+      UserProfile.signup("kevin", "secret", "0")
+      user = UserProfile.find_by(username: "kevin")
+      for height in 66..67
+        for weight in 130..131
+          for age in 23..24
+            for gender in ["male", "female"]
+              for activity_level in [0, 1, 2, 3, 4]
+                for weight_change_per_week_goal in [0.0, 0.5, 1.0, 1.5, 2.0]
+                  # expected
+                  bmr = nil
+                  if gender == "male"
+                    bmr = (65 + 13.8*weight/2.2 + 5*height*2.54 - 6.8*age).round(-1)
+                  else # gender == "female"
+                    bmr = (655 + 9.6*weight/2.2 + 1.8*height*2.54 - 4.7*age).round(-1)
+                  end
+                  scale_factor = 1.2 + 0.175 * activity_level
+                  calorie_change_per_week = 3500 * weight_change_per_week_goal
+                  calorie_change_per_day = calorie_change_per_week / 7
+                  expected = scale_factor * bmr + calorie_change_per_day
+                  # actual
+                  user.height = height
+                  user.weight = weight
+                  user.age = age
+                  user.gender = gender
+                  user.activity_level = activity_level
+                  user.weight_change_per_week_goal = weight_change_per_week_goal
+                  user.save()
+                  actual = UserProfile.recommendedCalorieIntake("kevin")
+                  actual.should == expected
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 end

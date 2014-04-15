@@ -352,9 +352,17 @@ class UserProfile < ActiveRecord::Base
       return chartData
     end
 
-    def caloriesNeededMaintainWeight()
-      bmr = UserProfile.getBMR(height, weight, age, gender)
-      return bmr * 1.2 # use default for now (little to no exercise)
+    def self.recommendedCalorieIntake(username)
+      user = find_by(username: username)
+      if user.nil?
+        return nil
+      end
+      bmr = self.getBMR(user.height, user.weight, user.age, user.gender)
+      scale_factor = 1.2 + 0.175 * user.activity_level
+      # one pound of body weight is roughly equivalent to 3500 calories
+      calorie_change_per_week = 3500 * user.weight_change_per_week_goal
+      calorie_change_per_day = calorie_change_per_week / 7
+      return scale_factor * bmr + calorie_change_per_day
     end
 
     def self.reset()
