@@ -8,6 +8,7 @@ require 'json'
 # deal with at times. In particular, it doesn't seem to play nice with "before"
 # and "after" blocks, which is why this code might look excessively redundant. Will
 # try to refactor soon.  -JY
+
 describe "Fitplan GUI Tests" do
 
 

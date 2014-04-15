@@ -52,17 +52,20 @@ describe "Fitplan Unit Tests" do
 		}
 		it "should fail if fields contain negative values" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"-20", "gender"=>"female"}
+				"desired_weight"=>"150", "age"=>"-20", "gender"=>"female",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should fail if fields contain words" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"twenty", "gender"=>"female"}
+				"desired_weight"=>"150", "age"=>"twenty", "gender"=>"female",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should work if all fields are either blank or non-negative integers" do
 			fields = {"feet"=>"5", "inches"=>"0", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 		end
 	end
@@ -78,7 +81,8 @@ describe "Fitplan Unit Tests" do
 		end
 		it "should remember the defaults" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 			defaults = UserProfile.getDefaults("kevin")
 			for key in defaults.keys
@@ -192,7 +196,8 @@ describe "Fitplan Unit Tests" do
 		it "should report the target and normal for completed profile form" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			UserProfile.addFood("kevin", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -211,7 +216,8 @@ describe "Fitplan Unit Tests" do
 		it "should figure out rec_target and rec_normal" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"", "inches"=>"", "weight"=>"165",
-				"desired_weight"=>"", "age"=>"", "gender"=>""}
+				"desired_weight"=>"", "age"=>"", "gender"=>"",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			rec = UserProfile.getRecommended("kevin", 2000, 1500,
 				"Running, 6 mph (10 min mile)")
@@ -253,7 +259,8 @@ describe "Fitplan Unit Tests" do
   	it "should add entry for valid entry" do
   		UserProfile.signup("a", "secret", "0")
   		fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-			"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+			"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+      "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 		UserProfile.setProfile("a", fields.keys, fields)
   		result = UserProfile.addWorkoutEntry("a",
   			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)

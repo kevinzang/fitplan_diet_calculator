@@ -36,7 +36,8 @@ describe "Fitplan Functional Tests" do
 		it "should submit profile" do
 			UserProfile.signup("a", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
-				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"140", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			resp = {"result"=>UserProfile::SUCCESS}
 			post '/profile_form/submit', req.to_json, session
 			response.body.should == resp.to_json
@@ -47,7 +48,8 @@ describe "Fitplan Functional Tests" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
-				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"140", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("a", req.keys, req).should == UserProfile::SUCCESS
 			get '/profile_form'
 			defaults = assigns(:defaults)
@@ -145,7 +147,8 @@ describe "Fitplan Functional Tests" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("a", fields.keys, fields)
 			UserProfile.addFood("a", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -176,7 +179,8 @@ describe "Fitplan Functional Tests" do
     		cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("a", fields.keys, fields)
 			UserProfile.addFood("a", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -199,7 +203,8 @@ describe "Fitplan Functional Tests" do
     		cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("a", fields.keys, fields)
 			UserProfile.addFood("a", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")

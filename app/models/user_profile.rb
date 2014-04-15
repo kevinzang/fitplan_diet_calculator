@@ -94,7 +94,7 @@ class UserProfile < ActiveRecord::Base
             return ERR_USER_NOT_FOUND
         end
         values = {}
-        for field in ["height", "weight", "desired_weight", "age", "gender"]
+        for field in ["height", "weight", "desired_weight", "age", "gender", "activity_level", "weight_change_per_week_goal"]
             value = user.read_attribute(field)
             if value == nil
                 values[field] = ""
@@ -124,6 +124,8 @@ class UserProfile < ActiveRecord::Base
         user.desired_weight = params["desired_weight"].to_i
         user.age = params["age"].to_i
         user.gender = params["gender"]
+        user.activity_level = params["activity_level"].to_i
+        user.weight_change_per_week_goal = params["weight_change_per_week_goal"].to_f
         user.save()
         return valid
     end
