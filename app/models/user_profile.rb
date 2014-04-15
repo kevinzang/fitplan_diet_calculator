@@ -1,5 +1,6 @@
 class UserProfile < ActiveRecord::Base
     require "food_entry"
+    require "workout_entry"
     require "date"
 
 	MAX_USERNAME_LENGTH = 128
@@ -192,21 +193,48 @@ class UserProfile < ActiveRecord::Base
             total += entry.calories * entry.numservings
         end
         d["intake"] = total
-        for field in ["height", "weight", "desired_weight", "age", "gender"]
-            if user.read_attribute(field) == nil || user.read_attribute(field) == 0
+        entries = WorkoutEntry.where(username:username, date:date.to_s)
+        total = 0
+        for entry in entries
+            total += WorkoutEntry.getBurned(entry)
+        end
+        d["burned"] = total
+        for field in ["height", "age", "gender"]
+            val = user.read_attribute(field)
+            if val == nil || val == 0
                 # profile not complete
                 d["target"] = -1
                 d["normal"] = -1
-                d["rec_target"] = -1
-                d["rec_normal"] = -1
                 return d
             end
         end
-        d["target"] = self.getBMR(user.height, user.desired_weight, user.age, user.gender)
-        d["normal"] = self.getBMR(user.height, user.weight, user.age, user.gender)
-        d["rec_target"] = self.getRecommended(d["intake"]-d["target"], 10, user.desired_weight)
-        d["rec_normal"] = self.getRecommended(d["intake"]-d["normal"], 10, user.weight)
+        if user.desired_weight == nil || user.desired_weight == 0
+            d["target"] = -1
+        else
+            d["target"] = self.getBMR(user.height, user.desired_weight,
+                user.age, user.gender)
+        end
+        if user.weight == nil || user.weight == 0
+            d["normal"] = -1
+        else
+            d["normal"] = self.getBMR(user.height, user.weight,
+                user.age, user.gender)
+        end
         return d
+    end
+
+    def self.getRecommended(username, target_cal, normal_cal, activity)
+        user = UserProfile.find_by(username:username)
+        rate = WorkoutEntry.getRate(activity)
+        rec = {"rec_target"=>-1, "rec_normal"=>-1}
+        if user == nil || rate == nil
+            return rec
+        end
+        if !(user.weight == nil || user.weight == 0)
+            rec["rec_target"] = [target_cal*60/rate/user.weight, 0].max().round(0)
+            rec["rec_normal"] = [normal_cal*60/rate/user.weight, 0].max().round(0)
+        end
+        return rec
     end
 
     def self.calorieIntakeChartData(username, range_in_months)
@@ -241,6 +269,7 @@ class UserProfile < ActiveRecord::Base
     def self.reset()
         UserProfile.delete_all()
         FoodEntry.delete_all()
+        WorkoutEntry.delete_all()
     end
 
     private
@@ -273,13 +302,6 @@ class UserProfile < ActiveRecord::Base
         else
             return 2000
         end
-    end
-
-    private
-    def self.getRecommended(calories, rate, weight)
-        # [rate] = cal/(kg * hr)
-        # [weight] = lb
-        return [calories*2.2*60/10/weight, 0].max().round(0)
     end
 
     private

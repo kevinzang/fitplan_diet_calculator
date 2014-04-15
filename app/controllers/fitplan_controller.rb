@@ -1,5 +1,6 @@
 require File.expand_path("../../models/user_profile", __FILE__)
 require File.expand_path("../../models/food_search", __FILE__)
+require File.expand_path("../../models/workout_entry", __FILE__)
 require 'date'
 require 'json'
 
@@ -52,6 +53,9 @@ class FitplanController < ApplicationController
 	def profile_form
 		# profile form page, retrieve existing values
 		@user = getUser(cookies[:remember_token])
+		if @user == nil
+    		return
+    	end
 		@defaults = UserProfile.getDefaults(@user)
 	end
 
@@ -69,6 +73,9 @@ class FitplanController < ApplicationController
 	def profile
 		# profile page
 		@user = getUser(cookies[:remember_token])
+		if @user == nil
+    		return
+    	end
 		@today = Date.today.to_s
 		@entries = UserProfile.getEntriesByDate(@user, @today)
 		if @entries.class == String
@@ -81,6 +88,9 @@ class FitplanController < ApplicationController
 	def add_food
 		# respond to initial food search
 		@user = getUser(cookies[:remember_token])
+		if @user == nil
+    		return
+    	end
 		if request.post?
 			@food = params["food"]
 			@results = FoodSearch.search(@food)
@@ -103,6 +113,9 @@ class FitplanController < ApplicationController
 	def add_food_submit
 		# respond to JSON request to submit food entry
 		@user = getUser(cookies[:remember_token])
+		if @user == nil
+    		return
+    	end
 		if !valid_json?(["num", "num_servings"])
 			return render(:json=>{}, status:500)
 		end
@@ -114,6 +127,9 @@ class FitplanController < ApplicationController
 
     def delete_food
     	@user = getUser(cookies[:remember_token])
+    	if @user == nil
+    		return
+    	end
     	if !valid_json?(["delete"])
 			return render(:json=>{}, status:500)
 		end
@@ -124,7 +140,35 @@ class FitplanController < ApplicationController
 
     def workout
     	@user = getUser(cookies[:remember_token])
+    	if @user == nil
+    		return
+    	end
+    	@activities = WorkoutEntry.getActivities()
+    	@defaultActivity = "Running, 6 mph (10 min mile)"
     	@workout = UserProfile.getWorkout(@user, Date.today.to_s)
+    	target_cal = @workout["intake"]-
+        	@workout["target"]-@workout["burned"]
+        normal_cal = @workout["intake"]-
+        	@workout["normal"]-@workout["burned"]
+        rec = UserProfile.getRecommended(@user, target_cal,
+        	normal_cal, @defaultActivity)
+        @workout["rec_target"] = rec["rec_target"] # target for desired weight
+        @workout["rec_normal"] = rec["rec_normal"] # maintain current weight
+    end
+
+    def get_recommended()
+        # [rate] = cal/(lb * hr)
+        # [weight] = lb
+        @user = getUser(cookies[:remember_token])
+        if @user == nil
+    		return
+    	end
+		if !valid_json?(["target_cal", "normal_cal", "activity"])
+			return render(:json=>{}, status:500)
+		end
+		rec = UserProfile.getRecommended(@user, params["target_cal"],
+			params["normal_cal"], params["activity"])
+		return render(:json=>rec, status: 200)
     end
 
   def progress
@@ -132,7 +176,7 @@ class FitplanController < ApplicationController
     @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
   end
 
-  def test
+    def test
     	if !valid_json?([])
             return render(:json=>{}, status:500)
         end

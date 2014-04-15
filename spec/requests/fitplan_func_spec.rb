@@ -58,6 +58,8 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "search for food to add" do
 		it "should set @food and @results" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
 			post '/profile/add_food', {'food' => "mashed potatoes"}
 			assigns(:food).should == "mashed potatoes"
 			assigns(:results).length.should > 0
@@ -142,23 +144,32 @@ describe "Fitplan Functional Tests" do
 		it "should set @workout" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
-			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"20", "gender"=>"female"}
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
 			UserProfile.setProfile("a", fields.keys, fields)
-			UserProfile.addFood("a", "chicken pot pie", "1000",
-				Date.today.to_s, "10 bells", "2")
+			UserProfile.addFood("a", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
 			UserProfile.addFood("a", "ice cream", "100",
 				(Date.today-1).to_s, "10 bells", "2")
-			UserProfile.addFood("a", "dragon tail", "200",
-				Date.today.to_s, "10 bells", "5")
 			get '/profile/workout'
+			defaultActivity = assigns(:defaultActivity)
+			defaultActivity.should == "Running, 6 mph (10 min mile)"
 			workout = assigns(:workout)
-			workout["target"].should == 1520
-			workout["intake"].should == 3000
-			workout["normal"].should == 1540
-			workout["rec_target"].should == 130
-			workout["rec_normal"].should == 124
+			workout["target"].should == 1760
+			workout["intake"].should == 2660
+			workout["normal"].should == 1800
+			workout["rec_target"].should == 74
+			workout["rec_normal"].should == 71
 		end
+		it "should set @activities" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
+			get '/profile/workout'
+			activities = assigns(:activities)
+			activities.include?("Aerobics, general").should == true
+			activities.include?("Ballet, twist, jazz, tap").should == true
+			activities.include?("Canoeing, camping trip").should == true
+        end
     end
     describe "user authentication" do
     	it "should remember the user" do

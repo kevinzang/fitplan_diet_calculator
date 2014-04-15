@@ -12,6 +12,7 @@ Fitplan::Application.routes.draw do
   post '/profile/add_food/get_calorie/add' => 'fitplan#add_food_submit'
   post '/profile/delete_food' => 'fitplan#delete_food'
   get '/profile/workout' => 'fitplan#workout'
+  post '/profile/workout/get_recommended' => 'fitplan#get_recommended'
   post '/test' => 'fitplan#test'
   get '/progress' => 'fitplan#progress'
   # The priority is based upon order of creation: first created -> highest priority.

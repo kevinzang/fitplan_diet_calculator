@@ -2,6 +2,7 @@ require 'spec_helper'
 require File.expand_path("../../../app/models/user_profile", __FILE__)
 require File.expand_path("../../../app/models/food_search", __FILE__)
 require File.expand_path("../../../app/models/food_entry", __FILE__)
+require File.expand_path("../../../app/models/workout_entry", __FILE__)
 require 'date'
 
 describe "Fitplan Unit Tests" do
@@ -178,49 +179,71 @@ describe "Fitplan Unit Tests" do
 		end
 	end
 	describe "getting the workout plan" do
-		it "should just report the intake if profile form incomplete" do
+		it "should report the intake" do
 			UserProfile.signup("kevin", "secret", "0")
-			UserProfile.addFood("kevin", "chicken pot pie", "1000",
-				Date.today.to_s, "10 bells", "2")
-			UserProfile.addFood("kevin", "ice cream", "100",
-				(Date.today-1).to_s, "10 bells", "2")
-			UserProfile.addFood("kevin", "dragon tail", "200",
-				Date.today.to_s, "10 bells", "5")
-			target = UserProfile.getWorkout("kevin", Date.today.to_s)
-			target["intake"].should == 3000
+			UserProfile.addFood("kevin", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
+			workout = UserProfile.getWorkout("kevin", Date.today.to_s)
+			workout["intake"].should == 2660 # 266 * 10
+			workout["burned"].should == 0 # no WorkoutEntries entered
+			workout["target"].should == -1 # profile form not set
+			workout["normal"].should == -1 # profile form not set
 		end
-		it "should use profile details if they're filled out" do
+		it "should report the target and normal for completed profile form" do
 			UserProfile.signup("kevin", "secret", "0")
-			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"20", "gender"=>"female"}
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
-			UserProfile.addFood("kevin", "chicken pot pie", "1000",
-				Date.today.to_s, "10 bells", "2")
-			UserProfile.addFood("kevin", "ice cream", "100",
-				(Date.today-1).to_s, "10 bells", "2")
-			UserProfile.addFood("kevin", "dragon tail", "200",
-				Date.today.to_s, "10 bells", "5")
-			target = UserProfile.getWorkout("kevin", Date.today.to_s)
-			target["target"].should == 1520
-			target["intake"].should == 3000
-			target["normal"].should == 1540
-			target["rec_target"].should == 130
-			target["rec_normal"].should == 124
+			UserProfile.addFood("kevin", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
+			workout = UserProfile.getWorkout("kevin", Date.today.to_s)
+			workout["intake"].should == 2660 # 266 * 10
+			workout["burned"].should == 0 # no WorkoutEntries entered
+			workout["target"].should == 1760 # BMR desired weight
+			workout["normal"].should == 1800 # BMR weight
 		end
-    end
-    describe "user authentication" do
-    	it "should set the remember token" do
-    		UserProfile.signup("kevin", "secret", "0")
-    		username = UserProfile.getUsername("0")
-    		username.should == "kevin"
-    	end
-    	it "should sign out" do
-    		UserProfile.signup("kevin", "secret", "0")
-    		UserProfile.signout("0")
-    		user = UserProfile.find_by(username:"kevin")
-    		user.remember_token.should == nil
-    	end
-    end
+		it "should use a default of -1 for rec_target and rec_normal" do
+			UserProfile.signup("kevin", "secret", "0")
+			rec = UserProfile.getRecommended("kevin", 0, 0, "")
+			rec["rec_target"].should == -1
+			rec["rec_normal"].should == -1
+		end
+		it "should figure out rec_target and rec_normal" do
+			UserProfile.signup("kevin", "secret", "0")
+			fields = {"feet"=>"", "inches"=>"", "weight"=>"165",
+				"desired_weight"=>"", "age"=>"", "gender"=>""}
+			UserProfile.setProfile("kevin", fields.keys, fields)
+			rec = UserProfile.getRecommended("kevin", 2000, 1500, "Running, 6 mph (10 min mile)")
+			rec["rec_target"].should == 160 # target: need to burn 2000
+			rec["rec_normal"].should == 120 # normal: need to burn 1500
+		end
+  end
+  describe "getting workout activities" do
+  	it "should retrieve activities" do
+  		activities = WorkoutEntry.getActivities
+  		activities.include?("Aerobics, general").should == true
+			activities.include?("Ballet, twist, jazz, tap").should == true
+			activities.include?("Canoeing, camping trip").should == true
+  	end
+  	it "should look up rates for activities" do
+  		WorkoutEntry.getRate("Aerobics, general").should == 2.95
+			WorkoutEntry.getRate("Ballet, twist, jazz, tap").should == 2.04
+			WorkoutEntry.getRate("Canoeing, camping trip").should == 1.81
+  	end
+  end
+  describe "user authentication" do
+  	it "should set the remember token" do
+  		UserProfile.signup("kevin", "secret", "0")
+  		username = UserProfile.getUsername("0")
+  		username.should == "kevin"
+  	end
+  	it "should sign out" do
+  		UserProfile.signup("kevin", "secret", "0")
+  		UserProfile.signout("0")
+  		user = UserProfile.find_by(username:"kevin")
+  		user.remember_token.should == nil
+  	end
+  end
   describe "getting calorie intake chart data" do
     it "should return nil if user does not exist" do
       UserProfile.calorieIntakeChartData("derp", 12).should == nil

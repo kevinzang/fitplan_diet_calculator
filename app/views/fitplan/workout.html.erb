@@ -3,28 +3,89 @@
 <%= render '/layouts/navbar' %>
 
 	<div>Today's intake: <%= @workout["intake"] %> cal</div><br>
-  <div id="plan"></div><br>
+  <div>Calories burned: <%= @workout["burned"] %> cal</div><br>
+  <div>Activity:
+    <select id="rec_activity" name="rec_activity" onchange="getRecommended()">
+    <% for i in 0..@activities.length-1 %>
+      <% if @activities[i] == @defaultActivity %>
+        <option value="<%= @activities[i] %>" selected><%= @activities[i] %></option>
+      <% else %>
+        <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
+      <% end %>
+    <% end %>
+    </select>
+  </div><br>
+  <div>To reach your desired weight:<br>
+    <div id="target">Target:
+      <% if @workout["target"] == -1 %>
+        Complete your profile form to find out!
+      <% else %>
+        <%= @workout["target"] %> calories
+      <% end %>
+    </div>
+    <div id="rec_target">Recommended:
+      <% if @workout["rec_target"] == -1 %>
+        Complete your profile form to find out!
+      <% else %>
+        <%= @workout["rec_target"] %> minutes
+      <% end %>
+    </div><br>
+    To maintain your current weight:<br>
+    <div id="normal">Target:
+      <% if @workout["normal"] == -1 %>
+        Complete your profile form to find out!
+      <% else %>
+        <%= @workout["normal"] %> calories
+      <% end %>
+    </div>
+    <div id="rec_normal">Recommended:
+      <% if @workout["rec_normal"] == -1 %>
+        Complete your profile form to find out!
+      <% else %>
+        <%= @workout["rec_normal"] %> minutes
+      <% end %>
+    </div>
+  </div><br>
+  <form action="/profile/add_food" method="post">
+    <select id="activity" name="activity">
+    <% for i in 0..@activities.length-1 %>
+      <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
+    <% end %>
+    </select>
+    <input id="minutes" name="minutes">minutes
+    <input id="add_workout_entry" type="submit" value="Enter">
+  </form>
 	<a href="/profile">Back to profile</a>
 </center>
 
 <script type="text/javascript">
-  $(document).ready(function() {
-    var target = <%= @workout["target"] %>;
-    var normal = <%= @workout["normal"] %>;
-    var rec_target = <%= @workout["rec_target"] %>;
-    var rec_normal = <%= @workout["rec_normal"] %>;
-    var plan = document.getElementById("plan");
-    if (target == -1) {
-      $(plan).html("Complete your profile to get a workout plan");
+  function getRecommended() {
+    rec_activity = document.getElementById("rec_activity");
+    var target_calories = <%= @workout["intake"] - @workout["target"] - @workout["burned"] %>;
+    var normal_calories = <%= @workout["intake"] - @workout["normal"] - @workout["burned"] %>;
+    alert(rec_activity.value);
+    send_json("/profile/workout/get_recommended",
+      {target_cal: target_calories,
+       normal_cal: normal_calories,
+       activity: rec_activity.value
+      },
+      function(reply) {
+        return setRecommended(reply);
+      },
+      show_error
+    );
+  }
+
+  function setRecommended(reply) {
+    if (reply.rec_target == "-1") {
+      $('#rec_target').html("Recommended: Complete your profile form to find out!");
     } else {
-      $(plan).html(
-        "<div>To reach your desired weight, your target is "+
-        target+" calories/day<br>"+
-        "Recommended: "+rec_target+" minutes of exercise</div><br><br>"+
-        "<div>To maintain your current weight, your target is "+
-        normal+" calories/day<br>"+
-        "Recommended: "+rec_normal+" minutes of exercise</div>"
-      );
+      $('#rec_target').html("Recommended: "+reply.rec_target+" minutes");
     }
-  });
+    if (reply.rec_normal == "-1") {
+      $('#rec_normal').html("Recommended: Complete your profile form to find out!");
+    } else {
+      $('#rec_normal').html("Recommended: "+reply.rec_normal+" minutes");
+    }
+  }
 </script>
