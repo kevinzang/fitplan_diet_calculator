@@ -2,61 +2,78 @@
 
 <%= render '/layouts/navbar' %>
 
-	<div>Today's intake: <span id="intake"><%= @workout["intake"] %></span> cal</div><br>
-  <div>Calories burned: <span id="burned"><%= @workout["burned"] %></span> cal</div><br>
-  <div>Net intake: <span id="net_intake"><%= @workout["intake"] - @workout["burned"] %></span> cal</div><br>
-  <div>Activity:
-    <select id="rec_activity" name="rec_activity" onchange="getRecommended()">
-    <% for i in 0..@activities.length-1 %>
-      <% if @activities[i] == @defaultActivity %>
-        <option value="<%= @activities[i] %>" selected><%= @activities[i] %></option>
-      <% else %>
-        <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
+<div id="reports">
+  <div id="today">
+  <i><b>Today's Stats:</b></i><br><br>
+  Caloric intake: <span id="intake" style="float: right;"><%= @workout["intake"] %></span><br>
+  Calories burned: <span id="burned" style="float: right;"><%= @workout["burned"] %></span><br>
+  Net caloric intake: <span id="net_intake" style="float: right;"><%= @workout["intake"] - @workout["burned"] %></span>
+  </div>
+
+  <hr />
+
+  <div id="suggested">
+  <i><b>Suggested activity:</b></i><br><br>
+      <select id="rec_activity" name="rec_activity" style="width:300px;" onchange="getRecommended()">
+      <% for i in 0..@activities.length-1 %>
+        <% if @activities[i] == @defaultActivity %>
+          <option value="<%= @activities[i] %>" selected><%= @activities[i] %></option>
+        <% else %>
+          <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
+        <% end %>
       <% end %>
-    <% end %>
-    </select>
-  </div><br>
-  <div>To reach your desired weight:<br>
-    <div>Target:
-      <% if @workout["target"] == -1 %>
-        Complete your profile form to find out!
-      <% else %>
-        <span id="target"><%= @workout["target"] %></span> calories
-      <% end %>
-    </div>
-    <div>Recommended:
-      <% if @workout["rec_target"] == -1 %>
-        Complete your profile form to find out!
-      <% else %>
-        <span id="rec_target"><%= @workout["rec_target"] %></span> minutes
-      <% end %>
-    </div><br>
-    To maintain your current weight:<br>
-    <div>Target:
+      </select>
+  </div>
+
+  <hr />
+
+  <div id="desired">
+    <i><b>To reach desired weight:</b></i><br><br>
+      Target (cal/day):
+        <% if @workout["target"] == -1 %>
+          Complete your profile form to find out!
+        <% else %>
+          <span id="target" style="float: right;"><%= @workout["target"] %></span>
+        <% end %><br>
+      Suggested workout (min):
+        <% if @workout["rec_target"] == -1 %>
+          Complete your profile form to find out!
+        <% else %>
+          <span id="rec_target" style="float: right;"><%= @workout["rec_target"] %></span>
+        <% end %>
+  </div>
+
+  <hr />
+
+  <div id="current">
+    <i><b>To maintain current weight:</b></i><br><br>
+    Target (cal/day):
       <% if @workout["normal"] == -1 %>
         Complete your profile form to find out!
       <% else %>
-        <span id="normal"><%= @workout["normal"] %></span> calories
-      <% end %>
-    </div>
-    <div>Recommended:
+        <span id="normal" style="float: right;"><%= @workout["normal"] %></span>
+      <% end %><br>
+    Suggested workout (min):
       <% if @workout["rec_normal"] == -1 %>
         Complete your profile form to find out!
       <% else %>
-        <span id="rec_normal"><%= @workout["rec_normal"] %></span> minutes
+        <span id="rec_normal" style="float: right;"><%= @workout["rec_normal"] %></span>
       <% end %>
-    </div>
-  </div><br>
-  <form action="" method="post">
-    <select id="activity" name="activity">
-    <% for i in 0..@activities.length-1 %>
-      <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
-    <% end %>
-    </select>
-    <input id="minutes" name="minutes">minutes
-    <input id="add_workout_entry" type="submit" value="Enter">
-  </form>
-	<a href="/profile">Back to profile</a>
+  </div>
+
+</div>
+
+
+<form action="" method="post" style="width:700px;border-radius:0px;padding-top: 10px">
+  <div id="workout-activity"><select id="activity" name="activity" style="width:300px;float:right;">
+  <% for i in 0..@activities.length-1 %>
+    <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
+  <% end %>
+  </select></div>
+  <div id="workout-duration"><input id="minutes" name="minutes" style="width:100px;">&nbsp;minutes</div>
+  <input id="add_workout_entry" type="submit" value="Add Workout">
+</form>
+
 </center>
 
 <script type="text/javascript">

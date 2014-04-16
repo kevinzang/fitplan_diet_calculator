@@ -1,0 +1,17 @@
+#today, #suggested, #desired, #current {
+  background-color: #F0FFFF;
+  width: 300px;
+  text-align: left;
+}
+
+#reports {
+  background-color: #F0FFFF;
+  float: left;
+  margin-left: 25px;
+  padding: 20px;
+}
+
+#workout-activity, #workout-duration, #add_workout_entry {
+  float: left;
+  margin-left: 30px;
+}
