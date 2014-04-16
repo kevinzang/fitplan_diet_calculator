@@ -163,17 +163,23 @@ class UserProfile < ActiveRecord::Base
       if user.nil?
         return ERR_USER_NOT_FOUND
       end
+      begin
+        Float(weight)
+      rescue
+        return "Error: weight must be a number"
+      end
+      weight = weight.to_f.round.to_i
       if weight < 0
         return "Error: weight must be positive"
       end
       if weight > 1000
-        return "Error: max weight is 1000"
+        return "Error: weight must be <= 1000"
       end
-      entry = WeightEntry.find_by(:username => username, :date => date)
-      if entry.nil?
+      entry = WeightEntry.find_by(username: username, date: date)
+      if entry == nil
         entry = WeightEntry.new(username: username, date: date, weight: weight)
       else
-        entry.update_attributes(:weight => weight)
+        entry.update_attributes(weight: weight)
       end
       entry.save()
       return SUCCESS

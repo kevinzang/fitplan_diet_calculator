@@ -91,7 +91,8 @@ describe "Fitplan Unit Tests" do
 				defaults[key].should == fields[key]
 			end
 		end
-	end
+  end
+=begin
 	describe "search for food to add" do
 		it "should return the search results" do
 			results = FoodSearch.search("mashed potatoes")
@@ -142,6 +143,7 @@ describe "Fitplan Unit Tests" do
 				"10 oolongs", "0").should_not == UserProfile::SUCCESS
 		end
 	end
+=end
 	describe "delete food" do
 		it "should fail if user is not registered" do
 			UserProfile.deleteFood("kevin", ["chicken"]).should_not == UserProfile::SUCCESS
@@ -331,29 +333,29 @@ describe "Fitplan Unit Tests" do
   end
   describe "UserProfile.addWeightEntry(...)" do
     before(:each) {
-      UserProfile.delete_all()
+      UserProfile.reset()
       WeightEntry.delete_all()
     }
     it "should error for invalid user" do
-      result = UserProfile.addWeightEntry("kevin", 1, Date.today.to_s)
+      result = UserProfile.addWeightEntry("kevin", "1", Date.today.to_s)
       result.should == "Error: user not found"
     end
     it "should error for weight < 0" do
       UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addWeightEntry("kevin", -1, Date.today.to_s)
+      result = UserProfile.addWeightEntry("kevin", "-1", Date.today.to_s)
       result.should == "Error: weight must be positive"
       WeightEntry.find_by(username: "kevin").should == nil
     end
     it "should error for weight > 1000" do
       UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addWeightEntry("kevin", 1001, Date.today.to_s)
-      result.should == "Error: max weight is 1000"
+      result = UserProfile.addWeightEntry("kevin", "1001", Date.today.to_s)
+      result.should == "Error: weight must be <= 1000"
       WeightEntry.find_by(username: "kevin").should == nil
     end
     it "should succeed if weight and user are valid" do
       date = Date.today
       UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addWeightEntry("kevin", 211, date.to_s)
+      result = UserProfile.addWeightEntry("kevin", "211", date.to_s)
       result.should == "SUCCESS"
       entry = WeightEntry.find_by(username: "kevin")
       entry.should_not == nil
@@ -366,9 +368,9 @@ describe "Fitplan Unit Tests" do
     it "should return all weight entries, lowest weight for each day" do
       date = Date.today
       UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addWeightEntry("kevin", 211, date.to_s)
-      UserProfile.addWeightEntry("kevin", 210, date.to_s)
-      UserProfile.addWeightEntry("kevin", 209, (date + 1.days).to_s)
+      UserProfile.addWeightEntry("kevin", "211", date.to_s)
+      UserProfile.addWeightEntry("kevin", "210", date.to_s)
+      UserProfile.addWeightEntry("kevin", "209", (date + 1.days).to_s)
       entries = UserProfile.getWeightEntries("kevin")
       entries.length.should == 2
       entries[0].weight.should == 210
@@ -380,8 +382,8 @@ describe "Fitplan Unit Tests" do
       current_date = Date.today
       out_of_range_date = current_date - 5.months
       UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addWeightEntry("kevin", 211, (current_date - 5.days).to_s)
-      UserProfile.addWeightEntry("kevin", 5, out_of_range_date.to_s)
+      UserProfile.addWeightEntry("kevin", "211", (current_date - 5.days).to_s)
+      UserProfile.addWeightEntry("kevin", "5", out_of_range_date.to_s)
       entries = UserProfile.getWeightEntriesInRange("kevin", 3)
       entries.length.should == 1
       entries[0].weight.should == 211
@@ -391,10 +393,10 @@ describe "Fitplan Unit Tests" do
     it "should return all weight entries in range, in format requested by chartkick gem" do
       date = Date.today
       UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addWeightEntry("kevin", 211, date.to_s)
-      UserProfile.addWeightEntry("kevin", 212, (date - 3.days).to_s)
-      UserProfile.addWeightEntry("kevin", 216, (date - 10.days).to_s)
-      UserProfile.addWeightEntry("kevin", 999, (date - 5.months).to_s)
+      UserProfile.addWeightEntry("kevin", "211", date.to_s)
+      UserProfile.addWeightEntry("kevin", "212", (date - 3.days).to_s)
+      UserProfile.addWeightEntry("kevin", "216", (date - 10.days).to_s)
+      UserProfile.addWeightEntry("kevin", "999", (date - 5.months).to_s)
       chartData = UserProfile.weightChartData("kevin", 3)
       chartData.size.should == 3
       chartData[date.to_s].should == 211

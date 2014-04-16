@@ -1,5 +1,7 @@
 <%= render '/layouts/navbar' %>
-
+<div>
+    <p id="add_weight_response"></p>
+</div>
 <h1>Profile Page</h1><br>
 <h1>Welcome, <%= @user %></h1>
 <div id="message"><%= @message %></div>
@@ -7,6 +9,10 @@
 <form action="/profile/add_food" method="post">
   <input id="food" name="food" type="text">
   <input id="search_food" type="submit" value="Add Food">
+</form>
+<form id="weight_form" action="/profile/add_weight" method="post">
+  <input id="weight" name="weight" type="text">
+  <input id="submit_weight" type="submit" value="Add Weight">
 </form>
 <% for i in 0..@entries.length-1 %>
   <form id="register" action="" method="POST">
@@ -52,5 +58,20 @@ $('#delete_entries').click(function() {
 	show_error
   );
   return false;
+});
+
+$("#weight_form").submit(function(event) {
+    event.preventDefault()
+    $.ajax({
+        url : "/profile/add_weight",
+        type : "POST",
+        data: $("#weight_form").serializeArray(),
+        success: function(responseData) {
+            document.getElementById('add_weight_response').innerHTML = responseData.message;
+        },
+        error: function(responseData) {
+            document.getElementById('add_weight_response').innerHTML = responseData.message;
+        }
+    })
 });
 </script>

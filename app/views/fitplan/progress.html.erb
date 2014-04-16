@@ -7,9 +7,8 @@
 <div style="width:800px; margin:0 auto">
   <p>Starting Weight: <%= @userModel.weight.to_s + ' lbs.' if !@userModel.nil? %>&nbsp;&nbsp;&nbsp;&nbsp;
     Desired Weight: <%= @userModel.desired_weight.to_s + ' lbs.' if !@userModel.nil? %></p>
-  <p>Calories Needed to Maintain Weight: <%= @userModel.caloriesNeededMaintainWeight().to_int if !@userModel.nil? %></p>
-  <p style="font-weight:bold">Daily Calorie Intake</p>
-  <%= line_chart @calorieIntakeChartData, discrete: true, height: '400px', name: 'Calories' %>
+  <p style="font-weight:bold">Weight</p>
+  <%= line_chart @weightChartData, discrete: true, height: '400px', name: 'Calories' %>
   <br>
   <br>
 </div>

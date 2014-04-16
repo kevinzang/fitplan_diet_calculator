@@ -64,7 +64,7 @@ describe "Fitplan Functional Tests" do
 				defaults[key].should == req[key]
 			end
 		end
-	end
+  end
 	describe "search for food to add" do
 		it "should set @food and @results" do
 			cookies[:remember_token] = "0"
@@ -263,6 +263,7 @@ describe "Fitplan Functional Tests" do
     end
   describe "getting calorie intake chart data" do
     it "should set @calorieIntakeChartData" do
+      cookies[:remember_token] = "0"
       UserProfile.signup("a", "secret", "0")
       start_date = Date.today
       (0..20).each do |offset|
@@ -279,6 +280,24 @@ describe "Fitplan Functional Tests" do
         chartData.has_key?(key).should == true
         chartData[key].should == 2 * 156 + 483 + 3 * 92 + 855
       end
+    end
+  end
+  describe "fitplan_controller.add_weight()" do
+    it "should successfully add valid weight entry" do
+      cookies[:remember_token] = "0"
+      UserProfile.signup("kevin", "secret", "0")
+      date = Date.today
+      req = {"weight" => "117"}
+      resp = {"result"=>"success", "message" => "Weight successfully added"}
+      post 'profile/add_weight', req.to_json, session
+      response.body.should == resp.to_json
+      entries = UserProfile.getWeightEntries("kevin")
+      entries.length.should == 1
+      entry = entries[0]
+      entry.should_not == nil
+      entry.username.should == "kevin"
+      entry.weight.should == 117
+      entry.date.should == date.to_s
     end
   end
 end
