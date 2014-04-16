@@ -127,7 +127,20 @@ class FitplanController < ApplicationController
 		result = UserProfile.addFood(@user, entry.food, entry.calories, entry.date,
 			entry.serving, params["num_servings"])
 		return render(:json=>{"result"=>result}, status: 200)
-	end
+  end
+
+  def add_weight
+    @user = getUser(cookies[:remember_token])
+    if @user == nil
+      return
+    end
+    result = UserProfile.addWeightEntry(@user, params["weight"], Date.today.to_s)
+    if result == UserProfile::SUCCESS
+      return render(:json=>{"result"=>"success", "message"=>"Weight successfully added"})
+    else
+      return render(:json=>{"result"=>"failure", "message"=>result})
+    end
+  end
 
 	def delete_food
 		@user = getUser(cookies[:remember_token])
@@ -194,8 +207,10 @@ class FitplanController < ApplicationController
 	end
 
   def progress
+    @user = getUser(cookies[:remember_token])
     @userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
     @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
+    @weightChartData = UserProfile.weightChartData(@user, 3)
   end
 
 	def test
