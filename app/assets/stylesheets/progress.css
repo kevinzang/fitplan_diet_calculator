@@ -1,0 +1,27 @@
+
+
+#weight_info {
+  background-color: #B4E7ED;
+  height: 40px;
+  width: 550px;
+  margin: 10px auto;
+  padding: 13px 150px 0 150px;
+  text-align: center;
+}
+
+#weight_info p {
+  float: left;
+  margin-left: 3%;
+  overflow: hidden;
+}
+
+#chart {
+  background-color: #B4E7ED;
+  margin: 25px auto;
+  padding: 20px 30px;
+  width: 800px; 
+}
+
+#chart p {
+  margin-bottom: 20px;
+}
