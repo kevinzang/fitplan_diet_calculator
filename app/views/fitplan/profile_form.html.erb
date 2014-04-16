@@ -1,21 +1,27 @@
 <center>
 <%= render '/layouts/navbar' %>
 
-  <div id="message"></div>
   <div id="inputForm" align="left">
     <form id="register" action="" method="POST">
+      <div id="message"></div>
+      <hr />
+      Feet: <input id="feet" name="feet" type="text" value=<%= @defaults["feet"] %>>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      Inches: <input id="inches" name="inches" type="text" value=<%= @defaults["inches"] %>>
+      <hr />
+  	  Current weight (lbs): <input id="weight" name="weight" type="text" value=<%= @defaults["weight"] %>>
+      <br>
+  	  Desired weight (lbs): <input id="desired_weight" name="desired_weight" type="text" value=<%= @defaults["desired_weight"] %>> <br>
+      <hr />
+  	  Age: <input id="age" name="age" type="text" value=<%= @defaults["age"] %>> <br>
+      <hr />
+      Male <%= radio_button_tag("gender", "male", @defaults["gender"]=="male") %>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      Female <%= radio_button_tag("gender", "female", @defaults["gender"]=="female") %><br>
+      <hr />
 
 
-  	Height: <input id="feet" name="feet" type="text" value=<%= @defaults["feet"] %>> feet
-  	        <input id="inches" name="inches" type="text" value=<%= @defaults["inches"] %>> inches<br>
-  	Weight: <input id="weight" name="weight" type="text" value=<%= @defaults["weight"] %>> lbs<br>
-  	Desired Weight: <input id="desired_weight" name="desired_weight" type="text" value=<%= @defaults["desired_weight"] %>> lbs<br>
-  	Age: <input id="age" name="age" type="text" value=<%= @defaults["age"] %>>yrs<br>
-    Male <%= radio_button_tag("gender", "male", @defaults["gender"]=="male") %>
-    Female <%= radio_button_tag("gender", "female", @defaults["gender"]=="female") %><br>
-
-
-  	<input id="profile_submit" type="submit" value="Submit Profile">
+  	  <input id="profile_submit" type="submit" value="Submit Profile">
 
     </form>
   </div>

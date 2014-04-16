@@ -32,6 +32,34 @@ div {
   -moz-border-radius: 10px;
 }
 
+hr {
+  height: 3px;
+  background-color: #dcdcdc;
+}
+
+/*
+.after-navbar {
+  padding-top: 40px;
+}
+*/
+
+.navbar {
+  width: 100%;
+  /* position: fixed; */
+}
+
+.logo {
+  font-size: 30px;
+  background-color: #F0FFFF;
+  margin: 10px;
+  float: left;
+  margin-left: 5%;
+}
+
+.container {
+  float: right;
+}
+
 a {
   color: #7D26CD;
 }

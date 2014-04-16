@@ -153,7 +153,7 @@ describe "Fitplan GUI Tests" do
             expect(page).to have_text('141 calories', wait: 5)
         end
 
-        it "should display food along with calories and serving size", js: true do
+        it "should display submitted food on profile page", js: true do
             visit '/'
             fill_in 'username', :with => 'AFE3'
             fill_in 'password', :with => 'password'

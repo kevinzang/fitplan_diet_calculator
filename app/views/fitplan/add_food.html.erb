@@ -2,13 +2,15 @@
 
 <%= render '/layouts/navbar' %>
 
-  <h1>Search results for <%= @food %>:</h1>
   <div id="food-listings">
+  <i>Search results for <%= @food %>:</i>
+  <hr />
     <% for i in 0..@results.length-1 %>
       <div id="food-container-<%= i %>" class="foodContainer">
-        <div id="food-title-<%= i %>" class="foodTitle" onclick="getCalories(<%= i %>)"><button type="button" id="food-button"><%= raw @results[i] %></button></div>
+        <div id="food-title-<%= i %>" class="foodTitle" onclick="getCalories(<%= i %>)"><a id="food-button"><%= raw @results[i] %></a></div>
         <div id="<%= i %>" class="foodData"></div>
       </div>
+      <hr />
     <% end %>
   <div>
 
@@ -23,14 +25,12 @@ function displayCalorie(selected_id, reply) {
     var food_container = document.getElementById("food-container-"+selected_id);
 	if (reply.calorie != -1) {
 		var serving_id = "serving"+selected_id;
-		$(element).html("<div class='info'><div>"+reply.calorie+" calories</div>"+
-		"<div>"+reply.serving+"</div></div>"+
-		"<div class='input'><input id='"+serving_id+"' value='1'> servings"+
+		$(element).html("<br><div class='info'>"+reply.calorie+" calories&nbsp;&nbsp;&nbsp;&nbsp;"
+		+reply.serving+"</div>"+
+		"<div class='input'>Servings: <input id='"+serving_id+"' value='1' style='width:35px;'>"+
 		"&nbsp;&nbsp;<button type='button' onclick='addFood("+selected_id+")'>"+
 		"Add</button></div>");
-        $(food_title).css("background-color","#FF7F24");
-        $(food_container).css("background-color","#F0FFFF");
-        $(food_container).css("border-radius","20px");
+        $(food_title).css("text-decoration", "underline");
 		$(element).show();
 	}
 }

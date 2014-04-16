@@ -1,5 +1,5 @@
 #food-listings {
-  background-color: #B4E7ED;
+  background-color: #F0FFFF;
   padding: 10px;
   width: 1000px;
   border-radius: 40px;
@@ -7,39 +7,36 @@
 
 .foodTitle {
   text-align: left;
-  background-color: #F0FFFF;
-  padding: 1px;
-  margin: 2px;
-  border-radius: 10px;
-}
-
-.foodTitle:hover {
-  cursor: pointer;
-  background-color: #FF7F24;
+  font-family: Verdana, Geneva, sans-serif;
 }
 
 .foodContainer {
-  margin: 2px;
-  padding: 2px;
 }
 
 .foodData {
-  padding: 2px;
-  display: inline-block;
+  width: 975px;
+  height: 35px;
 }
 
-.info, .input {
-  background-color: #FF7F24;
+.info {
   float: left;
-  width: 480px;
-  height: 40px;
-  padding: 5px;
-  margin: 2px;
-  border-radius: 20px;
+  text-align: left;
+}
+
+.input {
+  float: right;
+  text-align: right;
 }
 
 
 #food-button {
-    background: transparent;
-    border: none !important;
+  color: #505050;
+  background: transparent;
+  border: none !important;
 }
+
+
+#food-button:hover {
+  cursor: pointer;
+}
+

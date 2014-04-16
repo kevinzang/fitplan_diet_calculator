@@ -1,0 +1,11 @@
+#message {
+  font-style: italic;
+}
+
+#feet, #inches, #weight, #desired_weight, #age {
+  width: 50px;
+}
+
+#register {
+  width: 450px;
+}
