@@ -208,6 +208,9 @@ class FitplanController < ApplicationController
 
   def progress
     @user = getUser(cookies[:remember_token])
+    if @user == nil
+	  return
+	end
     @userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
     @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
     @weightChartData = UserProfile.weightChartData(@user, 3)
