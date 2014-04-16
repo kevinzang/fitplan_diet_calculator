@@ -34,12 +34,20 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "submit profile form" do
 		it "should submit profile" do
-			UserProfile.signup("a", "secret", "0")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("dragon", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
-				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"140", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			resp = {"result"=>UserProfile::SUCCESS}
 			post '/profile_form/submit', req.to_json, session
 			response.body.should == resp.to_json
+			record = UserProfile.find_by(username:"dragon")
+			record.height.should == 60
+			record.weight.should == 150
+			record.desired_weight.should == 140
+			record.age.should == 20
+			record.gender.should == "male"
 		end
 	end
 	describe "set profile form preexisting values" do
@@ -47,7 +55,8 @@ describe "Fitplan Functional Tests" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
-				"desired_weight"=>"140", "age"=>"20", "gender"=>"male"}
+				"desired_weight"=>"140", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("a", req.keys, req).should == UserProfile::SUCCESS
 			get '/profile_form'
 			defaults = assigns(:defaults)
@@ -58,6 +67,8 @@ describe "Fitplan Functional Tests" do
 	end
 	describe "search for food to add" do
 		it "should set @food and @results" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
 			post '/profile/add_food', {'food' => "mashed potatoes"}
 			assigns(:food).should == "mashed potatoes"
 			assigns(:results).length.should > 0
@@ -142,24 +153,96 @@ describe "Fitplan Functional Tests" do
 		it "should set @workout" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
-			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
-				"desired_weight"=>"150", "age"=>"20", "gender"=>"female"}
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
 			UserProfile.setProfile("a", fields.keys, fields)
-			UserProfile.addFood("a", "chicken pot pie", "1000",
-				Date.today.to_s, "10 bells", "2")
+			UserProfile.addFood("a", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
 			UserProfile.addFood("a", "ice cream", "100",
 				(Date.today-1).to_s, "10 bells", "2")
-			UserProfile.addFood("a", "dragon tail", "200",
-				Date.today.to_s, "10 bells", "5")
+			get '/profile/workout'
+			defaultActivity = assigns(:defaultActivity)
+			defaultActivity.should == "Running, 6 mph (10 min mile)"
+			workout = assigns(:workout)
+			workout["target"].should == 1760
+			workout["intake"].should == 2660
+			workout["normal"].should == 1800
+			workout["rec_target"].should == 74
+			workout["rec_normal"].should == 71
+		end
+		it "should set @activities" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
+			get '/profile/workout'
+			activities = assigns(:activities)
+			activities.include?("Aerobics, general").should == true
+			activities.include?("Ballet, twist, jazz, tap").should == true
+			activities.include?("Canoeing, camping trip").should == true
+        end
+    end
+    describe "getting a recommendation" do
+    	it "should get a recommendation" do
+    		cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+			UserProfile.setProfile("a", fields.keys, fields)
+			UserProfile.addFood("a", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
 			get '/profile/workout'
 			workout = assigns(:workout)
-			workout["target"].should == 1520
-			workout["intake"].should == 3000
-			workout["normal"].should == 1540
-			workout["rec_target"].should == 130
-			workout["rec_normal"].should == 124
+			# workout["target"].should == 1760
+			# workout["intake"].should == 2660
+			# workout["normal"].should == 1800
+			# workout["rec_target"].should == 74
+			# workout["rec_normal"].should == 71
+			req = {"activity" => "Bird watching",
+				"target_cal" => 1760, "normal_cal" => 1800} # rate=1.14
+			resp = {"rec_target" => 579, "rec_normal" => 592}
+			post '/profile/workout/get_recommended', req.to_json, session
+			response.body.should == resp.to_json
 		end
-    end
+	end
+    describe "adding workout entries" do
+    	it "should add workout entry" do
+    		cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+			UserProfile.setProfile("a", fields.keys, fields)
+			UserProfile.addFood("a", "chicken", "266",
+				Date.today.to_s, "10 bells", "10")
+			get '/profile/workout'
+			workout = assigns(:workout)
+			# original plan
+			# workout["target"].should == 1760
+			# workout["intake"].should == 2660
+			# workout["normal"].should == 1800
+			# workout["rec_target"].should == 74
+			# workout["rec_normal"].should == 71
+			workout["burned"].should == 0
+
+			# add a WorkoutEntry
+			req = {"activity" => "Bird watching", # rate=1.14
+				"minutes" => "30"}
+			resp = {"result" => UserProfile::SUCCESS, "burned" => 91}
+			post '/profile/workout/add_entry', req.to_json, session
+			response.body.should == resp.to_json
+
+			# check that new plan accounts for new WorkoutEntry
+			get '/profile/workout'
+			workout = assigns(:workout)
+			workout["target"].should == 1760
+			workout["intake"].should == 2660
+			workout["normal"].should == 1800
+			workout["rec_target"].should == 67
+			workout["rec_normal"].should == 64
+			workout["burned"].should == 91
+		end
+	end
     describe "user authentication" do
     	it "should remember the user" do
     		cookies[:remember_token] = "blastoise"

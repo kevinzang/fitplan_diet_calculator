@@ -1,5 +1,5 @@
 <center>
-<%= render '/layouts/navbar' %>
+  <%= render '/layouts/navbar' %>
 
   <div id="inputForm" align="left">
     <form id="register" action="" method="POST">
@@ -19,54 +19,65 @@
       &nbsp;&nbsp;&nbsp;&nbsp;
       Female <%= radio_button_tag("gender", "female", @defaults["gender"]=="female") %><br>
       <hr />
-
-
-  	  <input id="profile_submit" type="submit" value="Submit Profile">
+      Activity Level: <%= select_tag("activity_level", options_for_select({"Little or no exercise" => 0,
+                                                                           "Light exercise 1-3 days/week" => 1,
+                                                                           "Moderate exercise 3-5 days/week" => 2,
+                                                                           "Hard exercise 6-7 days a week" => 3,
+                                                                           "Very hard exercise & physical job" => 4}, :selected => @defaults["activity_level"])) %><br>
+      Weekly Goal: <%= select_tag("weight_change_per_week_goal", options_for_select({"Maintain current weight"=> 0.0,
+                                                                                     "Lose 0.5 lbs per week" => 0.5,
+                                                                                     "Lose 1 lbs per week" => 1.0,
+                                                                                     "Lose 1.5 lbs per week" => 1.5,
+                                                                                     "Lose 2 lbs per week" => 2.0}, :selected => @defaults["weight_change_per_week_goal"])) %><br>
+      <hr />
+      <input id="profile_submit" type="submit" value="Submit Profile">
 
     </form>
   </div>
 </center>
 
 <script type="text/javascript">
-$(document).ready(setMessage);
-window.onpageshow = function(event) {
-  if (event.persisted) {
-    document.body.style.display = "none";
-    location.reload();
-  }
-};
-function setMessage() {
-  $('#message').html("Please fill out your profile:");
-}
-function register(result, url) {
-	if (result.result == "SUCCESS") {
-		window.location.href = url;
-	} else {
-		$('#message').html(result.result);
-	}
-}
-$('#profile_submit').click(function() {
-  var d = {
-    "feet" : document.getElementById("feet").value,
-    "inches" : document.getElementById("inches").value,
-    "weight" : document.getElementById("weight").value,
-    "desired_weight" : document.getElementById("desired_weight").value,
-    "age" : document.getElementById("age").value,
-    "gender" : ""
-  };
-  var gender = document.getElementsByName("gender");
-  for (var i=0; i<gender.length; i++) {
-    if (gender[i].checked) {
-      d["gender"] = gender[i].value;
+    $(document).ready(setMessage);
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            document.body.style.display = "none";
+            location.reload();
+        }
+    };
+    function setMessage() {
+        $('#message').html("Please fill out your profile:");
     }
-  }
-  send_json("/profile_form/submit",
-    d,
-    function(result) {
-      return register(result, "/profile");
-    },
-    show_error
-  );
-  return false;
-});
+    function register(result, url) {
+        if (result.result == "SUCCESS") {
+            window.location.href = url;
+        } else {
+            $('#message').html(result.result);
+        }
+    }
+    $('#profile_submit').click(function() {
+        var d = {
+            "feet" : document.getElementById("feet").value,
+            "inches" : document.getElementById("inches").value,
+            "weight" : document.getElementById("weight").value,
+            "desired_weight" : document.getElementById("desired_weight").value,
+            "age" : document.getElementById("age").value,
+            "gender" : "",
+            "activity_level" : document.getElementById("activity_level").options[document.getElementById("activity_level").selectedIndex].value,
+            "weight_change_per_week_goal" : document.getElementById("weight_change_per_week_goal").options[document.getElementById("weight_change_per_week_goal").selectedIndex].value
+        };
+        var gender = document.getElementsByName("gender");
+        for (var i=0; i<gender.length; i++) {
+            if (gender[i].checked) {
+                d["gender"] = gender[i].value;
+            }
+        }
+        send_json("/profile_form/submit",
+                d,
+                function(result) {
+                    return register(result, "/profile");
+                },
+                show_error
+        );
+        return false;
+    });
 </script>

@@ -1,5 +1,6 @@
 class UserProfile < ActiveRecord::Base
     require "food_entry"
+    require "workout_entry"
     require "date"
 
 	MAX_USERNAME_LENGTH = 128
@@ -18,6 +19,8 @@ class UserProfile < ActiveRecord::Base
             "#{MAX_PASSWORD_LENGTH} characters. Try again."
 
     ERR_USER_NOT_FOUND = "Error: user not found"
+
+    ERR_ACTIVITY_NOT_FOUND = "Error: activity not found"
 
 	def self.validUsername?(username)
 		return username != "" && username.length() <= MAX_USERNAME_LENGTH
@@ -91,7 +94,7 @@ class UserProfile < ActiveRecord::Base
             return ERR_USER_NOT_FOUND
         end
         values = {}
-        for field in ["height", "weight", "desired_weight", "age", "gender"]
+        for field in ["height", "weight", "desired_weight", "age", "gender", "activity_level", "weight_change_per_week_goal"]
             value = user.read_attribute(field)
             if value == nil
                 values[field] = ""
@@ -121,6 +124,8 @@ class UserProfile < ActiveRecord::Base
         user.desired_weight = params["desired_weight"].to_i
         user.age = params["age"].to_i
         user.gender = params["gender"]
+        user.activity_level = params["activity_level"].to_i
+        user.weight_change_per_week_goal = params["weight_change_per_week_goal"].to_f
         user.save()
         return valid
     end
@@ -139,6 +144,39 @@ class UserProfile < ActiveRecord::Base
             return ERR_USER_NOT_FOUND
         end
         return FoodEntry.where(username:username, date:date.to_s)
+    end
+
+    def self.getWeightEntries(username)
+      user = UserProfile.find_by(username:username)
+      if user == nil
+        return ERR_USER_NOT_FOUND
+      end
+      return WeightEntry.where(username: username)
+    end
+
+    def self.getWeightEntriesInRange(username, range_in_months)
+      return getWeightEntries(username).select{|entry| entry.date.to_date() >= Date.today - range_in_months.months}
+    end
+
+    def self.addWeightEntry(username, weight, date)
+      user = UserProfile.find_by(username:username)
+      if user.nil?
+        return ERR_USER_NOT_FOUND
+      end
+      if weight < 0
+        return "Error: weight must be positive"
+      end
+      if weight > 1000
+        return "Error: max weight is 1000"
+      end
+      entry = WeightEntry.find_by(:username => username, :date => date)
+      if entry.nil?
+        entry = WeightEntry.new(username: username, date: date, weight: weight)
+      else
+        entry.update_attributes(:weight => weight)
+      end
+      entry.save()
+      return SUCCESS
     end
 
     def self.addFood(username, food, calorie, date, serving, num_servings)
@@ -192,21 +230,102 @@ class UserProfile < ActiveRecord::Base
             total += entry.calories * entry.numservings
         end
         d["intake"] = total
-        for field in ["height", "weight", "desired_weight", "age", "gender"]
-            if user.read_attribute(field) == nil || user.read_attribute(field) == 0
+        entries = WorkoutEntry.where(username:username, date:date.to_s)
+        total = 0
+        for entry in entries
+            total += entry.burned
+        end
+        d["burned"] = total
+        for field in ["height", "age", "gender"]
+            val = user.read_attribute(field)
+            if val == nil || val == 0
                 # profile not complete
                 d["target"] = -1
                 d["normal"] = -1
-                d["rec_target"] = -1
-                d["rec_normal"] = -1
                 return d
             end
         end
-        d["target"] = self.getBMR(user.height, user.desired_weight, user.age, user.gender)
-        d["normal"] = self.getBMR(user.height, user.weight, user.age, user.gender)
-        d["rec_target"] = self.getRecommended(d["intake"]-d["target"], 10, user.desired_weight)
-        d["rec_normal"] = self.getRecommended(d["intake"]-d["normal"], 10, user.weight)
+        if user.desired_weight == nil || user.desired_weight == 0
+            d["target"] = -1
+        else
+            d["target"] = self.getBMR(user.height, user.desired_weight,
+                user.age, user.gender)
+        end
+        if user.weight == nil || user.weight == 0
+            d["normal"] = -1
+        else
+            d["normal"] = self.getBMR(user.height, user.weight,
+                user.age, user.gender)
+        end
         return d
+    end
+
+    def self.getRecommended(username, target_cal, normal_cal, activity)
+        user = UserProfile.find_by(username:username)
+        rate = WorkoutEntry.getRate(activity)
+        rec = {"rec_target"=>-1, "rec_normal"=>-1}
+        if user == nil || rate == nil
+            return rec
+        end
+        if !(user.weight == nil || user.weight == 0)
+            rec["rec_target"] = [target_cal*60/rate/user.weight, 0].max().round(0)
+            rec["rec_normal"] = [normal_cal*60/rate/user.weight, 0].max().round(0)
+        end
+        return rec
+    end
+
+    def self.addWorkoutEntry(username, activity, minutes, date)
+        user = UserProfile.find_by(username:username)
+        if user == nil
+            return ERR_USER_NOT_FOUND
+        end
+        rate = WorkoutEntry.getRate(activity)
+        if rate == nil
+            return ERR_ACTIVITY_NOT_FOUND
+        end
+        if minutes == ""
+            return "Must enter minutes of exercise"
+        end
+        if minutes.to_f.to_s != minutes &&
+            minutes.to_i.to_s != minutes
+            return "Minutes must be numeric value"
+        end
+        min = minutes.to_i
+        if min <= 0
+            return "Minutes must be positive"
+        end
+        if user.weight == nil || user.weight == 0
+            return "Must enter your weight on your Profile Form"
+        end
+        entry = WorkoutEntry.new(username:username,
+            activity:activity, minutes:min, date:date)
+        entry.burned = (rate * user.weight / 60.0 * min).round(0).to_i
+        entry.save()
+        entries = WorkoutEntry.where(username:username, date:date.to_s)
+        total = 0
+        for entry in entries
+            total += entry.burned
+        end
+        return total
+    end
+
+    def self.weightChartData(username, range_in_months)
+      weightEntries = getWeightEntriesInRange(username, range_in_months)
+      if weightEntries == ERR_USER_NOT_FOUND
+        return {}
+      end
+      if range_in_months < 0
+        return {}
+      end
+      chartData = {}
+      for weightEntry in weightEntries
+        if chartData.has_key?(weightEntry.date)
+          chartData[weightEntry.date] = max chartData[weightEntry.date], weightEntry.weight
+        else
+          chartData[weightEntry.date] = weightEntry.weight
+        end
+      end
+      return chartData
     end
 
     def self.calorieIntakeChartData(username, range_in_months)
@@ -233,14 +352,23 @@ class UserProfile < ActiveRecord::Base
       return chartData
     end
 
-    def caloriesNeededMaintainWeight()
-      bmr = UserProfile.getBMR(height, weight, age, gender)
-      return bmr * 1.2 # use default for now (little to no exercise)
+    def self.recommendedCalorieIntake(username)
+      user = find_by(username: username)
+      if user.nil?
+        return nil
+      end
+      bmr = self.getBMR(user.height, user.weight, user.age, user.gender)
+      scale_factor = 1.2 + 0.175 * user.activity_level
+      # one pound of body weight is roughly equivalent to 3500 calories
+      calorie_change_per_week = 3500 * user.weight_change_per_week_goal
+      calorie_change_per_day = calorie_change_per_week / 7
+      return scale_factor * bmr + calorie_change_per_day
     end
 
     def self.reset()
         UserProfile.delete_all()
         FoodEntry.delete_all()
+        WorkoutEntry.delete_all()
     end
 
     private
@@ -273,13 +401,6 @@ class UserProfile < ActiveRecord::Base
         else
             return 2000
         end
-    end
-
-    private
-    def self.getRecommended(calories, rate, weight)
-        # [rate] = cal/(kg * hr)
-        # [weight] = lb
-        return [calories*2.2*60/10/weight, 0].max().round(0)
     end
 
     private
