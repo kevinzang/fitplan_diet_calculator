@@ -31,13 +31,13 @@
     <i><b>To reach desired weight:</b></i><br><br>
       Target (cal/day):
         <% if @workout["target"] == -1 %>
-          Complete your profile form to find out!
+          <br><i>Complete your profile form to find out!</i><br>
         <% else %>
           <span id="target" style="float: right;"><%= @workout["target"] %></span>
         <% end %><br>
-      Suggested workout (min):
+      Suggested workout (minutes):
         <% if @workout["rec_target"] == -1 %>
-          Complete your profile form to find out!
+          <br><i>Complete your profile form to find out!</i><br>
         <% else %>
           <span id="rec_target" style="float: right;"><%= @workout["rec_target"] %></span>
         <% end %>
@@ -49,13 +49,13 @@
     <i><b>To maintain current weight:</b></i><br><br>
     Target (cal/day):
       <% if @workout["normal"] == -1 %>
-        Complete your profile form to find out!
+        <br><i>Complete your profile form to find out!</i><br>
       <% else %>
         <span id="normal" style="float: right;"><%= @workout["normal"] %></span>
       <% end %><br>
-    Suggested workout (min):
+    Suggested workout (minutes):
       <% if @workout["rec_normal"] == -1 %>
-        Complete your profile form to find out!
+        <br><i>Complete your profile form to find out!</i><br>
       <% else %>
         <span id="rec_normal" style="float: right;"><%= @workout["rec_normal"] %></span>
       <% end %>
@@ -64,13 +64,13 @@
 </div>
 
 
-<form action="" method="post" style="width:700px;border-radius:0px;padding-top: 10px">
+<form action="" method="post" style="width:700px;border-radius:0px;padding-top:10px">
   <div id="workout-activity"><select id="activity" name="activity" style="width:300px;float:right;">
   <% for i in 0..@activities.length-1 %>
     <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
   <% end %>
   </select></div>
-  <div id="workout-duration"><input id="minutes" name="minutes" style="width:100px;">&nbsp;minutes</div>
+  <div id="workout-duration">Duration: <input id="minutes" name="minutes" style="width:100px;"></div>
   <input id="add_workout_entry" type="submit" value="Add Workout">
 </form>
 
