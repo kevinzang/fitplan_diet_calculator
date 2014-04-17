@@ -243,8 +243,12 @@ class FitplanController < ApplicationController
 				end
 			}
 			line = fixline.split(" ")
-			total = line[line.index("examples,")-1].to_i
-			fails = line[line.index("failures")-1].to_i
+      if line.index("examples,") != nil
+			  total = line[line.index("examples,")-1].to_i
+      end
+      if (line.index("failures")) != nil
+			  fails = line[line.index("failures")-1].to_i
+      end
 			file.close
 			output = contents.join()
 			if fails == 0
@@ -252,7 +256,9 @@ class FitplanController < ApplicationController
 			end
 			return render(:json=>{"nrFailed"=>fails, "output"=>output,
 				"totalTests"=>total}, status:200)
-		rescue => err
+    rescue => err
+      puts err.message
+      puts err.backtrace
 			return render(:json=>{"nrFailed"=>0, "output"=>"Unexpected error",
 				"totalTests"=>10}, status:200)
 		end

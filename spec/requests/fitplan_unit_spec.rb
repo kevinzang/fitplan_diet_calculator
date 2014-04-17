@@ -6,6 +6,7 @@ require File.expand_path("../../../app/models/workout_entry", __FILE__)
 require 'date'
 
 describe "Fitplan Unit Tests" do
+  puts "***begin fitplan_unit_spec.rb"
 	before(:each) {
 		UserProfile.reset()
     WeightEntry.delete_all()
@@ -55,19 +56,19 @@ describe "Fitplan Unit Tests" do
 		it "should fail if fields contain negative values" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"-20", "gender"=>"female",
-        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should fail if fields contain words" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"twenty", "gender"=>"female",
-        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should work if all fields are either blank or non-negative integers" do
 			fields = {"feet"=>"5", "inches"=>"0", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 		end
 	end
@@ -84,7 +85,7 @@ describe "Fitplan Unit Tests" do
 		it "should remember the defaults" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 			defaults = UserProfile.getDefaults("kevin")
 			for key in defaults.keys
@@ -92,7 +93,6 @@ describe "Fitplan Unit Tests" do
 			end
 		end
   end
-=begin
 	describe "search for food to add" do
 		it "should return the search results" do
 			results = FoodSearch.search("mashed potatoes")
@@ -143,7 +143,6 @@ describe "Fitplan Unit Tests" do
 				"10 oolongs", "0").should_not == UserProfile::SUCCESS
 		end
 	end
-=end
 	describe "delete food" do
 		it "should fail if user is not registered" do
 			UserProfile.deleteFood("kevin", ["chicken"]).should_not == UserProfile::SUCCESS
@@ -201,15 +200,15 @@ describe "Fitplan Unit Tests" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
 				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			UserProfile.addFood("kevin", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
 			workout = UserProfile.getWorkout("kevin", Date.today.to_s)
 			workout["intake"].should == 2660 # 266 * 10
 			workout["burned"].should == 0 # no WorkoutEntries entered
-			workout["target"].should == 1760 # BMR desired weight
-			workout["normal"].should == 1800 # BMR weight
+			workout["target"].should == 1975 # <strike>BMR desired weight</strike> Recommended Calorie Intake to Maintain Weight
+			workout["normal"].should == 2475 # <strike>BMR weight</strike> Recommended Calorie Intake to lose <weight_change_per_week_goal> pounds per week
 		end
 		it "should use a default of -1 for rec_target and rec_normal" do
 			UserProfile.signup("kevin", "secret", "0")
@@ -221,7 +220,7 @@ describe "Fitplan Unit Tests" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"", "inches"=>"", "weight"=>"165",
 				"desired_weight"=>"", "age"=>"", "gender"=>"",
-        "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			rec = UserProfile.getRecommended("kevin", 2000, 1500,
 				"Running, 6 mph (10 min mile)")
@@ -264,7 +263,7 @@ describe "Fitplan Unit Tests" do
   		UserProfile.signup("a", "secret", "0")
   		fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
 			"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-      "activity_level"=>"0", "weight_change_per_week_goal"=>"0.0"}
+      "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 		UserProfile.setProfile("a", fields.keys, fields)
   		result = UserProfile.addWorkoutEntry("a",
   			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
@@ -444,4 +443,5 @@ describe "Fitplan Unit Tests" do
       end
     end
   end
+  puts "***end fitplan_unit_spec.rb"
 end

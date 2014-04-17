@@ -154,6 +154,19 @@ class UserProfile < ActiveRecord::Base
       return WeightEntry.where(username: username)
     end
 
+    def self.getCurrentWeight(username)
+      user = UserProfile.find_by(username:username)
+      if user == nil
+        return ERR_USER_NOT_FOUND
+      end
+      list = WeightEntry.where(username: username)
+      if list.length == 0
+        return user.weight
+      end
+      list.sort!{|a,b| b.updated_at <=> a.updated_at}
+      return list[0].weight
+    end
+
     def self.getWeightEntriesInRange(username, range_in_months)
       return getWeightEntries(username).select{|entry| entry.date.to_date() >= Date.today - range_in_months.months}
     end
@@ -259,7 +272,7 @@ class UserProfile < ActiveRecord::Base
         if user.weight == nil || user.weight == 0
             d["normal"] = -1
         else
-            d["normal"] = self.recommendedCalorieIntake(username)
+            d["normal"] = self.recommendedCalorieIntakeWeeklyGoal(username, 0)
         end
         return d
     end
@@ -272,8 +285,8 @@ class UserProfile < ActiveRecord::Base
             return rec
         end
         if !(user.weight == nil || user.weight == 0)
-            rec["rec_target"] = [target_cal*60/rate/user.weight, 0].max().round(0)
-            rec["rec_normal"] = [normal_cal*60/rate/user.weight, 0].max().round(0)
+            rec["rec_target"] = [target_cal*60/rate/getCurrentWeight(username), 0].max().round(0)
+            rec["rec_normal"] = [normal_cal*60/rate/getCurrentWeight(username), 0].max().round(0)
         end
         return rec
     end
@@ -303,7 +316,7 @@ class UserProfile < ActiveRecord::Base
         end
         entry = WorkoutEntry.new(username:username,
             activity:activity, minutes:min, date:date)
-        entry.burned = (rate * user.weight / 60.0 * min).round(0).to_i
+        entry.burned = (rate * getCurrentWeight(username) / 60.0 * min).round(0).to_i
         entry.save()
         entries = WorkoutEntry.where(username:username, date:date.to_s)
         total = 0
@@ -356,15 +369,29 @@ class UserProfile < ActiveRecord::Base
       return chartData
     end
 
+    # Uses Harris-Benedict Equation
     def self.recommendedCalorieIntake(username)
       user = find_by(username: username)
       if user.nil?
         return nil
       end
-      bmr = self.getBMR(user.height, user.weight, user.age, user.gender)
+      bmr = self.getBMR(user.height, getCurrentWeight(username), user.age, user.gender)
       scale_factor = 1.2 + 0.175 * user.activity_level
       # one pound of body weight is roughly equivalent to 3500 calories
       calorie_change_per_week = 3500 * user.weight_change_per_week_goal
+      calorie_change_per_day = calorie_change_per_week / 7
+      return scale_factor * bmr + calorie_change_per_day
+    end
+
+    def self.recommendedCalorieIntakeWeeklyGoal(username, weekly_goal)
+      user = find_by(username: username)
+      if user.nil?
+        return nil
+      end
+      bmr = self.getBMR(user.height, getCurrentWeight(username), user.age, user.gender)
+      scale_factor = 1.2 + 0.175 * user.activity_level
+      # one pound of body weight is roughly equivalent to 3500 calories
+      calorie_change_per_week = 3500 * weekly_goal
       calorie_change_per_day = calorie_change_per_week / 7
       return scale_factor * bmr + calorie_change_per_day
     end
@@ -385,7 +412,7 @@ class UserProfile < ActiveRecord::Base
             if val != "" && val.to_f.to_s != val &&
                val.to_i.to_s != val
                 return "All fields must be numbers. Try again."
-            elsif val.to_i < 0
+            elsif key != "weight_change_per_week_goal" && val.to_i < 0
                 return "All fields must be non-negative. Try again."
             end
         end
