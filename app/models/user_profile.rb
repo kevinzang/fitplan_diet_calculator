@@ -254,14 +254,12 @@ class UserProfile < ActiveRecord::Base
         if user.desired_weight == nil || user.desired_weight == 0
             d["target"] = -1
         else
-            d["target"] = self.getBMR(user.height, user.desired_weight,
-                user.age, user.gender)
+            d["target"] = self.recommendedCalorieIntake(username)
         end
         if user.weight == nil || user.weight == 0
             d["normal"] = -1
         else
-            d["normal"] = self.getBMR(user.height, user.weight,
-                user.age, user.gender)
+            d["normal"] = self.recommendedCalorieIntake(username)
         end
         return d
     end
