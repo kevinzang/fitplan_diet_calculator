@@ -198,6 +198,53 @@ class UserProfile < ActiveRecord::Base
       return SUCCESS
     end
 
+    def self.addUserFood(username, food, calories, serving)
+      user = UserProfile.find_by(username:username)
+      if user == nil
+        return ERR_USER_NOT_FOUND
+      end
+      begin
+        Integer(calories)
+      rescue
+        return "Calories must be an integer"
+      end
+      food = food.to_s
+      calories = calories.to_i
+      serving = serving.to_s
+      if calories <= 0
+        return "Calories must be positive"
+      end
+      entry = UserFood.find_by(username:username, food:food, serving:serving)
+      if entry == nil
+        entry = UserFood.new(username:username, food:food, serving:serving, calories:calories)
+      else
+        entry.update_attributes(calories:calories)
+      end
+      entry.save()
+      return SUCCESS
+    end
+
+    def self.getUserFoods(username, arg)
+      return UserFood.where(username:username)
+    end
+
+    def self.deleteUserFood(username, food_names)
+      user = UserProfile.find_by(username:username)
+      if user == nil
+        return ERR_USER_NOT_FOUND
+      end
+      entries = UserFood.where(username:username,
+                                food:food_names)
+      for entry in entries
+        index = food_names.index(entry.food)
+        if index != nil
+          entry.delete
+          food_names.delete_at(index)
+        end
+      end
+      return SUCCESS
+    end
+
     def self.addFood(username, food, calorie, date, serving, num_servings)
         user = UserProfile.find_by(username:username)
         if user == nil

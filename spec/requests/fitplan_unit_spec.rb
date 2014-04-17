@@ -443,5 +443,55 @@ describe "Fitplan Unit Tests" do
       end
     end
   end
+  describe "UserProfile.addUserFood(...)" do
+    it "should return ERR_USER_NOT_FOUND if user doesn't exist" do
+      result = UserProfile.addUserFood("derp", "derp", "derp", "derp")
+      result.should == UserProfile::ERR_USER_NOT_FOUND
+    end
+    it "should not add foods with nonpositive calories" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addUserFood("kevin", "ice cream yum", "0", "serving")
+      result.should == "Calories must be positive"
+    end
+    it "should not add foods with nonnumeric calories" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addUserFood("kevin", "ice cream yum", "derp", "serving")
+      result.should == "Calories must be an integer"
+    end
+    it "should add user food if no errors" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.addUserFood("kevin", "ice cream yum", "120", "serving")
+      result.should == UserProfile::SUCCESS
+      entries = UserProfile.getUserFoods("kevin", "")
+      entries.length.should == 1
+      entries[0].username.should == "kevin"
+      entries[0].food.should == "ice cream yum"
+      entries[0].calories.should == 120
+      entries[0].serving.should == "serving"
+    end
+    it "should overwrite preexisting user foods with same username, food, serving" do
+      UserProfile.signup("kevin", "secret", "0")
+      UserProfile.signup("not kevin", "secret", "1")
+      UserProfile.addUserFood("kevin", "ice cream yum", "120", "serving")
+      UserProfile.addUserFood("kevin", "ice cream", "121", "serving")
+      UserProfile.addUserFood("kevin", "ice cream yum", "122", "serving 2")
+      UserProfile.addUserFood("kevin", "ice cream yum", "123", "serving")
+      UserProfile.addUserFood("not kevin", "ice cream yum", "124", "serving")
+      entries = UserProfile.getUserFoods("kevin", "").sort!{|a, b| a.calories <=> b.calories}
+      entries.length.should == 3
+      entries[0].username.should == "kevin"
+      entries[0].food.should == "ice cream"
+      entries[0].calories.should == 121
+      entries[0].serving.should == "serving"
+      entries[1].username.should == "kevin"
+      entries[1].food.should == "ice cream yum"
+      entries[1].calories.should == 122
+      entries[1].serving.should == "serving 2"
+      entries[2].username.should == "kevin"
+      entries[2].food.should == "ice cream yum"
+      entries[2].calories.should == 123
+      entries[2].serving.should == "serving"
+    end
+  end
   puts "***end fitplan_unit_spec.rb"
 end

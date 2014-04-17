@@ -68,7 +68,6 @@ describe "Fitplan Functional Tests" do
 			end
 		end
   end
-=begin
 	describe "search for food to add" do
 		it "should set @food and @results" do
 			cookies[:remember_token] = "0"
@@ -110,7 +109,6 @@ describe "Fitplan Functional Tests" do
 			entries[0].numservings.should == 2
 		end
 	end
-=end
 	describe "delete food" do
 		it "should delete the entries" do
 			cookies[:remember_token] = "0"
@@ -211,7 +209,6 @@ describe "Fitplan Functional Tests" do
 		end
 	end
     describe "adding workout entries" do
-      puts "describe adding workout entries"
     	it "should add workout entry" do
     		cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
@@ -250,7 +247,6 @@ describe "Fitplan Functional Tests" do
 		end
     end
     describe "user authentication" do
-      puts "describe running user authentication func tests"
     	it "should remember the user" do
     		cookies[:remember_token] = "blastoise"
     		UserProfile.signup("squirtle", "wartortle", "blastoise")
@@ -269,7 +265,6 @@ describe "Fitplan Functional Tests" do
     	end
     end
   describe "getting calorie intake chart data" do
-    puts "describe getting calorie intake chart data"
     it "should set @calorieIntakeChartData" do
       cookies[:remember_token] = "0"
       UserProfile.signup("a", "secret", "0")
@@ -291,14 +286,13 @@ describe "Fitplan Functional Tests" do
     end
   end
   describe "fitplan_controller.add_weight()" do
-    puts "describe fitplan_controller.add_weight()"
     it "should successfully add valid weight entry" do
       cookies[:remember_token] = "0"
       UserProfile.signup("kevin", "secret", "0")
       date = Date.today
       req = {"weight" => "117"}
       resp = {"result"=>"success", "message" => "Weight successfully added"}
-      post 'profile/add_weight', req.to_json, session
+      post '/profile/add_weight', req.to_json, session
       response.body.should == resp.to_json
       entries = UserProfile.getWeightEntries("kevin")
       entries.length.should == 1
@@ -307,6 +301,32 @@ describe "Fitplan Functional Tests" do
       entry.username.should == "kevin"
       entry.weight.should == 117
       entry.date.should == date.to_s
+    end
+  end
+  describe "fitplan_controller.create_new_food()" do
+    it "should successfully add valid user food" do
+      cookies[:remember_token] = "0"
+      UserProfile.signup("kevin", "secret", "0")
+      req = {"username" => "kevin", "food" => "ice cream", "calories" => 9000, "serving" => "a lot"}
+      resp = {"result" => UserProfile::SUCCESS}
+      post '/profile/create_new_food', req.to_json, session
+      response.body.should == resp.to_json
+    end
+    it "should error if calories is nonpositive" do
+      cookies[:remember_token] = "0"
+      UserProfile.signup("kevin", "secret", "0")
+      req = {"username" => "kevin", "food" => "ice cream", "calories" => 0, "serving" => "a lot"}
+      resp = {"result" => "Calories must be positive"}
+      post '/profile/create_new_food', req.to_json, session
+      response.body.should == resp.to_json
+    end
+    it "should error if calories is not a number" do
+      cookies[:remember_token] = "0"
+      UserProfile.signup("kevin", "secret", "0")
+      req = {"username" => "kevin", "food" => "ice cream", "calories" => "derp", "serving" => "a lot"}
+      resp = {"result" => "Calories must be an integer"}
+      post '/profile/create_new_food', req.to_json, session
+      response.body.should == resp.to_json
     end
   end
   puts "***end fitplan_func_spec.rb"

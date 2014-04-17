@@ -11,6 +11,7 @@ Fitplan::Application.routes.draw do
   post '/profile/add_food/get_calorie' => 'fitplan#get_calorie'
   post '/profile/add_food/get_calorie/add' => 'fitplan#add_food_submit'
   post '/profile/add_weight' => 'fitplan#add_weight'
+  post '/profile/create_new_food' => 'fitplan#create_new_food'
   post '/profile/delete_food' => 'fitplan#delete_food'
   get '/profile/workout' => 'fitplan#workout'
   post '/profile/workout/get_recommended' => 'fitplan#get_recommended'

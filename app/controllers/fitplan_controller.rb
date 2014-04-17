@@ -129,6 +129,15 @@ class FitplanController < ApplicationController
 		return render(:json=>{"result"=>result}, status: 200)
   end
 
+  def create_new_food
+    @user = getUser(cookies[:remember_token])
+    if @user == nil
+      return
+    end
+    result = UserProfile.addUserFood(@user, params[:food], params[:calories], params[:serving])
+    return render(:json=>{"result"=>result}, status: 200)
+  end
+
   def add_weight
     @user = getUser(cookies[:remember_token])
     if @user == nil
