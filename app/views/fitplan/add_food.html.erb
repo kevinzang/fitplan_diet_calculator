@@ -7,7 +7,7 @@
   <hr />
     <% for i in 0..@results.length-1 %>
       <div id="food-container-<%= i %>" class="foodContainer">
-        <div id="food-title-<%= i %>" class="foodTitle" onclick="getCalories(<%= i %>)"><a href="#" id="food-button"><%= raw @results[i] %></a></div>
+        <div id="food-title-<%= i %>" class="foodTitle" onclick='getCalories(<%= i %>); return false;'><a href="#" id="food-button"><%= raw @results[i] %></a></div>
         <div id="<%= i %>" class="foodData"></div>
       </div>
       <hr />
@@ -33,6 +33,7 @@ function displayCalorie(selected_id, reply) {
         $(food_title).css("text-decoration", "underline");
 		$(element).show();
 	}
+	return false;
 }
 
 function addFood(selected_id) {
