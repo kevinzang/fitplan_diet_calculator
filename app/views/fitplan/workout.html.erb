@@ -64,7 +64,7 @@
 </div>
 
 
-<form action="" method="post" style="width:700px;border-radius:0px;padding-top:10px">
+<form id="add-workout" action="" method="post">
   <div id="workout-activity"><select id="activity" name="activity" style="width:300px;float:right;">
   <% for i in 0..@activities.length-1 %>
     <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
