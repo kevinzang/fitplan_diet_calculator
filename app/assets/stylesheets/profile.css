@@ -1,5 +1,28 @@
-
+/*
 .entry {
-  float: left; 
+  float: left;
   padding: 10px;
 }
+*/
+
+#food-form {
+  float: left;
+  margin-left: 20px;
+}
+
+.entry {
+  text-align: left;
+}
+
+#entry-list {
+  background-color: #F0FFFF;
+  padding: 10px;
+  width: 600px;
+  height: 100%;
+  margin-left: 20px;
+}
+
+.num-servings {
+  float: right;
+}
+
