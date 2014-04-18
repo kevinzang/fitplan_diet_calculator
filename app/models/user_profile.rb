@@ -208,6 +208,12 @@ class UserProfile < ActiveRecord::Base
       rescue
         return "Calories must be an integer"
       end
+      if food.nil? or food == ""
+        return "Food field missing"
+      end
+      if serving.nil? or serving == ""
+        return "Serving field missing"
+      end
       food = food.to_s
       calories = calories.to_i
       serving = serving.to_s
