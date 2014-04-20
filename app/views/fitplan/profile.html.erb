@@ -2,32 +2,37 @@
 <div>
     <p id="add_weight_response"></p>
 </div>
-<h1>Profile Page</h1><br>
 <h1>Welcome, <%= @user %></h1>
-<div id="message"><%= @message %></div>
-<a href="/profile/workout">Workout plan</a>
-<form action="/profile/add_food" method="post">
-  <input id="food" name="food" type="text">
-  <input id="search_food" type="submit" value="Add Food">
-</form>
 <form id="weight_form" action="/profile/add_weight" method="post">
   <input id="weight" name="weight" type="text">
   <input id="submit_weight" type="submit" value="Add Weight">
 </form><br>
-<% for i in 0..@entries.length-1 %>
-  <form id="register" action="" method="POST">
-    <div id="<%= @entries[i].food %>" style="display:inline-block">
-<div class="entry"><%= raw @entries[i].food %></div>
-<div class="entry"><%= @entries[i].calories %> cal</div>
-<div class="entry"><%= @entries[i].date %></div>
-<div class="entry"><%= @entries[i].serving %></div>
-<div class="entry"><%= @entries[i].numservings %></div>
-<input name="delete" class = "delete" type="checkbox">
+<% i = 0 %>
+<% for key in @days %>
+  <div>
+    You have <span id="count-<%= i %>"><%= @entries[key].length %></span>
+    entries for <span id="day-<%= i %>"><%= key %></span>.
+  </div>
+  <% for entry in @entries[key] %>
+  <form action="" method="POST">
+    <div id="<%= entry.food %>" style="display:inline-block">
+      <div class="entry"><%= raw entry.food %></div>
+      <div class="entry"><%= entry.calories %> cal</div>
+      <div class="entry"><%= entry.date %></div>
+      <div class="entry"><%= entry.serving %></div>
+      <div class="entry"><%= entry.numservings %></div>
+      <input name="delete" class = "delete-<%= i %>" type="checkbox">
     </div>
   </form>
-    <br/>
+  <br/>
+  <% end %>
+  <form action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
+    <input id="food-<%= i %>" name="food" type="text">
+    <input type="submit" value="Add Food">
+  </form>
+  <input type="submit" value="Delete selected entries" onclick='delete_entries(<%= i %>, "<%= key %>")'>
+  <% i = i + 1 %>
 <% end %>
-<input id="delete_entries" type="submit" value="Delete selected entries">
 
 <script type="text/javascript">
 window.onpageshow = function(event) {
@@ -36,29 +41,30 @@ window.onpageshow = function(event) {
     location.reload();
   }
 };
-function register(result) {
+function register(result, index) {
 	if (result.result == "SUCCESS") {
 		location.reload();
 	} else {
 		alert(result.result);
 	}
 }
-$('#delete_entries').click(function() {
+
+function delete_entries(index, date) {
   var array = new Array();
-  $('.delete').each(function(i, obj) {
+  $('.delete-'+index).each(function(i, obj) {
     if (obj.checked) {
     	array.push(obj.parentNode.id);
     }
   });
   send_json("/profile/delete_food",
-	{"delete":JSON.stringify(array)},
+	{"delete":JSON.stringify(array), "date":date},
 	function(reply) {
-		return register(reply);
+		return register(reply, index);
 	},
 	show_error
   );
   return false;
-});
+}
 
 $("#weight_form").submit(function(event) {
     event.preventDefault()

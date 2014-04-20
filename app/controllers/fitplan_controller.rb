@@ -81,17 +81,24 @@ class FitplanController < ApplicationController
 			return
 		end
 		@today = Date.today.to_s
-		@entries = UserProfile.getEntriesByDate(@user, @today)
-		if @entries.class == String
-			@message = @entries
-		else
-			@message = "You have #{@entries.length} entries for #{@today}."
+		curr = Date.today
+		count = curr.wday
+		while (curr.wday > 0)
+			curr = curr - 1
+		end
+		@entries = {}
+		@days = []
+		for _ in 0..count
+			@days.insert(0, curr.to_s)
+			@entries[curr.to_s] = UserProfile.getEntriesByDate(@user, curr.to_s)
+			curr = curr + 1
 		end
 	end
 
 	def add_food
 		# respond to initial food search
 		@user = getUser(cookies[:remember_token])
+		@day = params[:day].gsub("_", "-")
 		if @user == nil
 			return
 		end
@@ -120,11 +127,11 @@ class FitplanController < ApplicationController
 		if @user == nil
 			return
 		end
-		if !valid_json?(["num", "num_servings"])
+		if !valid_json?(["num", "num_servings", "date"])
 			return render(:json=>{}, status:500)
 		end
 		entry = FoodSearch.getEntry(params["num"].to_i)
-		result = UserProfile.addFood(@user, entry.food, entry.calories, entry.date,
+		result = UserProfile.addFood(@user, entry.food, entry.calories, params["date"],
 			entry.serving, params["num_servings"])
 		return render(:json=>{"result"=>result}, status: 200)
   end
@@ -156,11 +163,11 @@ class FitplanController < ApplicationController
 		if @user == nil
 			return
 		end
-		if !valid_json?(["delete"])
+		if !valid_json?(["delete", "date"])
 			return render(:json=>{}, status:500)
 		end
 		delete = JSON.parse(params["delete"])
-		result = UserProfile.deleteFood(@user, delete)
+		result = UserProfile.deleteFood(@user, delete, params["date"])
 		return render(:json=>{"result"=>result}, status: 200)
 	end
 

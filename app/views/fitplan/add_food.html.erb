@@ -4,6 +4,7 @@
 
   <div id="food-listings">
   <i>Search results for <%= @food %>:</i>
+  <h1><%= @day %></h1>
   <hr />
     <% for i in 0..@results.length-1 %>
       <div id="food-container-<%= i %>" class="foodContainer">
@@ -38,8 +39,9 @@ function displayCalorie(selected_id, reply) {
 
 function addFood(selected_id) {
 	var servings = document.getElementById("serving"+selected_id).value;
-	send_json("/profile/add_food/get_calorie/add",
-		{num: selected_id, num_servings: servings},
+	var day = "<%= @day %>";
+	send_json("/profile/get_calorie/add",
+		{num: selected_id, num_servings: servings, date: day},
 		function(reply) {
 			if (reply.result == "SUCCESS") {
 				window.location.href = "/profile";
@@ -53,7 +55,7 @@ function addFood(selected_id) {
 }
 
 function getCalories(selected_id) {
-	send_json("/profile/add_food/get_calorie",
+	send_json("/profile/get_calorie",
 		{num: selected_id},
 		function(reply) {
 			return displayCalorie(selected_id, reply);

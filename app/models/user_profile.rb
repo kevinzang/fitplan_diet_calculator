@@ -273,13 +273,13 @@ class UserProfile < ActiveRecord::Base
         return SUCCESS
     end
 
-    def self.deleteFood(username, food_names)
+    def self.deleteFood(username, food_names, date)
         user = UserProfile.find_by(username:username)
         if user == nil
             return ERR_USER_NOT_FOUND
         end
         entries = FoodEntry.where(username:username,
-            food:food_names)
+            food:food_names, date:date)
         for entry in entries
             index = food_names.index(entry.food)
             if index != nil
