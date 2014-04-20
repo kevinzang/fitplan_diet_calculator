@@ -1,5 +1,27 @@
-
-.entry {
-  float: left; 
+.entry-field {
+  float: left;
   padding: 10px;
+  display:inline;
+  background-color:#F0FFFF;
+  margin:0 auto;
+}
+
+.day-entries {
+	cursor:pointer;
+	width:100%;
+	text-align:center;
+}
+
+.entry-wrapper {
+	"width:100%;
+	float:left;
+}
+
+.field-title {
+	font-weight:bold;
+	font-family:"Times New Roman", Times, serif;
+	font-size:20px;
+	border:0;
+	display:inline;
+	float:left;
 }

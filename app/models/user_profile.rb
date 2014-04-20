@@ -455,6 +455,29 @@ class UserProfile < ActiveRecord::Base
         WorkoutEntry.delete_all()
     end
 
+    def self.populate()
+        # create some entries for this week
+        UserProfile.reset()
+        UserProfile.signup("a", "", "")
+        week = []
+        curr = Date.today
+        while curr.wday > 0
+            curr = curr - 1
+        end
+        for _ in 0..6
+            week.insert(0, curr.to_s)
+            curr = curr + 1
+        end
+        for day in week
+            UserProfile.addFood("a", "Irresponsibly long food name for the glorious "+
+                "day that is #{day}", 100, day, "Somewhat long description", "1")
+            UserProfile.addFood("a", "Irresponsibly long food name for the glorious "+
+                "day that is #{day}", 100, day, "Somewhat long description", "2")
+            UserProfile.addFood("a", "Irresponsibly long food name for the glorious "+
+                "day that is #{day}", 100, day, "Somewhat long description", "3")
+        end
+    end
+
     private
     def self.checkProfile(fields, params)
         for key in fields
