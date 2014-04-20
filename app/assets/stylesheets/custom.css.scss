@@ -7,6 +7,7 @@ body {
   text-align: center;
   font-family: Verdana, Geneva, sans-serif;
   background-color: #45C4D3;
+  /*background-image: url('/shoes.JPG');*/
 }
 
 h1 {
@@ -14,8 +15,6 @@ h1 {
   margin: 30px;
   padding: 20px;
   display: inline-block;
-  border-radius: 10px;
-  -moz-border-radius: 10px;
 }
 
 h2, h3, h4, form {
@@ -23,13 +22,6 @@ h2, h3, h4, form {
   margin: 10px;
   padding: 5px;
   display: inline-block;
-  border-radius: 8px;
-  -moz-border-radius: 8px;
-}
-
-div {
-  border-radius: 10px;
-  -moz-border-radius: 10px;
 }
 
 hr {
@@ -37,28 +29,30 @@ hr {
   background-color: #dcdcdc;
 }
 
-/*
-.after-navbar {
-  padding-top: 40px;
-}
-*/
-
 .navbar {
   width: 100%;
+  height: 40px;
   /* position: fixed; */
+  background-color: white;
+  border-radius: 0px;
+}
+
+.navbar-option:hover {
+  background-color: #dcdcdc;
 }
 
 .logo {
-  font-size: 30px;
-  background-color: #F0FFFF;
-  margin: 10px;
+  height: 30px;
+  width: 100px;
   float: left;
-  margin-left: 5%;
-  font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal, "Helvetica Inserat", "Bitstream Vera Sans Bold", "Arial Black", sans serif;
+  margin-left: 75px;
+  padding: 5px;
 }
 
 .container {
   float: right;
+  background-color: white;
+  height: 30px;
 }
 
 a {
@@ -66,7 +60,7 @@ a {
 }
 
 a:hover {
-  color: blue;
+  color: #000000;
 }
 
 .popup {

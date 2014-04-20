@@ -225,6 +225,27 @@ class FitplanController < ApplicationController
     @weightChartData = UserProfile.weightChartData(@user, 3)
   end
 
+  def faq
+    @user = getUser(cookies[:remember_token])
+    if @user == nil
+	  return
+	end
+  end
+
+  def about
+    @user = getUser(cookies[:remember_token])
+	if @user == nil
+		return
+	end
+  end
+
+  def tips
+    @user = getUser(cookies[:remember_token])
+	if @user == nil
+		return
+	end
+  end
+
 	def test
 		if !valid_json?([])
 			return render(:json=>{}, status:500)

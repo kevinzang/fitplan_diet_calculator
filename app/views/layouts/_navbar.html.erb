@@ -1,15 +1,34 @@
 <div class="navbar">
-  <div class="navbar-inner">
-    <div class="logo">fitplan</div>
-    <div class="container">
-      <ul class="nav">
-        <li><a href="/">Home</a></li>
-        <li><a href="/profile_form">Edit Profile</a></li>
-        <li><a href="/profile">Profile</a></li>
-        <li><a href="/profile/workout">Workout Plan</a></li>
-        <li><a href="/progress">Progress</a></li>
-        <li id="signout_submit"><a href="#">Sign out</a></li>
-      </ul>
-    </div>
+  <div class="logo"><img src="/logo.jpg" height=80 width=80 /></div>
+  <div class="container">
+    <ul class="nav">
+    <% if @user != nil %>
+      <% options = Hash['/profile_form' => 'Edit Profile',
+                        '/profile' => 'Profile',
+                        '/profile/workout' => 'Workout Plan',
+                        '/progress' => 'Progress',
+                        '/faq' => 'FAQ',
+                        '/about' => 'About',
+                        '/tips' => 'Workout Tips'] %>
+
+      <% options.each do |key, value|
+        if request.fullpath.split("?")[0] == key %>
+          <li class="navbar-option" style="background-color:#dcdcdc;"><a href=<%= key %>><%= value %></a></li>
+        <% else %>
+          <li class="navbar-option"><a href=<%= key %>><%= value %></a></li>
+        <% end %>
+      <% end %>
+
+<!--
+      <li class="navbar-option"><a href="/profile">Profile</a></li>
+      <li class="navbar-option"><a href="/profile/workout">Workout Plan</a></li>
+      <li class="navbar-option"><a href="/progress">Progress</a></li>
+      <li class="navbar-option"><a href="/faq">FAQ</a></li>
+      <li class="navbar-option"><a href="/about">About</a></li>
+      <li class="navbar-option"><a href="/tips">Workout Tips</a></li>
+-->
+      <li id="signout_submit" class="navbar-option"><a href="#">Sign out</a></li>
+    <% end %>
+    </ul>
   </div>
 </div>
