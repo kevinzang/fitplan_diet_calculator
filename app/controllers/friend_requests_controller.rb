@@ -60,7 +60,6 @@ class FriendRequestsController < ApplicationController
 	end
 
 	def hot_button_create_request()
-		puts "THE WORLD HAS ENDED"
 		username = getUser(cookies[:remember_token])
 		if username == nil
 			return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
@@ -78,9 +77,9 @@ class FriendRequestsController < ApplicationController
 			if user.username != @mainuser.username &&
 				user.desired_weight != nil &&
 				user.weight != nil &&
-				Friendship.find_by(usernameTo:@mainuser, usernameFrom: user) == nil &&
-				FriendRequest.find_by(usernameTo:user, usernameFrom:@mainuser) == nil &&
-				FriendRequest.find_by(usernameTo:@mainuser, usernameFrom:user) == nil	
+				Friendship.find_by(usernameTo:@mainuser.username, usernameFrom:user.username) == nil &&
+				FriendRequest.find_by(usernameTo:user.username, usernameFrom:@mainuser.username) == nil &&
+				FriendRequest.find_by(usernameTo:@mainuser.username, usernameFrom:user.username) == nil	
 				cur_loss = user.weight - user.desired_weight
 				if ((user_weight_loss - cur_loss).abs < tempDif)
 					tempDif = (user_weight_loss - cur_loss).abs
