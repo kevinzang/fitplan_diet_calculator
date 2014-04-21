@@ -44,7 +44,7 @@ describe "Friends Unit Tests" do
 			post '/profile/create_request', req.to_json, session
 			FriendRequest.all.count.should == 0
 		end
-		it "should not friend a nonexistant user" do
+		it "should not friend a nonexistent user" do
 			UserProfile.signup("a", "secret", "0")
 			cookies[:remember_token] = "0"
 			req = {"username"=>"b"}
