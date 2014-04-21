@@ -87,6 +87,9 @@ class FitplanController < ApplicationController
 		else
 			@message = "You have #{@entries.length} entries for #{@today}."
 		end
+        @userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
+        @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
+        @weightChartData = UserProfile.weightChartData(@user, 3)
 	end
 
 	def add_food

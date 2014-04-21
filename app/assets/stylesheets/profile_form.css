@@ -1,3 +1,10 @@
+#input-form {
+  background-color: #F0FFFF;
+  position: absolute;
+  top: 50px;
+  left: 30px;
+}
+
 #message {
   font-style: italic;
 }

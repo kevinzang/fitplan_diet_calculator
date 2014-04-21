@@ -6,12 +6,34 @@
 
 #reports {
   background-color: #F0FFFF;
-  float: left;
-  margin-left: 25px;
   padding: 20px;
+  position: absolute;
+  top: 80px;
+  left: 50px;
 }
 
-#workout-activity, #workout-duration, #add_workout_entry {
+#workout-activity, #workout-duration {
   float: left;
   margin-left: 30px;
+}
+
+#add_workout_entry {
+  float: right;
+}
+
+#add-workout {
+  background-color: #F0FFFF;
+  text-align: left;
+  position: absolute;
+  width: 800px;
+  top: 70px;
+  right: 50px;
+}
+
+#intake, #burned, #net_intake, #target, #rec_target, #normal, #rec_normal {
+  float: right;
+}
+
+#rec_activity {
+  width: 300px;
 }

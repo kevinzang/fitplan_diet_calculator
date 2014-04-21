@@ -3,10 +3,8 @@
   <div class="container">
     <ul class="nav">
     <% if @user != nil %>
-      <% options = Hash['/profile_form' => 'Edit Profile',
-                        '/profile' => 'Profile',
+      <% options = Hash['/profile' => 'Profile',
                         '/profile/workout' => 'Workout Plan',
-                        '/progress' => 'Progress',
                         '/faq' => 'FAQ',
                         '/about' => 'About',
                         '/tips' => 'Workout Tips'] %>
@@ -19,14 +17,6 @@
         <% end %>
       <% end %>
 
-<!--
-      <li class="navbar-option"><a href="/profile">Profile</a></li>
-      <li class="navbar-option"><a href="/profile/workout">Workout Plan</a></li>
-      <li class="navbar-option"><a href="/progress">Progress</a></li>
-      <li class="navbar-option"><a href="/faq">FAQ</a></li>
-      <li class="navbar-option"><a href="/about">About</a></li>
-      <li class="navbar-option"><a href="/tips">Workout Tips</a></li>
--->
       <li id="signout_submit" class="navbar-option"><a href="#">Sign out</a></li>
     <% end %>
     </ul>

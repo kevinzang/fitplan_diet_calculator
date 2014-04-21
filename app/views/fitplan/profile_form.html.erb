@@ -1,7 +1,8 @@
-<center>
+<div class="overall">
+
   <%= render '/layouts/navbar' %>
 
-  <div id="inputForm" align="left">
+  <div id="input-form">
     <form id="register" action="" method="POST">
       <div id="message"></div>
       <hr />
@@ -31,10 +32,9 @@
                                                                                      "Lose 2 lbs per week" => -2.0}, :selected => @defaults["weight_change_per_week_goal"])) %><br>
       <hr />
       <input id="profile_submit" type="submit" value="Submit Profile">
-
     </form>
   </div>
-</center>
+</div>
 
 <script type="text/javascript">
     $(document).ready(setMessage);

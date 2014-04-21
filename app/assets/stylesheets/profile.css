@@ -1,28 +1,59 @@
-/*
-.entry {
-  float: left;
+#profile-sidebar {
+  background-color: #F0FFFF;
+  width: 300px;
   padding: 10px;
+  text-align: left;
+  position: absolute;
+  top: 70px;
+  left: 30px;
 }
-*/
 
-#food-form {
+#profile-name {
   float: left;
-  margin-left: 20px;
+}
+
+#profile-edit, .profile-stat {
+  float: right;
+}
+
+#charts-and-graphs {
+  width: 900px;
+  position: absolute;
+  top: 70px;
+  right: 30px;
+}
+
+#weight-chart {
+  float: left;
+  width: 400px;
+}
+
+#zach-community-stuff {
+  float: right;
+  width: 400px;
+}
+
+#weight_form {
+  float: right;
+}
+
+#food-entries {
+  background-color: #F0FFFF;
+  padding: 10px;
+  width: 850px;
+  position: absolute;
+  top: 300px;
+  right: 50px;
 }
 
 .entry {
   text-align: left;
 }
 
-#entry-list {
-  background-color: #F0FFFF;
-  padding: 10px;
-  width: 600px;
-  height: 100%;
-  margin-left: 20px;
+#delete_entries {
+  float: right;
 }
 
 .num-servings {
   float: right;
 }
-

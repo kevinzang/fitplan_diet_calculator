@@ -1,38 +1,69 @@
-<%= render '/layouts/navbar' %>
+<div class="overall">
 
-<div><p id="add_weight_response"></p></div>
+  <%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
 
-<h1>Welcome, <%= @user %></h1><br>
+  <%= render '/layouts/navbar' %>
 
-<form id="food-form" action="/profile/add_food" method="post">
-  What have you eaten today? Add it here!<br>
-  <input id="food" name="food" type="text" style="width:510px;">
-  <input id="search_food" type="submit" value="Add Food">
-</form><br>
+  <div id="profile-sidebar">
+    <div id="profile-name"><%= @user %>'s Profile</div>
+    <div id="profile-edit"><a href="/profile_form">Edit Profile</a></div>
+    <hr />
+    <div id="profile-pic">
+    </div>
+    <hr />
+    Height: <div class="profile-stat"><%= UserProfile.find_by_username(@user).height %> inches</div><br>
+    Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
+    Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
+    Activity Level: <div class="profile-stat"><%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%></div><br>
+    Weekly goal: <div class="profile-stat"><% change = UserProfile.find_by_username(@user).weight_change_per_week_goal %>
+                 <% if change == nil %>
+                 <% elsif change == 0.0 %>
+                   Maintain current weight
+                 <% else %>
+                   Lose <%= change.abs %> lbs per week
+                 <% end %></div>
 
-<form id="weight_form" action="/profile/add_weight" method="post">
-  <input id="weight" name="weight" type="text">
-  <input id="submit_weight" type="submit" value="Add Weight">
-</form><br>
 
-<div id="entry-list">
-  <div id="message"><%= @message %></div>
-  <hr />
-  <% for i in 0..@entries.length-1 %>
-      <div id="<%= @entries[i].food %>" class="entry">
-        <u><%= raw @entries[i].food %></u><br>
-        <i>Serving(s): <%= @entries[i].numservings %></i>&nbsp;&nbsp;&nbsp;&nbsp;
-        <%= @entries[i].calories %> cal/serving&nbsp;&nbsp;&nbsp;&nbsp;
-        <!--<%= @entries[i].date %>-->
-        <%= @entries[i].serving %>&nbsp;&nbsp;&nbsp;&nbsp;
-        <input name="delete" class = "delete" type="checkbox" id="check-<%= i %>" style="float:right;">
-      <hr />
-      </div>
-  <% end %>
+  </div>
 
-  <input id="delete_entries" type="submit" value="Delete selected entries">
+  <div><p id="add_weight_response"></p></div>
+
+  <div id="charts-and-graphs">
+    <div id="weight-chart">
+      <b>Weight Progress</b>
+      <form id="weight_form" action="/profile/add_weight" method="post">
+        <input id="weight" name="weight" type="text">
+        <input id="submit_weight" type="submit" value="Add Weight">
+      </form><br><br>
+      <%= line_chart @weightChartData, discrete: true, height: '150px', name: 'weight_chart' %>
+    </div>
+    <div id="zach-community-stuff"></div>
+  </div>
+
+  <div id="food-entries">
+    <div id="message"><%= @message %></div>
+    <hr />
+    <form id="food-form" action="/profile/add_food" method="post">
+      <input id="food" name="food" type="text">
+      <input id="search_food" type="submit" value="Add Food">
+    </form>
+    <hr />
+    <% for i in 0..@entries.length-1 %>
+        <div id="<%= @entries[i].food %>" class="entry">
+          <u><%= raw @entries[i].food %></u><br>
+          <i>Serving(s): <%= @entries[i].numservings %></i>&nbsp;&nbsp;&nbsp;&nbsp;
+          <%= @entries[i].calories %> cal/serving&nbsp;&nbsp;&nbsp;&nbsp;
+          <!--<%= @entries[i].date %>-->
+          <%= @entries[i].serving %>&nbsp;&nbsp;&nbsp;&nbsp;
+          <input name="delete" class = "delete" type="checkbox" id="check-<%= i %>" style="float:right;">
+        <hr />
+        </div>
+    <% end %>
+
+    <input id="delete_entries" type="submit" value="Delete selected entries">
+  </div>
+
 </div>
-
 
 <script type="text/javascript">
 window.onpageshow = function(event) {
@@ -81,3 +112,4 @@ $("#weight_form").submit(function(event) {
     })
 });
 </script>
+
