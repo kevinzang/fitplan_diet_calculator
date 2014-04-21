@@ -98,9 +98,16 @@
 </div>
 
 <div id="gauge_container">
-  <p>Your gauge level is <%= @gauge_level %>.</p>
+  <% if @gauge_level == 30 %>
+    <p>Congratulations Swoldier. You have been with us for <%= @gauge_level %> days!</p>
+  <% else if @gauge_level == 0%>
+    <p>Get started with Fitplan!</p>
+  <% else %>
+    <p>You've been with us for <%= @gauge_level +1%> days.</p>
+    <% end %>
+  <% end %>
   <div id="gauge_helper">
-    <img src="/redx.jpg" width="30px" height ="150px" >
+    <img src="/habit_gauge_<%=@gauge_level%>.jpg" width="30px" height ="150px" >
 <!--    <div id="gauge_box"></div>-->
   </div>
 </div>
