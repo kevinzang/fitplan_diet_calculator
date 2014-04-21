@@ -113,12 +113,14 @@
 }
 
 #gauge_box {
+  background-color: #FF0000;
   border: 1px solid black;
   border-radius: 10px;
-  bottom: 0;
-  color: #FF0000;
+  bottom: 161px;
+  left: 975px;
   height: 70px;
   margin: auto;
+  position: absolute;
   width: 30px;
 }
 
