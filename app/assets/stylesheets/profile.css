@@ -100,15 +100,14 @@
 }
 
 #friend_request {
-  float:left;
-  width:630px;
-  margin:5px;
+  width: 76%;
+  margin: 1%;
 }
 
 #submit_request {
-  float:right;
-  margin:6px;
   height: 30px;
+  width: 16%;
+  margin: 1%;
 }
 
 #weight_form {
@@ -117,7 +116,8 @@
 
 #weight-chart {
   float: left;
-  width: 31%;
+  /*width: 31%;*/
+  width: 40%;
   background-color: #F0FFFF;
   padding: 1%;
   margin: 1%;
@@ -133,7 +133,7 @@
 
 #gauge_container {
   background-color: #F0FFFF;
-  width: 34%;
+  width: 25%;
   height: 204px;
   padding-top: 10px;
   margin-top: 1%;

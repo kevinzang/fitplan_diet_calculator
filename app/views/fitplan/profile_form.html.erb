@@ -12,12 +12,16 @@
 
 <div id="input-form">
   <div id="message"></div>
-  <%= image_tag(UserProfile.find_by(:username => @user).profile_pic.url, :width => '200px') %><br>
-  <button type="button" id="edit_pic">Edit Picture</button><br>
+  <hr />
+  <%= image_tag(UserProfile.find_by(:username => @user).profile_pic.url, :width => '200px') %><br><br>
+  <button type="button" class="specialButton" id="edit_pic">Edit Picture</button><br>
   <div id="upload_pic_div" style="display:none">
     <%= form_for(:pic_form, :url => '/profile_form/upload_pic', :html => {:id => "upload_pic_form"}, :multipart => true) do |form| %>
-        <%= form.file_field :profile_pic %>
-        <%= form.submit 'Upload', :id => 'upload_pic_submit'%>
+        <div id="browse-container">
+          <%= form.file_field :profile_pic %>
+          <input id="browse" class="specialButton" type="submit" value="Browse">
+        </div>
+        <%= form.submit 'Upload', :id => 'upload_pic_submit', :class => 'specialButton' %>
     <% end %>
   </div>
   <form id="register" action="" method="POST">
@@ -114,5 +118,8 @@
 
     $('#edit_pic').click(function() {
         $("#upload_pic_div").show();
+        $("#edit_pic").hide();
+        $("#pic_form_profile_pic").css("opacity", "0");
     });
+
 </script>
