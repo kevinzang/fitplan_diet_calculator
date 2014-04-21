@@ -40,15 +40,20 @@
   </div>
   
   <div id="gauge_container">
-    <div id="gauge"></div>
-    <div id="gauge_transbox"></div> 
+    <p>You have used Fitplan for 
+      <% l = @days.length - 1 %> 
+      <%= l %> day(s)</p>
+    <div id="gauge">
+      fitplan
+    </div>
+    <!--<div id="gauge_transbox"></div> --> 
   </div>
 
   <div id="all-entries-container" style="width:800px; margin:0 auto;">
   <% i = 0 %>
   <% for key in @days %>
     <div class="day-entries" onclick="displayMenu(<%= i %>)"><p>
-      You have <span id="count-<%= i %>"><%= @entries[key].length %></span>
+      You have <span id="count-<%= i %>"><%= @entries[key].length%></span>
       entries for <span id="day-<%= i %>"><%= key %></span>.</p>
     </div>
     <div class="entry<%= i %>" style="width:100%;">
@@ -99,6 +104,10 @@ window.onpageshow = function(event) {
 $(document).ready(function() {
   displayMenu(0);
 });
+
+var opacityVal = 0.3;
+document.getElementById('gauge').style.opacity = opacityVal;
+
 function register(result, index) {
 	if (result.result == "SUCCESS") {
 		location.reload();
@@ -149,5 +158,6 @@ function displayMenu(day) {
     }
   }
 }
+
 </script>
 

@@ -1,38 +1,98 @@
-<div class="navbar">
-  <div class="navbar-inner">
-    <div class="container">
-      <ul class="nav">
-        <li><a href="/">Home</a></li>
-        <li><a href="/profile_form">Edit Profile</a></li>
-        <li class="active"><a href="/profile">Profile</a></li>
-        <li><a href="/profile/workout">Workout Plan</a></li>
-        <li id="signout_submit"><a href="/">Sign out</a></li>
-      </ul>
+<div class="overall">
+  <%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
+  <%= render '/layouts/navbar' %>
+
+  <div id="profile-sidebar">
+    <div id="profile-name"><%= @user %>'s Profile</div>
+    <div id="profile-edit"><a href="/profile_form">Edit Profile</a></div>
+    <hr />
+    <div id="profile-pic">
     </div>
+    <hr />
+    Height: <div class="profile-stat"><%= UserProfile.find_by_username(@user).height %> inches</div><br>
+    Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
+    Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
+    Activity Level: <div class="profile-stat"><%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%></div><br>
+    Weekly goal: <div class="profile-stat"><% change = UserProfile.find_by_username(@user).weight_change_per_week_goal %>
+                 <% if change == nil %>
+                 <% elsif change == 0.0 %>
+                   Maintain current weight
+                 <% else %>
+                   Lose <%= change.abs %> lbs per week
+                 <% end %></div>
   </div>
-</div>
-<h1>Profile Page</h1><br>
-<h1>Welcome, <%= @user %></h1>
-<div id="message"><%= @message %></div>
-<a href="/profile/workout">Workout plan</a>
-<form action="/profile/add_food" method="post">
-  <input id="food" name="food" type="text">
-  <input id="search_food" type="submit" value="Add Food">
-</form>
-<% for i in 0..@entries.length-1 %>
-  <form id="register" action="" method="POST">
-    <div id="<%= @entries[i].food %>" style="display:inline-block">
-<div class="entry"><%= raw @entries[i].food %></div>
-<div class="entry"><%= @entries[i].calories %> cal</div>
-<div class="entry"><%= @entries[i].date %></div>
-<div class="entry"><%= @entries[i].serving %></div>
-<div class="entry"><%= @entries[i].numservings %></div>
-<input name="delete" class = "delete" type="checkbox">
+
+
+  <div>
+      <p id="add_weight_response"></p>
+  </div>
+
+  <div id="charts-and-graphs">
+    <div id="weight-chart">
+      <b>Weight Progress</b>
+      <form id="weight_form" action="/profile/add_weight" method="post">
+        <input id="weight" name="weight" type="text">
+        <input id="submit_weight" type="submit" value="Add Weight">
+      </form><br><br>
+      <%= line_chart @weightChartData, discrete: true, height: '150px', name: 'weight_chart' %>
     </div>
-    <br/>
-  </form>
-<% end %>
-<input id="delete_entries" type="submit" value="Delete selected entries">
+    <div id="zach-community-stuff"></div>
+  </div>
+  
+  <div id="gauge_container">
+    <p>You have used Fitplan for 
+      <% l = @days.length - 1 %> 
+      <%= l %> day(s)</p>
+    <div id="gauge">
+      fitplan
+    </div>
+    <!--<div id="gauge_transbox"></div> --> 
+  </div>
+
+  <div id="all-entries-container" style="width:800px; margin:0 auto;">
+  <% i = 0 %>
+  <% for key in @days %>
+    <div class="day-entries" onclick="displayMenu(<%= i %>)"><p>
+      You have <span id="count-<%= i %>"><%= @entries[key].length%></span>
+      entries for <span id="day-<%= i %>"><%= key %></span>.</p>
+    </div>
+    <div class="entry<%= i %>" style="width:100%;">
+      <div class="entry-wrapper">
+        <div class="field-title" style="width:320px;">Food</div>
+        <div class="field-title" style="width:120px;">Calories</div>
+        <div class="field-title" style="width:220px;">Serving Size</div>
+        <div class="field-title" style="width:80px;">Servings</div>
+      </div>
+      <% for entry in @entries[key] %>
+        <div class="entry-wrapper">
+          <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
+          <div class="entry-field" style="width:100px;"><%= entry.calories %></div>
+          <div class="entry-field" style="width:200px;"><%= entry.serving.gsub("Serving Size ", "") %></div>
+          <div class="entry-field" style="width:60px;"><%= entry.numservings %></div>
+          <div class="entry-field" style="width:40px;" id="<%= entry.food %>">
+            <input name="delete" class = "delete-<%= i %>" type="checkbox">
+          </div>
+        </div>
+        <br/>
+      <% end %>
+      <form class="food-entry-form" action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
+        <input id="food-<%= i %>" class="food-entry-input" name="food" type="text" style="margin-left:35px;">
+        <input class="food-entry-input" type="submit" value="Add Food" style="margin-left:10px;">
+      </form>
+      <div class="food-entry-form">
+        <input class="food-entry-input" type="submit" value="Delete selected entries" style="margin-left:110px;" onclick='delete_entries(<%= i %>, "<%= key %>")'>
+      </div>
+      <div class="entry-field" style="width:780px; text-align:center;">
+        <p class="report">Intake: <%= @intake[key] %> cal</p>
+        <p class="report"> Burned: <%= @burned[key] %> cal</p>
+        <p class="report">Net Intake: <%= @intake[key] - @burned[key] %> cal</p>
+      </div>
+    </div>
+    <% i = i + 1 %>
+  <% end %>
+  </div>
+
+</div>
 
 <script type="text/javascript">
 window.onpageshow = function(event) {
@@ -41,27 +101,63 @@ window.onpageshow = function(event) {
     location.reload();
   }
 };
-function register(result) {
+$(document).ready(function() {
+  displayMenu(0);
+});
+
+var opacityVal = 0.4;
+document.getElementById('gauge').style.opacity = opacityVal;
+
+function register(result, index) {
 	if (result.result == "SUCCESS") {
 		location.reload();
 	} else {
 		alert(result.result);
 	}
 }
-$('#delete_entries').click(function() {
+
+function delete_entries(index, date) {
   var array = new Array();
-  $('.delete').each(function(i, obj) {
+  $('.delete-'+index).each(function(i, obj) {
     if (obj.checked) {
     	array.push(obj.parentNode.id);
+        obj.checked = false;
     }
   });
   send_json("/profile/delete_food",
-	{"delete":JSON.stringify(array)},
+	{"delete":JSON.stringify(array), "date":date},
 	function(reply) {
-		return register(reply);
+		return register(reply, index);
 	},
 	show_error
   );
   return false;
+}
+
+$("#weight_form").submit(function(event) {
+    event.preventDefault()
+    $.ajax({
+        url : "/profile/add_weight",
+        type : "POST",
+        data: $("#weight_form").serializeArray(),
+        success: function(responseData) {
+            document.getElementById('add_weight_response').innerHTML = responseData.message;
+        },
+        error: function(responseData) {
+            document.getElementById('add_weight_response').innerHTML = responseData.message;
+        }
+    })
 });
+
+function displayMenu(day) {
+  for (var i=0; i<7; i++) {
+    if (i != day) {
+      $(".entry"+i).slideUp();
+    } else {
+      $(".entry"+i).slideDown();
+    }
+  }
+}
+
 </script>
+
