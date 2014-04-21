@@ -60,8 +60,9 @@ class UserProfile < ActiveRecord::Base
 		if !UserProfile.validPassword?(password)
 			return ERR_BAD_PASSWORD
 		end
-		new_user = UserProfile.new(username:username, password:password,
-			remember_token:UserProfile.hash(token))
+		encrypted_password = Digest::SHA1.hexdigest(password)
+        new_user = UserProfile.new(username:username, password:encrypted_password,
+            remember_token:UserProfile.hash(token))
 		new_user.activity_level = 0
 		new_user.weight_change_per_week_goal = 0.0
 		new_user.gauge_level = 0
@@ -72,10 +73,12 @@ class UserProfile < ActiveRecord::Base
 
 	def self.login(username, password, token)
 		reg_user = UserProfile.find_by(username:username)
+        encrypted_password = Digest::SHA1.hexdigest(password)
+
 		if reg_user == nil
 			return ERR_BAD_CREDENTIALS
 		end
-		if reg_user.password != password
+		if reg_user.password != encrypted_password
 			return ERR_BAD_CREDENTIALS
 		end
 		reg_user.remember_token = UserProfile.hash(token)

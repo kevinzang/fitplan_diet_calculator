@@ -10,82 +10,64 @@
   </div><br><br>
   <hr />
 
-  <i><b>Profile details</b></i><br><br>
-  Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
-  Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
-  Activity Level:
-  <div class="profile-stat">
-    <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%>
-  </div><br>
+  <i><b>Profile details</b></i><div style="float:right;cursor:pointer" onclick="displayElement('#profile-details')">+</div>
+  <div id="profile-details">
+    <br>
+    Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
+    Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
+    Activity Level:
+    <div class="profile-stat">
+      <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%>
+    </div><br>
 
-  Weekly goal:
-  <div class="profile-stat"><% change = UserProfile.find_by_username(@user).weight_change_per_week_goal %>
-    <% if change == nil %>
-    <% elsif change == 0.0 %>
-      Maintain current weight
-    <% else %>
-      Lose <%= change.abs %> lbs per week
+    Weekly goal:
+    <div class="profile-stat"><% change = UserProfile.find_by_username(@user).weight_change_per_week_goal %>
+      <% if change == nil %>
+      <% elsif change == 0.0 %>
+        Maintain current weight
+      <% else %>
+        Lose <%= change.abs %> lbs per week
+      <% end %>
+    </div>
+  </div>
+
+  <hr />
+
+  <div style="float:left"><i><b>Requests (<%= @pending_in.length %>)</b></i></div>
+  <div style="float:right;cursor:pointer" onclick="displayElement('#requests')">+</div><br>
+
+  <div id="requests">
+    <br>
+    <div class="request-title"><u>Received</u></div>
+    <div class="request-title"><u>Sent</u></div>
+
+    <div id="received-requests">
+      <% for friend in @pending_in %>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
+      <% end %>
+    </div>
+
+
+    <div id="sent-requests">
+      <% for friend in @pending_out %>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameTo %></div>
+      <% end %>
+    </div>
+
+  <br><br><br><br><br>
+  </div>
+
+  <hr />
+
+  <div style="float:left"><i><b>Friends (<%= @accepted.length %>)</b></i></div><br><br>
+
+  <div class="friends-display" id="accepted-friends">
+    <% for friend in @accepted %>
+      <div class="image" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
     <% end %>
   </div>
-  <hr />
-
-  <div style="float:left"><i><b>Received Requests</b></i><br><br></div>
-  <div style="float:right"><%= @pending_in.length %> request(s)</div><br><br>
-
-  <% if @pending_in.length > 4 %>
-    <div class="friends-display" id="received-requests">
-      <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
-      <% end %>
-    </div>
-  <% elsif @pending_in.length > 0 %>
-    <div class="single-row-friends-display" id="received-requests">
-      <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
-      <% end %>
-    </div>
-  <% end %>
 
   <hr />
-
-  <div style="float:left"><i><b>Friends</b></i><br><br></div>
-  <div style="float:right"><%= @accepted.length %> friend(s)</div><br><br>
-
-  <% if @accepted.length > 4 %>
-    <div class="friends-display" id="accepted-friends">
-      <% for friend in @accepted %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
-      <% end %>
-    </div>
-  <% elsif @accepted.length > 0 %>
-    <div class="single-row-friends-display" id="accepted-friends">
-      <% for friend in @accepted %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
-      <% end %>
-    </div>
-  <% end %>
-
-  <hr />
-
-  <div style="float:left"><i><b>Sent Requests</b></i><br><br></div>
-  <div style="float:right"><%= @pending_out.length %> request(s)</div><br><br>
-
-  <% if @pending_out.length > 4 %>
-    <div class="friends-display" id="sent-requests">
-      <% for friend in @pending_out %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
-      <% end %>
-    </div>
-  <% elsif @pending_out.length > 0 %>
-    <div class="single-row-friends-display" id="sent-requests">
-      <% for friend in @pending_out %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
-      <% end %>
-    </div>
-  <% end %>
-
-  <hr />
-
 
   <div id="friend-requests">
 
@@ -139,11 +121,6 @@
 
   <% i = 0 %>
   <% for key in @days %>
-  <!--
-    <div class="day-entries" onclick="displayMenu(<%= i %>)">
-      <span id="day-<%= i %>"><%= key %></span>: <span id="count-<%= i %>"><%= @entries[key].length%></span> entries
-    </div>
-  -->
 
     <div class="entry<%= i %>" style="width:100%;">
       <div class="entry-wrapper">
@@ -199,6 +176,8 @@ window.onpageshow = function(event) {
 };
 $(document).ready(function() {
   setMenu();
+  $("#profile-details").hide();
+  $("#requests").hide();
 });
 
 var opacityVal = 0.3;
@@ -277,6 +256,22 @@ function accept_request(friend) {
   return false;
 }
 
+function delete_friend(friend) {
+  alert("deleting friend");
+  send_json("/profile/delete_friend",
+    {"friend":friend},
+  function(reply) {
+    if (reply.result != "SUCCESS") {
+      alert(reply.result);
+    } else {
+      location.reload(false);
+    }
+  },
+  show_error
+  );
+  return false;
+}
+
 function find_friend() {
   alert("find friend");
   send_json("/profile/find_friend",
@@ -297,16 +292,6 @@ function setMenu() {
   $(document.getElementById("day-button-0")).css("border-bottom", "thin solid #505050");
 }
 
-function displayMenu(day) {
-  for (var i=0; i<7; i++) {
-    if (i != day) {
-      $(".entry"+i).slideUp();
-    } else {
-      $(".entry"+i).slideDown();
-    }
-  }
-}
-
 function displayDay(day) {
   for (var i=0; i<7; i++) {
     if (i != day) {
@@ -320,6 +305,13 @@ function displayDay(day) {
 
 }
 
+function displayElement(elementId) {
+  if ($(elementId).is(':visible')) {
+    $(elementId).hide();
+  } else {
+    $(elementId).show();
+  }
+}
+
 
 </script>
-
