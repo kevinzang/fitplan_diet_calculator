@@ -127,18 +127,17 @@
 
 #gauge_helper {
 /*  vertical-align: middle;*/
+  background-color: #FFFFFF;
   height: 150px;
+  opacity: 1;
 }
 
 #gauge_box {
   background-color: #FF0000;
   border: 1px solid black;
   border-radius: 10px;
-  bottom: 161px;
-  left: 975px;
-  height: 70px;
+  height: 150px;
   margin: auto;
-  position: absolute;
   width: 30px;
 }
 
