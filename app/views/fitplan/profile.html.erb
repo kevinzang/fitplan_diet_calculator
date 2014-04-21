@@ -118,10 +118,9 @@
 
 <div id="gauge_container">
   <p>Your gauge level is <%= @gauge_level %>.</p>
-  <div id="gauge">
-    fitplan
+  <div id="gauge_helper">
+    <div id="gauge_box"></div>
   </div>
-  <!--<div id="gauge_transbox"></div>-->
 </div>
 
 <div id="all-entries-container">
@@ -203,7 +202,7 @@ $(document).ready(function() {
 });
 
 var opacityVal = 0.3;
-document.getElementById('gauge').style.opacity = opacityVal;
+document.getElementById('gauge_text').style.opacity = opacityVal;
 
 function register(result, index) {
 	if (result.result == "SUCCESS") {

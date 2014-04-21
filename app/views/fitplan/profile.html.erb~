@@ -1,96 +1,190 @@
-<div class="overall">
-  <%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
-  <%= render '/layouts/navbar' %>
+<%= javascript_include_tag "//www.google.com/jsapi", "chartkick" %>
+<%= render '/layouts/navbar' %>
 
-  <div id="profile-sidebar">
-    <div id="profile-name"><%= @user %>'s Profile</div>
-    <div id="profile-edit"><a href="/profile_form">Edit Profile</a></div>
-    <hr />
-    <div id="profile-pic">
-    </div>
-    <hr />
-    Height: <div class="profile-stat"><%= UserProfile.find_by_username(@user).height %> inches</div><br>
-    Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
-    Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
-    Activity Level: <div class="profile-stat"><%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%></div><br>
-    Weekly goal: <div class="profile-stat"><% change = UserProfile.find_by_username(@user).weight_change_per_week_goal %>
-                 <% if change == nil %>
-                 <% elsif change == 0.0 %>
-                   Maintain current weight
-                 <% else %>
-                   Lose <%= change.abs %> lbs per week
-                 <% end %></div>
-  </div>
-
+<div id="profile-sidebar">
 
   <div>
-      <p id="add_weight_response"></p>
+    <div id="profile-pic" style="float:left"><img src="/anon_user.jpg" height="30" width="60"></div>
+    <div style="float:right"><i><b><%= @user %>'s Profile</b></i></div><br>
+    <a href="/profile_form" style="float:right">Edit Profile</a>
+  </div><br><br>
+  <hr />
+
+  <i><b>Profile details</b></i><br><br>
+  Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
+  Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
+  Activity Level:
+  <div class="profile-stat">
+    <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%>
+  </div><br>
+
+  Weekly goal:
+  <div class="profile-stat"><% change = UserProfile.find_by_username(@user).weight_change_per_week_goal %>
+    <% if change == nil %>
+    <% elsif change == 0.0 %>
+      Maintain current weight
+    <% else %>
+      Lose <%= change.abs %> lbs per week
+    <% end %>
+  </div>
+  <hr />
+
+  <div style="float:left"><i><b>Received Requests</b></i><br><br></div>
+  <div style="float:right"><%= @pending_in.length %> request(s)</div><br><br>
+
+  <% if @pending_in.length > 4 %>
+    <div class="friends-display" id="received-requests">
+      <% for friend in @pending_in %>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% end %>
+    </div>
+  <% elsif @pending_in.length > 0 %>
+    <div class="single-row-friends-display" id="received-requests">
+      <% for friend in @pending_in %>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <hr />
+
+  <div style="float:left"><i><b>Friends</b></i><br><br></div>
+  <div style="float:right"><%= @accepted.length %> friend(s)</div><br><br>
+
+  <% if @accepted.length > 4 %>
+    <div class="friends-display" id="accepted-friends">
+      <% for friend in @accepted %>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% end %>
+    </div>
+  <% elsif @accepted.length > 0 %>
+    <div class="single-row-friends-display" id="accepted-friends">
+      <% for friend in @accepted %>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <hr />
+
+  <div style="float:left"><i><b>Sent Requests</b></i><br><br></div>
+  <div style="float:right"><%= @pending_out.length %> request(s)</div><br><br>
+
+  <% if @pending_out.length > 4 %>
+    <div class="friends-display" id="sent-requests">
+      <% for friend in @pending_out %>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
+      <% end %>
+    </div>
+  <% elsif @pending_out.length > 0 %>
+    <div class="single-row-friends-display" id="sent-requests">
+      <% for friend in @pending_out %>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <hr />
+
+
+  <div id="friend-requests">
+
+    <i><b>Send a Friend Request</b></i><br><br>
+    <form id="friend_request_form" action="" method="post">
+      <input id="friend_request" name="username" type="text" style="float:left;width:230px;" placeholder="Enter a friend's name">
+      <input id="submit_request" type="submit" value="Send" style="float:right"><br>
+    </form>
+
   </div>
 
-  <div id="charts-and-graphs">
-    <div id="weight-chart">
-      <b>Weight Progress</b>
-      <form id="weight_form" action="/profile/add_weight" method="post">
-        <input id="weight" name="weight" type="text">
-        <input id="submit_weight" type="submit" value="Add Weight">
-      </form><br><br>
-      <%= line_chart @weightChartData, discrete: true, height: '150px', name: 'weight_chart' %>
-    </div>
-    <div id="zach-community-stuff"></div>
-  </div>
-  
-  <div id="gauge_container">
-    <p>You have used Fitplan for 
-      <% l = @days.length - 1 %> 
-      <%= l %> day(s)</p>
-    <div id="gauge">
-      fitplan
-    </div>
-    <!--<div id="gauge_transbox"></div> --> 
+  <hr />
+
+  <div id="friend-with-same-goal">
+    <i><b>Find Friend With Same Goal</b></i><br><br>
+    <!-- change this route and stuff -->
+    <input id="submit_request" type="submit" value="Find New Friend" style="width:200px;margin-left:50px" onclick="find_friend()">
   </div>
 
-  <div id="all-entries-container" style="width:800px; margin:0 auto;">
+</div>
+
+<div id="weight-chart">
+  <b>Weight Progress</b>
+  <form id="weight_form" action="/profile/add_weight" method="post">
+    <input id="weight" name="weight" type="text" placeholder="weight" style="float:left">
+    <input id="submit_weight" type="submit" value="Add" style="height:30px;float:left;margin-left:5px;">
+  </form><br><br>
+  <%= line_chart @weightChartData, discrete: true, height: '150px', name: 'weight_chart' %>
+</div>
+
+<div id="gauge_container">
+  <p>Your gauge level is <%= @gauge_level %>.</p>
+  <div id="gauge_box"></div>
+</div>
+
+<div id="all-entries-container">
+
+  <% i = 0 %>
+  <ul id="days-nav">
+    <% for key in @days %>
+      <li class="day-nav-button" id="day-button-<%= i %>" onclick="displayDay(<%= i %>)">
+        <span id="day-<%= i %>"><%= key.split('-')[1] %></span>/<span id="day-<%= i %>"><%= key.split('-')[2] %></span> (<span id="count-<%= i %>"><%= @entries[key].length%></span>)
+      </li>
+      <% i = i + 1 %>
+    <% end %>
+  </ul>
+
+  <br>
+
   <% i = 0 %>
   <% for key in @days %>
-    <div class="day-entries" onclick="displayMenu(<%= i %>)"><p>
-      You have <span id="count-<%= i %>"><%= @entries[key].length%></span>
-      entries for <span id="day-<%= i %>"><%= key %></span>.</p>
+  <!--
+    <div class="day-entries" onclick="displayMenu(<%= i %>)">
+      <span id="day-<%= i %>"><%= key %></span>: <span id="count-<%= i %>"><%= @entries[key].length%></span> entries
     </div>
+  -->
+
     <div class="entry<%= i %>" style="width:100%;">
       <div class="entry-wrapper">
         <div class="field-title" style="width:320px;">Food</div>
-        <div class="field-title" style="width:120px;">Calories</div>
+        <div class="field-title" style="width:100px;">Calories</div>
         <div class="field-title" style="width:220px;">Serving Size</div>
         <div class="field-title" style="width:80px;">Servings</div>
       </div>
+
+      <div class="entry-wrapper">
       <% for entry in @entries[key] %>
         <div class="entry-wrapper">
           <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
-          <div class="entry-field" style="width:100px;"><%= entry.calories %></div>
+          <div class="entry-field" style="width:80px;"><%= entry.calories %></div>
           <div class="entry-field" style="width:200px;"><%= entry.serving.gsub("Serving Size ", "") %></div>
           <div class="entry-field" style="width:60px;"><%= entry.numservings %></div>
           <div class="entry-field" style="width:40px;" id="<%= entry.food %>">
             <input name="delete" class = "delete-<%= i %>" type="checkbox">
           </div>
         </div>
-        <br/>
       <% end %>
+      </div>
+
+      <br><br>
+
       <form class="food-entry-form" action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
-        <input id="food-<%= i %>" class="food-entry-input" name="food" type="text" style="margin-left:35px;">
+        <input id="food-<%= i %>" class="food-entry-input" name="food" placeholder="e.g. 'chicken'" type="text" style="margin-left:35px;">
         <input class="food-entry-input" type="submit" value="Add Food" style="margin-left:10px;">
       </form>
+
       <div class="food-entry-form">
         <input class="food-entry-input" type="submit" value="Delete selected entries" style="margin-left:110px;" onclick='delete_entries(<%= i %>, "<%= key %>")'>
       </div>
-      <div class="entry-field" style="width:780px; text-align:center;">
+
+      <div class="entry-field" style="width:780px;text-align:center;border:2px solid #505050;margin-top:10px">
         <p class="report">Intake: <%= @intake[key] %> cal</p>
         <p class="report"> Burned: <%= @burned[key] %> cal</p>
         <p class="report">Net Intake: <%= @intake[key] - @burned[key] %> cal</p>
       </div>
+
     </div>
     <% i = i + 1 %>
   <% end %>
-  </div>
 
 </div>
 
@@ -102,11 +196,11 @@ window.onpageshow = function(event) {
   }
 };
 $(document).ready(function() {
-  displayMenu(0);
+  setMenu();
 });
 
-var opacityVal = 0.4;
-document.getElementById('gauge').style.opacity = opacityVal;
+var opacityVal = 0.3;
+document.getElementById('gauge_text').style.opacity = opacityVal;
 
 function register(result, index) {
 	if (result.result == "SUCCESS") {
@@ -141,13 +235,65 @@ $("#weight_form").submit(function(event) {
         type : "POST",
         data: $("#weight_form").serializeArray(),
         success: function(responseData) {
-            document.getElementById('add_weight_response').innerHTML = responseData.message;
+            alert(responseData.message);
+            location.reload(false);
         },
         error: function(responseData) {
-            document.getElementById('add_weight_response').innerHTML = responseData.message;
+            alert(responseData.message);
         }
     })
 });
+
+$("#friend_request_form").submit(function(event) {
+  var user = document.getElementById("friend_request").value;
+  send_json("/profile/create_request",
+  {"username":user},
+  function(reply) {
+    if (reply.result != "SUCCESS") {
+      alert(reply.result);
+    } else {
+      location.reload(false);
+    }
+  },
+  show_error
+  );
+  return false;
+});
+
+function accept_request(friend) {
+  send_json("/profile/accept_request",
+  {"friend":friend},
+  function(reply) {
+    if (reply.result != "SUCCESS") {
+      alert(reply.result);
+    } else {
+      location.reload(false);
+    }
+  },
+  show_error
+  );
+  return false;
+}
+
+function find_friend() {
+  alert("find friend");
+  send_json("/profile/find_friend",
+    {},
+    function(reply) {
+      location.reload(false);
+    },
+    show_error
+  );
+  return false;
+}
+
+function setMenu() {
+  for (var i=1; i<7; i++) {
+    $(".entry"+i).hide();
+  }
+  $(".entry0").show();
+  $(document.getElementById("day-button-0")).css("border-bottom", "thin solid #505050");
+}
 
 function displayMenu(day) {
   for (var i=0; i<7; i++) {
@@ -158,6 +304,20 @@ function displayMenu(day) {
     }
   }
 }
+
+function displayDay(day) {
+  for (var i=0; i<7; i++) {
+    if (i != day) {
+      $(".entry"+i).hide();
+      $(document.getElementById("day-button-"+i)).css("border-bottom", "");
+    } else {
+      $(".entry"+i).show();
+      $(document.getElementById("day-button-"+i)).css("border-bottom", "thin solid #505050");
+    }
+  }
+
+}
+
 
 </script>
 
