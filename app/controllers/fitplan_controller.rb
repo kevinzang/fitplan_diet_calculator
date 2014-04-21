@@ -87,10 +87,24 @@ class FitplanController < ApplicationController
 			curr = curr - 1
 		end
 		@entries = {}
+		@burned = {}
+		@intake = {}
 		@days = []
 		for _ in 0..count
 			@days.insert(0, curr.to_s)
-			@entries[curr.to_s] = UserProfile.getEntriesByDate(@user, curr.to_s)
+			food_entries = UserProfile.getEntriesByDate(@user, curr.to_s)
+			@entries[curr.to_s] = food_entries
+	        total = 0
+	        for entry in food_entries
+	            total += entry.calories * entry.numservings
+	        end
+	        @intake[curr.to_s] = total
+	        workout_entries = WorkoutEntry.where(username:@user, date:curr.to_s)
+	        total = 0
+	        for entry in workout_entries
+	            total += entry.burned
+	        end
+	        @burned[curr.to_s] = total
 			curr = curr + 1
 		end
 	end

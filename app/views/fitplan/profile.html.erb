@@ -10,34 +10,41 @@
 <div id="all-entries-container" style="width:800px; margin:0 auto;">
 <% i = 0 %>
 <% for key in @days %>
-  <div class="day-entries" onclick="displayMenu(<%= i %>)">
+  <div class="day-entries" onclick="displayMenu(<%= i %>)"><p>
     You have <span id="count-<%= i %>"><%= @entries[key].length %></span>
-    entries for <span id="day-<%= i %>"><%= key %></span>.
+    entries for <span id="day-<%= i %>"><%= key %></span>.</p>
   </div>
   <div class="entry<%= i %>" style="width:100%;">
     <div class="entry-wrapper">
       <div class="field-title" style="width:320px;">Food</div>
       <div class="field-title" style="width:120px;">Calories</div>
       <div class="field-title" style="width:220px;">Serving Size</div>
-      <div class="field-title" style="width:70px;">Servings</div>
+      <div class="field-title" style="width:80px;">Servings</div>
     </div>
     <% for entry in @entries[key] %>
       <div class="entry-wrapper">
         <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
         <div class="entry-field" style="width:100px;"><%= entry.calories %></div>
         <div class="entry-field" style="width:200px;"><%= entry.serving.gsub("Serving Size ", "") %></div>
-        <div class="entry-field" style="width:50px;"><%= entry.numservings %></div>
-        <div class="entry-field" style="width:50px;" id="<%= entry.food %>">
+        <div class="entry-field" style="width:60px;"><%= entry.numservings %></div>
+        <div class="entry-field" style="width:40px;" id="<%= entry.food %>">
           <input name="delete" class = "delete-<%= i %>" type="checkbox">
         </div>
       </div>
       <br/>
     <% end %>
-    <form action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
-      <input id="food-<%= i %>" name="food" type="text">
-      <input type="submit" value="Add Food">
+    <form class="food-entry-form" action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
+      <input id="food-<%= i %>" class="food-entry-input" name="food" type="text" style="margin-left:35px;">
+      <input class="food-entry-input" type="submit" value="Add Food" style="margin-left:10px;">
     </form>
-    <input type="submit" value="Delete selected entries" onclick='delete_entries(<%= i %>, "<%= key %>")'>
+    <div class="food-entry-form">
+      <input class="food-entry-input" type="submit" value="Delete selected entries" style="margin-left:110px;" onclick='delete_entries(<%= i %>, "<%= key %>")'>
+    </div>
+    <div class="entry-field" style="width:780px; text-align:center;">
+      <p class="report">Intake: <%= @intake[key] %> cal</p>
+      <p class="report"> Burned: <%= @burned[key] %> cal</p>
+      <p class="report">Net Intake: <%= @intake[key] - @burned[key] %> cal</p>
+    </div>
   </div>
   <% i = i + 1 %>
 <% end %>

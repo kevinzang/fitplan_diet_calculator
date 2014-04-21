@@ -459,6 +459,10 @@ class UserProfile < ActiveRecord::Base
         # create some entries for this week
         UserProfile.reset()
         UserProfile.signup("a", "", "")
+        fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+        "desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+        UserProfile.setProfile("a", fields.keys, fields)
         week = []
         curr = Date.today
         while curr.wday > 0
