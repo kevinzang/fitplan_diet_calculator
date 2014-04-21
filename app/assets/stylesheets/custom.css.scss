@@ -7,7 +7,16 @@ body {
   text-align: center;
   font-family: Verdana, Geneva, sans-serif;
   background-color: #45C4D3;
-  background-image: url('/shoes.JPG');
+  background-image: url('/veggies.jpg');
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+/*
+  background-position:center;
+*/
+}
+
+div {
+  opacity: 0.9;
 }
 
 hr {
@@ -19,6 +28,7 @@ hr {
   position: relative;
   width: 1305px;
   height: 100vh;
+  margin-bottom: 20px;
 }
 
 .navbar {
@@ -37,6 +47,7 @@ hr {
   float: left;
   margin-left: 75px;
   padding: 5px;
+  opacity: 1.0;
 }
 
 .container {
