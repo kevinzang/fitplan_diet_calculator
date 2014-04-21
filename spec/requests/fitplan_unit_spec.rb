@@ -92,7 +92,7 @@ describe "Fitplan Unit Tests" do
 				defaults[key].should == fields[key]
 			end
 		end
-  end
+    end
 	describe "search for food to add" do
 		it "should return the search results" do
 			results = FoodSearch.search("mashed potatoes")
@@ -114,7 +114,6 @@ describe "Fitplan Unit Tests" do
 			entry = FoodSearch.getCalorie(5)
 			entry.calories.should == "204"
 			entry.serving.should == "Serving Size 1 cup (210 g)"
-			entry.date.should == Date.today.to_s
 			entry.searched.should == true
 		end
     end
@@ -145,26 +144,28 @@ describe "Fitplan Unit Tests" do
 	end
 	describe "delete food" do
 		it "should fail if user is not registered" do
-			UserProfile.deleteFood("kevin", ["chicken"]).should_not == UserProfile::SUCCESS
+			UserProfile.deleteFood("kevin", ["chicken"], 0).should_not == UserProfile::SUCCESS
 		end
 		it "should not have any effect if food not in list" do
+			today = Date.today
 			UserProfile.signup("kevin", "secret", "0")
 			UserProfile.addFood("kevin", "chicken", "150",
-				"2014-01-01", "10 bells", "2")
-			UserProfile.deleteFood("kevin", ["beans"]).should == UserProfile::SUCCESS
+				today.to_s, "10 bells", "2")
+			UserProfile.deleteFood("kevin", ["beans"], today.to_s).should == UserProfile::SUCCESS
 			entries = UserProfile.getEntries("kevin")
 			entries.length.should == 1
 			entries[0].food.should == "chicken"
 			entries[0].calories.should == 150
-			entries[0].date.should == "2014-01-01"
+			entries[0].date.should == today.to_s
 		end
 		it "should delete entries one at a time" do
 			UserProfile.signup("kevin", "secret", "0")
+			today = Date.today
 			UserProfile.addFood("kevin", "chicken pot pie", "150",
-				"2014-01-01", "10 bells", "2")
+				today.to_s, "10 bells", "2")
 			UserProfile.addFood("kevin", "chicken pot pie", "150",
-				"2014-01-01", "10 bells", "2")
-			UserProfile.deleteFood("kevin", ["chicken pot pie"]).should == UserProfile::SUCCESS
+				today.to_s, "10 bells", "2")
+			UserProfile.deleteFood("kevin", ["chicken pot pie"], today.to_s).should == UserProfile::SUCCESS
 			entries = UserProfile.getEntries("kevin")
 			entries.length.should == 1
 		end
@@ -227,65 +228,65 @@ describe "Fitplan Unit Tests" do
 			rec["rec_target"].should == 160 # target: need to burn 2000
 			rec["rec_normal"].should == 120 # normal: need to burn 1500
 		end
-  end
-  describe "getting workout activities" do
-  	it "should retrieve activities" do
-  		activities = WorkoutEntry.getActivities
-  		activities.include?("Aerobics, general").should == true
-			activities.include?("Ballet, twist, jazz, tap").should == true
-			activities.include?("Canoeing, camping trip").should == true
-  	end
-  	it "should look up rates for activities" do
-  		WorkoutEntry.getRate("Aerobics, general").should == 2.95
-			WorkoutEntry.getRate("Ballet, twist, jazz, tap").should == 2.04
-			WorkoutEntry.getRate("Canoeing, camping trip").should == 1.81
-  	end
-  end
-  describe "adding workout entries" do
-  	it "should return error for nonexistant user" do
-  		result = UserProfile.addWorkoutEntry("phantom",
-  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-  		result.should == UserProfile::ERR_USER_NOT_FOUND
-  	end
-  	it "should return error for nonexistant activity" do
-  		UserProfile.signup("a", "secret", "0")
-  		result = UserProfile.addWorkoutEntry("a",
-  			"underwater basket weaving", "30", Date.today.to_s)
-  		result.should == UserProfile::ERR_ACTIVITY_NOT_FOUND
-  	end
-  	it "should return error if user has no weight" do
-  		UserProfile.signup("a", "secret", "0")
-  		result = UserProfile.addWorkoutEntry("a",
-  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-  		result.class.should == String
-  	end
-  	it "should add entry for valid entry" do
-  		UserProfile.signup("a", "secret", "0")
-  		fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-			"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-      "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
-		UserProfile.setProfile("a", fields.keys, fields)
-  		result = UserProfile.addWorkoutEntry("a",
-  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-  		result.should == 363
-  		result = UserProfile.addWorkoutEntry("a",
-  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-  		result.should == 726
-  	end
-  end
-  describe "user authentication" do
-  	it "should set the remember token" do
-  		UserProfile.signup("kevin", "secret", "0")
-  		username = UserProfile.getUsername("0")
-  		username.should == "kevin"
-  	end
-  	it "should sign out" do
-  		UserProfile.signup("kevin", "secret", "0")
-  		UserProfile.signout("0")
-  		user = UserProfile.find_by(username:"kevin")
-  		user.remember_token.should == nil
-  	end
-  end
+	end
+	describe "getting workout activities" do
+	  	it "should retrieve activities" do
+	  		activities = WorkoutEntry.getActivities
+	  		activities.include?("Aerobics, general").should == true
+				activities.include?("Ballet, twist, jazz, tap").should == true
+				activities.include?("Canoeing, camping trip").should == true
+	  	end
+	  	it "should look up rates for activities" do
+	  		WorkoutEntry.getRate("Aerobics, general").should == 2.95
+				WorkoutEntry.getRate("Ballet, twist, jazz, tap").should == 2.04
+				WorkoutEntry.getRate("Canoeing, camping trip").should == 1.81
+	  	end
+	end
+	describe "adding workout entries" do
+	  	it "should return error for nonexistant user" do
+	  		result = UserProfile.addWorkoutEntry("phantom",
+	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+	  		result.should == UserProfile::ERR_USER_NOT_FOUND
+	  	end
+	  	it "should return error for nonexistant activity" do
+	  		UserProfile.signup("a", "secret", "0")
+	  		result = UserProfile.addWorkoutEntry("a",
+	  			"underwater basket weaving", "30", Date.today.to_s)
+	  		result.should == UserProfile::ERR_ACTIVITY_NOT_FOUND
+	  	end
+	  	it "should return error if user has no weight" do
+	  		UserProfile.signup("a", "secret", "0")
+	  		result = UserProfile.addWorkoutEntry("a",
+	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+	  		result.class.should == String
+	  	end
+	  	it "should add entry for valid entry" do
+	  		UserProfile.signup("a", "secret", "0")
+	  		fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+	      "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+			UserProfile.setProfile("a", fields.keys, fields)
+	  		result = UserProfile.addWorkoutEntry("a",
+	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+	  		result.should == 363
+	  		result = UserProfile.addWorkoutEntry("a",
+	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+	  		result.should == 726
+	  	end
+	end
+	describe "user authentication" do
+	  	it "should set the remember token" do
+	  		UserProfile.signup("kevin", "secret", "0")
+	  		username = UserProfile.getUsername("0")
+	  		username.should == "kevin"
+	  	end
+	  	it "should sign out" do
+	  		UserProfile.signup("kevin", "secret", "0")
+	  		UserProfile.signout("0")
+	  		user = UserProfile.find_by(username:"kevin")
+	  		user.remember_token.should == nil
+	  	end
+	end
   describe "getting calorie intake chart data" do
     it "should return nil if user does not exist" do
       UserProfile.calorieIntakeChartData("derp", 12).should == nil

@@ -87,7 +87,7 @@ class FoodSearch < ActiveRecord::Base
 			entry.searched = true
 			entry.calories = cal
 			entry.serving = serving
-			entry.date = Date.today.to_s
+			# entry.date = Date.today.to_s # not used
 			entry.save()
 			return entry
 		end

@@ -23,6 +23,10 @@
   right: 30px;
 }
 
+#weight_form {
+  float: right;
+}
+
 #weight-chart {
   float: left;
   width: 400px;
@@ -33,11 +37,7 @@
   width: 400px;
 }
 
-#weight_form {
-  float: right;
-}
-
-#food-entries {
+#all-entries-container {
   background-color: #F0FFFF;
   padding: 10px;
   width: 850px;
@@ -46,14 +46,53 @@
   right: 50px;
 }
 
-.entry {
-  text-align: left;
+.entry-field {
+  float: left;
+  padding: 10px;
+  display:inline;
+  background-color:#F0FFFF;
+  margin:0 auto;
 }
 
-#delete_entries {
-  float: right;
+.day-entries {
+	cursor:pointer;
+	width:100%;
+	text-align:center;
 }
 
-.num-servings {
-  float: right;
+.entry-wrapper {
+	width:100%;
+	float:left;
+}
+
+.field-title {
+	font-weight:bold;
+	font-size:16px;
+	border:0;
+	display:inline;
+	float:left;
+}
+
+.food-entry-form {
+	float:left;
+	padding:10px;
+	display:inline;
+	background-color:#F0FFFF;
+    margin: 0 auto;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    width:380px;
+    height:30px;
+}
+
+.food-entry-input {
+	box-sizing:content-box;
+	-moz-box-sizing:content-box;
+	float:left;
+	height:25px;
+}
+
+.report {
+	display:inline;
+	margin:0px 20px;
 }

@@ -72,8 +72,11 @@ describe "Fitplan Functional Tests" do
 		it "should set @food and @results" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
-			post '/profile/add_food', {'food' => "mashed potatoes"}
+			today = "2014-04-19"
+			url_today = today.gsub("-", "_")
+			post "/profile/add_food/#{url_today}", {'food' => "mashed potatoes"}
 			assigns(:food).should == "mashed potatoes"
+			assigns(:day).should == today
 			assigns(:results).length.should > 0
 			assigns(:results)[0].should ==
 			"Potatoes, Mashed, Home-prepared, Whole Milk And Margarine Added"
@@ -84,7 +87,7 @@ describe "Fitplan Functional Tests" do
 			FoodSearch.search("mashed potatoes")
 			req = {"num"=>"5"}
 			resp = {"calorie"=>"204", "serving"=>"Serving Size 1 cup (210 g)"}
-			post '/profile/add_food/get_calorie', req.to_json, session
+			post '/profile/get_calorie', req.to_json, session
 			response.body.should == resp.to_json
 		end
     end
@@ -96,15 +99,15 @@ describe "Fitplan Functional Tests" do
 			entries.length.should == 0
 			FoodSearch.search("mashed potatoes")
 			FoodSearch.getCalorie(5)
-			req = {"num" => "5", "num_servings" => "2"}
+			req = {"num" => "5", "num_servings" => "2", "date" => "04-19-2014"}
 			resp = {"result" => UserProfile::SUCCESS}
-			post '/profile/add_food/get_calorie/add', req.to_json, session
-			entries = UserProfile.getEntries("a")
+			post '/profile/get_calorie/add', req.to_json, session
+			entries = UserProfile.getEntriesByDate("a", "04-19-2014")
 			entries.length.should == 1
 			entries[0].food.should == "Potatoes, Mashed, Dehydrated, Prepared From Flakes "+
 			"- Without Milk, Whole Milk And Butter Add"
 			entries[0].calories.should == 204
-			entries[0].date.should == Date.today.to_s
+			entries[0].date.should == "04-19-2014"
 			entries[0].serving.should == "Serving Size 1 cup (210 g)"
 			entries[0].numservings.should == 2
 		end
@@ -114,42 +117,52 @@ describe "Fitplan Functional Tests" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			UserProfile.addFood("a", "chicken pot pie", "150",
-				"2014-01-01", "10 bells", "2")
+				"2014-04-19", "10 bells", "2")
 			UserProfile.addFood("a", "chicken pot pie", "150",
-				"2014-01-01", "10 bells", "2")
+				"2014-04-19", "10 bells", "2")
 			entries = UserProfile.getEntries("a")
 			entries.length.should == 2
-			req = {"delete" => ["chicken pot pie"].to_s}
+			req = {"delete" => ["chicken pot pie"].to_s, "date" => "2014-04-19"}
 			resp = {"result" => UserProfile::SUCCESS}
 			post '/profile/delete_food', req.to_json, session
-			entries = UserProfile.getEntries("a")
+			entries = UserProfile.getEntriesByDate("a", "2014-04-19")
 			entries.length.should == 1
 		end
 	end
-	describe "getting today's entries" do
-		@today = Date.today.to_s
-		@entries = UserProfile.getEntriesByDate("a", @today)
-		if @entries.class != Array
-			@message = @entries
-		else
-			@message = "You have #{@entries.length} entries for #{@today}."
-		end
-		it "should set @today and @entries" do
+	describe "getting the week's entries" do
+		it "should get the week's entries" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
-			UserProfile.addFood("a", "chicken pot pie", "150",
-				Date.today.to_s, "10 bells", "2")
-			UserProfile.addFood("a", "ice cream", "175",
-				(Date.today-1).to_s, "10 bells", "2")
+			curr = Date.today
+			count = curr.wday
+			week = []
+			while (curr.wday > 0)
+				week.push(curr.to_s)
+				curr = curr - 1
+			end
+			week.push(curr.to_s)
+			calorie = 1
+			for day in week
+				for i in 0..2
+					UserProfile.addFood("a", "food name", calorie.to_s,
+						day, "serving desc.", "1")
+					calorie += 1
+				end
+			end
 			get '/profile'
-			assigns(:today).should == Date.today.to_s
-			todays_entries = assigns(:entries)
-			todays_entries.length.should == 1
-			todays_entries[0].food.should == "chicken pot pie"
-			todays_entries[0].calories.should == 150
-			todays_entries[0].date.should == Date.today.to_s
-			todays_entries[0].serving.should == "10 bells"
-			todays_entries[0].numservings.should == 2
+			week_entries = assigns(:entries)
+			assigns(:days).should == week.reverse()
+			week_entries.length.should == count + 1
+			calorie = 3
+			for day in week
+				week_entries[day].length.should == 3
+				for entry in week_entries[day]
+					entry.calories.should <= calorie
+					entry.calories.should > calorie - 3
+					entry.date.should == day
+				end
+				calorie += 3
+			end
 		end
 	end
 	describe "getting the workout plan" do

@@ -273,13 +273,13 @@ class UserProfile < ActiveRecord::Base
         return SUCCESS
     end
 
-    def self.deleteFood(username, food_names)
+    def self.deleteFood(username, food_names, date)
         user = UserProfile.find_by(username:username)
         if user == nil
             return ERR_USER_NOT_FOUND
         end
         entries = FoodEntry.where(username:username,
-            food:food_names)
+            food:food_names, date:date)
         for entry in entries
             index = food_names.index(entry.food)
             if index != nil
@@ -453,6 +453,33 @@ class UserProfile < ActiveRecord::Base
         UserProfile.delete_all()
         FoodEntry.delete_all()
         WorkoutEntry.delete_all()
+    end
+
+    def self.populate()
+        # create some entries for this week
+        UserProfile.reset()
+        UserProfile.signup("a", "", "")
+        fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+        "desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+        UserProfile.setProfile("a", fields.keys, fields)
+        week = []
+        curr = Date.today
+        while curr.wday > 0
+            curr = curr - 1
+        end
+        for _ in 0..6
+            week.insert(0, curr.to_s)
+            curr = curr + 1
+        end
+        for day in week
+            UserProfile.addFood("a", "Irresponsibly long food name for the glorious "+
+                "day that is #{day}", 100, day, "Somewhat long description", "1")
+            UserProfile.addFood("a", "Irresponsibly long food name for the glorious "+
+                "day that is #{day}", 100, day, "Somewhat long description", "2")
+            UserProfile.addFood("a", "Irresponsibly long food name for the glorious "+
+                "day that is #{day}", 100, day, "Somewhat long description", "3")
+        end
     end
 
     private
