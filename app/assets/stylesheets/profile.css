@@ -30,6 +30,8 @@
 #weight-chart {
   float: left;
   width: 400px;
+  background-color: #F0FFFF;
+  padding: 5px;
 }
 
 #zach-community-stuff {
@@ -58,6 +60,7 @@
 	cursor:pointer;
 	width:100%;
 	text-align:center;
+    float: left;
 }
 
 .entry-wrapper {

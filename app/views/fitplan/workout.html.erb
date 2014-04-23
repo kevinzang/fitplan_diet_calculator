@@ -65,7 +65,6 @@
 
 
   <form id="add-workout" action="" method="post">
-    <i>Add your workouts for today:</i><br><br>
     <div id="workout-activity"><select id="activity" name="activity">
     <% for i in 0..@activities.length-1 %>
       <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
