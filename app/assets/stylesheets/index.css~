@@ -6,7 +6,6 @@
 }
 
 #header h4 {
-  color: #FFFFFF;
   font-style: italic;
 }
 

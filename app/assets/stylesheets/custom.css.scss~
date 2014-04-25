@@ -24,10 +24,6 @@ hr {
   background-color: #dcdcdc;
 }
 
-h1 {
-  color: #FFFFFF;
-}
-
 .overall {
   position: relative;
   width: 1305px;
