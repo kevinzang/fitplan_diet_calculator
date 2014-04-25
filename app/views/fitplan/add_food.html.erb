@@ -22,18 +22,25 @@ $(".foodData").hide();
 
 function displayCalorie(selected_id, reply) {
 	var element = document.getElementById(selected_id);
-    var food_title = document.getElementById("food-title-"+selected_id);
-    var food_container = document.getElementById("food-container-"+selected_id);
-	if (reply.calorie != -1) {
+    if (element.hasChildNodes()) {
+        $(element).show();
+    } else if (reply.calorie != -1) {
 		var serving_id = "serving"+selected_id;
-		$(element).html("<br><div class='info'>"+reply.calorie+" calories&nbsp;&nbsp;&nbsp;&nbsp;"
-		+reply.serving+"</div>"+
+		$(element).html("<br><div class='info'>&nbsp;&nbsp;&nbsp;&nbsp;1 serving: "+reply.calorie+
+        " calories&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serving size: "
+		+reply.serving.split("Serving Size")[1]+"</div>"+
 		"<div class='input'>Servings: <input id='"+serving_id+"' value='1' style='width:35px;'>"+
 		"&nbsp;&nbsp;<button type='button' onclick='addFood("+selected_id+")'>"+
 		"Add</button></div>");
-        $(food_title).css("text-decoration", "underline");
+        /*$(document.getElementById("food-title-"+selected_id)).css("text-decoration", "underline");*/
 		$(element).show();
 	}
+    for (var i=0;i<30;i++) {
+        var previous_selection = document.getElementById(i);
+        if (previous_selection.hasChildNodes() && i!=selected_id) {
+            $(previous_selection).hide();
+        }
+    }
 	return false;
 }
 

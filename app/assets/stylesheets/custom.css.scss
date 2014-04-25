@@ -15,8 +15,8 @@ body {
 */
 }
 
-div {
-  opacity: 0.9;
+div, form {
+  opacity: 0.93;
 }
 
 hr {
@@ -30,7 +30,7 @@ h1 {
 
 .overall {
   position: relative;
-  width: 1305px;
+  width: 100%;
   height: 100vh;
   margin-bottom: 20px;
 }
