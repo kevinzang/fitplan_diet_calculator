@@ -63,6 +63,7 @@
         <div class="field-title" style="width:220px;">Serving Size</div>
         <div class="field-title" style="width:80px;">Servings</div>
       </div>
+      <div class="entry-wrapper">
       <% for entry in @entries[key] %>
         <div class="entry-wrapper">
           <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
@@ -73,8 +74,9 @@
             <input name="delete" class = "delete-<%= i %>" type="checkbox">
           </div>
         </div>
-        <br/>
+        <br />
       <% end %>
+      </div>
       <form class="food-entry-form" action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
         <input id="food-<%= i %>" class="food-entry-input" name="food" type="text" style="margin-left:35px;">
         <input class="food-entry-input" type="submit" value="Add Food" style="margin-left:10px;">
@@ -102,7 +104,7 @@ window.onpageshow = function(event) {
   }
 };
 $(document).ready(function() {
-  displayMenu(0);
+  setMenu();
 });
 
 var opacityVal = 0.3;
@@ -148,6 +150,13 @@ $("#weight_form").submit(function(event) {
         }
     })
 });
+
+function setMenu() {
+  for (var i=1; i<7; i++) {
+    $(".entry"+i).hide();
+  }
+  $(".entry0").show();
+}
 
 function displayMenu(day) {
   for (var i=0; i<7; i++) {
