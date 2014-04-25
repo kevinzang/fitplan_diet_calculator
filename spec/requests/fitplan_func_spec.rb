@@ -151,7 +151,7 @@ describe "Fitplan Functional Tests" do
 			end
 			get '/profile'
 			week_entries = assigns(:entries)
-			assigns(:days).should == week.reverse()
+			assigns(:days).should == week
 			week_entries.length.should == count + 1
 			calorie = 3
 			for day in week

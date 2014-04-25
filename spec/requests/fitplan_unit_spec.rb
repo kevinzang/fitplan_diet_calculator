@@ -78,8 +78,14 @@ describe "Fitplan Unit Tests" do
 		}
 		it "should initially have empty strings for defaults" do
 			defaults = UserProfile.getDefaults("kevin")
-			for value in defaults.values
-				value.should == ""
+			for key in defaults.keys
+				if key == "activity_level"
+					defaults[key].should == "0"
+				elsif key == "weight_change_per_week_goal"
+					defaults[key].should == "0.0"
+				else
+					defaults[key].should == ""
+				end
 			end
 		end
 		it "should remember the defaults" do

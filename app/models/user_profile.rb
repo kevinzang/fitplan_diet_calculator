@@ -62,6 +62,8 @@ class UserProfile < ActiveRecord::Base
         end
         new_user = UserProfile.new(username:username, password:password,
             remember_token:UserProfile.hash(token))
+        new_user.activity_level = 0
+        new_user.weight_change_per_week_goal = 0.0
  		new_user.save()
  		return SUCCESS
     end
