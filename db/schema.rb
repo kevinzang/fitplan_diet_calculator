@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140417211635) do
+ActiveRecord::Schema.define(version: 20140426172306) do
 
   create_table "food_entries", force: true do |t|
     t.string   "username"
@@ -58,6 +58,8 @@ ActiveRecord::Schema.define(version: 20140417211635) do
     t.string   "remember_token"
     t.integer  "activity_level"
     t.float    "weight_change_per_week_goal"
+    t.integer  "gauge_level"
+    t.string   "last_login"
   end
 
   add_index "user_profiles", ["remember_token"], name: "index_user_profiles_on_remember_token"

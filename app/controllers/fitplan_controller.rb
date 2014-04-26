@@ -80,6 +80,7 @@ class FitplanController < ApplicationController
 		if @user == nil
 			return
 		end
+		@gauge_level = UserProfile.find_by(username:@user).gauge_level
 		@today = Date.today.to_s
 		curr = Date.today
 		count = curr.wday
@@ -94,22 +95,22 @@ class FitplanController < ApplicationController
 			@days.insert(0, curr.to_s)
 			food_entries = UserProfile.getEntriesByDate(@user, curr.to_s)
 			@entries[curr.to_s] = food_entries
-	        total = 0
-	        for entry in food_entries
-	            total += entry.calories * entry.numservings
-	        end
-	        @intake[curr.to_s] = total
-	        workout_entries = WorkoutEntry.where(username:@user, date:curr.to_s)
-	        total = 0
-	        for entry in workout_entries
-	            total += entry.burned
-	        end
-	        @burned[curr.to_s] = total
+			total = 0
+			for entry in food_entries
+				total += entry.calories * entry.numservings
+			end
+			@intake[curr.to_s] = total
+			workout_entries = WorkoutEntry.where(username:@user, date:curr.to_s)
+			total = 0
+			for entry in workout_entries
+				total += entry.burned
+			end
+			@burned[curr.to_s] = total
 			curr = curr + 1
 		end
-        @userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
-        @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
-        @weightChartData = UserProfile.weightChartData(@user, 3)
+		@userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
+		@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
+		@weightChartData = UserProfile.weightChartData(@user, 3)
 	end
 
 	def add_food
@@ -151,29 +152,29 @@ class FitplanController < ApplicationController
 		result = UserProfile.addFood(@user, entry.food, entry.calories, params["date"],
 			entry.serving, params["num_servings"])
 		return render(:json=>{"result"=>result}, status: 200)
-  end
+	end
 
-  def create_new_food
-    @user = getUser(cookies[:remember_token])
-    if @user == nil
-      return
-    end
-    result = UserProfile.addUserFood(@user, params[:food], params[:calories], params[:serving])
-    return render(:json=>{"result"=>result}, status: 200)
-  end
+	def create_new_food
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
+		result = UserProfile.addUserFood(@user, params[:food], params[:calories], params[:serving])
+		return render(:json=>{"result"=>result}, status: 200)
+	end
 
-  def add_weight
-    @user = getUser(cookies[:remember_token])
-    if @user == nil
-      return
-    end
-    result = UserProfile.addWeightEntry(@user, params["weight"], Date.today.to_s)
-    if result == UserProfile::SUCCESS
-      return render(:json=>{"result"=>"success", "message"=>"Weight successfully added"})
-    else
-      return render(:json=>{"result"=>"failure", "message"=>result})
-    end
-  end
+	def add_weight
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
+		result = UserProfile.addWeightEntry(@user, params["weight"], Date.today.to_s)
+		if result == UserProfile::SUCCESS
+			return render(:json=>{"result"=>"success", "message"=>"Weight successfully added"})
+		else
+			return render(:json=>{"result"=>"failure", "message"=>result})
+		end
+	end
 
 	def delete_food
 		@user = getUser(cookies[:remember_token])
@@ -196,12 +197,9 @@ class FitplanController < ApplicationController
 		@activities = WorkoutEntry.getActivities()
 		@defaultActivity = "Running, 6 mph (10 min mile)"
 		@workout = UserProfile.getWorkout(@user, Date.today.to_s)
-		target_cal = @workout["intake"]-
-			@workout["target"]-@workout["burned"]
-		normal_cal = @workout["intake"]-
-			@workout["normal"]-@workout["burned"]
-		rec = UserProfile.getRecommended(@user, target_cal,
-			normal_cal, @defaultActivity)
+		target_cal = @workout["intake"]-@workout["target"]-@workout["burned"]
+		normal_cal = @workout["intake"]-@workout["normal"]-@workout["burned"]
+		rec = UserProfile.getRecommended(@user, target_cal, normal_cal, @defaultActivity)
 		@workout["rec_target"] = rec["rec_target"] # target for desired weight
 		@workout["rec_normal"] = rec["rec_normal"] # maintain current weight
 	end
@@ -239,36 +237,36 @@ class FitplanController < ApplicationController
 		return render(:json=>rec, status: 200)
 	end
 
-  def progress
-    @user = getUser(cookies[:remember_token])
-    if @user == nil
-	  return
+	def progress
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
+		@userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
+		@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
+		@weightChartData = UserProfile.weightChartData(@user, 3)
 	end
-    @userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
-    @calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
-    @weightChartData = UserProfile.weightChartData(@user, 3)
-  end
 
-  def faq
-    @user = getUser(cookies[:remember_token])
-    if @user == nil
-	  return
+	def faq
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
 	end
-  end
 
-  def about
-    @user = getUser(cookies[:remember_token])
-	if @user == nil
-		return
+	def about
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
 	end
-  end
 
-  def tips
-    @user = getUser(cookies[:remember_token])
-	if @user == nil
-		return
+	def tips
+		@user = getUser(cookies[:remember_token])
+		if @user == nil
+			return
+		end
 	end
-  end
 
 	def test
 		if !valid_json?([])
@@ -297,12 +295,12 @@ class FitplanController < ApplicationController
 				end
 			}
 			line = fixline.split(" ")
-      if line.index("examples,") != nil
-			  total = line[line.index("examples,")-1].to_i
-      end
-      if (line.index("failures")) != nil
-			  fails = line[line.index("failures")-1].to_i
-      end
+			if line.index("examples,") != nil
+				total = line[line.index("examples,")-1].to_i
+			end
+			if (line.index("failures")) != nil
+				fails = line[line.index("failures")-1].to_i
+			end
 			file.close
 			output = contents.join()
 			if fails == 0
@@ -310,9 +308,9 @@ class FitplanController < ApplicationController
 			end
 			return render(:json=>{"nrFailed"=>fails, "output"=>output,
 				"totalTests"=>total}, status:200)
-    rescue => err
-      puts err.message
-      puts err.backtrace
+		rescue => err
+			puts err.message
+			puts err.backtrace
 			return render(:json=>{"nrFailed"=>0, "output"=>"Unexpected error",
 				"totalTests"=>10}, status:200)
 		end
