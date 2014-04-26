@@ -1,15 +1,14 @@
 #today, #suggested, #desired, #current {
   background-color: #F0FFFF;
-  width: 300px;
+  width: 100%;
   text-align: left;
 }
 
 #reports {
   background-color: #F0FFFF;
-  padding: 20px;
-  position: absolute;
-  top: 80px;
-  left: 50px;
+  padding: 1%;
+  width:30%;
+  float:left;
 }
 
 #workout-activity, #workout-duration, #add_workout_entry {
@@ -20,11 +19,10 @@
 #add-workout {
   background-color: #F0FFFF;
   text-align: left;
-  position: absolute;
-  width: 800px;
-  top: 70px;
-  right: 50px;
-  padding-top: 10px;
+  width: 66%;
+  padding-top: 1%;
+  margin:1%;
+  float:left;
 }
 
 #intake, #burned, #net_intake, #target, #rec_target, #normal, #rec_normal {

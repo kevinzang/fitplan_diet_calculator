@@ -1,8 +1,8 @@
 #input-form {
   background-color: #F0FFFF;
-  position: absolute;
-  top: 50px;
-  left: 30px;
+  width:40%;
+  margin:0 30%;
+  float:left;
 }
 
 #message {

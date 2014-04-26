@@ -8,6 +8,7 @@
 #header h4 {
   color: #FFFFFF;
   font-style: italic;
+  width:100%;
 }
 
 #info,
@@ -15,16 +16,17 @@
   background-color: #F0FFFF;
   float: left;
   height: 250px;
-  margin-left: 1%;
-  padding: 10px;
+  margin: 2%;
+  padding: 0;
   width: 46%;
 }
 
 #new {
   background-color: #F0FFFF;
   float: left;
-  margin: 1%;
-  padding: 1%;
+  margin: 2%;
+  padding: 0;
+  width:96%;
 }
 
 p {
@@ -34,6 +36,7 @@ p {
 
 #sitebody {
   margin-top: 40px;
+  width:100%;
 }
 
 
