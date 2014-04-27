@@ -3,6 +3,8 @@
 #message,
 #inputForm {
   text-align: center;
+  margin: 10px;
+  margin-left: 40px;
 }
 
 #header h4 {

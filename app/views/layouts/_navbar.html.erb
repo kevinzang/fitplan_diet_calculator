@@ -5,8 +5,8 @@
     <% if @user != nil %>
       <% options = Hash['/profile' => 'Profile',
                         '/profile/workout' => 'Workout Plan',
-                        '/faq' => 'FAQ',
                         '/about' => 'About',
+                        '/faq' => 'FAQ',
                         '/tips' => 'Workout Tips'] %>
 
       <% options.each do |key, value|

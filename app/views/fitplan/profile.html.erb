@@ -11,7 +11,6 @@
   <hr />
 
   <i><b>Profile details</b></i><br><br>
-  Height: <div class="profile-stat"><%= UserProfile.find_by_username(@user).height %> inches</div><br>
   Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
   Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
   Activity Level:
@@ -192,10 +191,10 @@ $("#weight_form").submit(function(event) {
         type : "POST",
         data: $("#weight_form").serializeArray(),
         success: function(responseData) {
-            document.getElementById('add_weight_response').innerHTML = responseData.message;
+            alert(responseData.message);
         },
         error: function(responseData) {
-            document.getElementById('add_weight_response').innerHTML = responseData.message;
+            alert(responseData.message);
         }
     })
 });
