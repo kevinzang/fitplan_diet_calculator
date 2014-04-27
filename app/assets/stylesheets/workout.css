@@ -1,28 +1,58 @@
-#today, #suggested, #desired, #current {
+#today {
   background-color: #F0FFFF;
   width: 100%;
   text-align: left;
 }
 
+#suggested {
+  width: 100%;
+  text-align: left;
+  margin-left: 35px;
+  padding-top: 15px;
+}
+
+#desired {
+  width: 40%;
+  text-align: left;
+  float: left;
+  padding-left: 35px;
+  padding-right: 40px;
+  padding-bottom: 6px;
+}
+
+#current {
+  width: 40%;
+  text-align: left;
+  float: left;
+  padding-left: 40px;
+  padding-bottom: 6px;
+  border-left: thin solid #dcdcdc;
+}
+
 #reports {
   background-color: #F0FFFF;
   padding: 1%;
-  width:30%;
+  width:27%;
+  margin-top: 50px;
+  margin-left:20px;
   float:left;
 }
 
-#workout-activity, #workout-duration, #add_workout_entry {
-  float: left;
-  margin-left: 40px;
+#recommendations {
+  background-color: #F0FFFF;
+  padding: 1%;
+  width:60%;
+  float:right;
+  margin-top: 50px;
+  margin-right:20px;
+  padding-bottom: 32px;
 }
+
 
 #add-workout {
   background-color: #F0FFFF;
   text-align: left;
-  width: 66%;
-  padding-top: 1%;
-  margin:1%;
-  float:left;
+  padding-top: 5px;
 }
 
 #intake, #burned, #net_intake, #target, #rec_target, #normal, #rec_normal {
@@ -30,5 +60,9 @@
 }
 
 #rec_activity {
-  width: 300px;
+  width: 400px;
+}
+
+#activity, #minutes, #add-workout-entry {
+  float: left;
 }

@@ -6,7 +6,7 @@ body {
   color: #505050;
   text-align: center;
   font-family: Verdana, Geneva, sans-serif;
-  background-color: #45C4D3;
+  background-color: white; /*45C4D3;*/
   background-image: url('/veggies.jpg');
   background-repeat:no-repeat;
   background-attachment:fixed;
@@ -39,9 +39,16 @@ h1 {
   background-color: white;
 }
 
-.navbar-option:hover {
-  background-color: #dcdcdc;
+.navbar-option {
+  height: 32px;
+  margin: 2px;
 }
+
+.navbar-option:hover {
+  border-bottom: thin solid #505050;
+}
+
+
 
 .logo {
   height: 30px;
@@ -57,6 +64,15 @@ h1 {
   background-color: white;
   height: 30px;
 }
+
+.static-page-wrapper {
+  background-color: #F0FFFF;
+  width: 1000px;
+  text-align: left;
+  margin-left: 100px;
+  padding: 10px;
+}
+
 
 /*
 a {

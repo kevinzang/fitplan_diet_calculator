@@ -2,12 +2,15 @@
 <%= render '/layouts/navbar' %>
 
 <div id="profile-sidebar">
-  <div id="profile-name"><%= @user %>'s Profile</div>
-  <div id="profile-edit"><a href="/profile_form">Edit Profile</a></div>
+
+  <div id="profile-pic">User's picture goes here</div>
   <hr />
-  <div id="profile-pic">
-  </div>
+
+  <i><b><%= @user %>'s Profile</b></i>
+  <a href="/profile_form" style="float:right">Edit Profile</a>
   <hr />
+
+  <i><b>Profile details</b></i><br><br>
   Height: <div class="profile-stat"><%= UserProfile.find_by_username(@user).height %> inches</div><br>
   Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
   Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
@@ -15,6 +18,7 @@
   <div class="profile-stat">
     <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%>
   </div><br>
+
   Weekly goal:
   <div class="profile-stat"><% change = UserProfile.find_by_username(@user).weight_change_per_week_goal %>
     <% if change == nil %>
@@ -24,6 +28,25 @@
       Lose <%= change.abs %> lbs per week
     <% end %>
   </div>
+  <hr />
+
+  <div id="friends-display">
+  <i><b>Friends</b></i><br><br>
+  friends yay
+  </div>
+  <hr />
+
+  <div id="friend-requests">
+  <i><b>Friend Requests</b></i><br><br>
+  friends requests yay
+  </div>
+  <hr />
+
+  <div id="friend-search">
+  <i><b>Friend Search</b></i><br><br>
+  search for friends
+  </div>
+
 </div>
 
 <!--
@@ -35,8 +58,8 @@
 <div id="weight-chart">
   <b>Weight Progress</b>
   <form id="weight_form" action="/profile/add_weight" method="post">
-    <input id="weight" name="weight" type="text">
-    <input id="submit_weight" type="submit" value="Add Weight">
+    <input id="weight" name="weight" type="text" placeholder="weight" style="float:left">
+    <input id="submit_weight" type="submit" value="Add" style="height:30px;float:left;margin-left:5px;">
   </form><br><br>
   <%= line_chart @weightChartData, discrete: true, height: '150px', name: 'weight_chart' %>
 </div>
@@ -49,53 +72,77 @@
   <!--<div id="gauge_transbox"></div>-->
 </div>
 
+<!--
 <div id="zach-community-stuff">
-  <!-- YOUR CODE HERE --> &nbsp
+  <!-- YOUR CODE HERE --> &nbsp;
 </div>
+-->
 
 <div id="all-entries-container">
-<% i = 0 %>
-<% for key in @days %>
-  <div class="day-entries" onclick="displayMenu(<%= i %>)"><p>
-    You have <span id="count-<%= i %>"><%= @entries[key].length%></span>
-    entries for <span id="day-<%= i %>"><%= key %></span>.</p>
-  </div>
-  <div class="entry<%= i %>" style="width:100%;">
-    <div class="entry-wrapper">
-      <div class="field-title" style="width:320px;">Food</div>
-      <div class="field-title" style="width:120px;">Calories</div>
-      <div class="field-title" style="width:220px;">Serving Size</div>
-      <div class="field-title" style="width:80px;">Servings</div>
-    </div>
-    <div class="entry-wrapper">
-    <% for entry in @entries[key] %>
-      <div class="entry-wrapper">
-        <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
-        <div class="entry-field" style="width:100px;"><%= entry.calories %></div>
-        <div class="entry-field" style="width:200px;"><%= entry.serving.gsub("Serving Size ", "") %></div>
-        <div class="entry-field" style="width:60px;"><%= entry.numservings %></div>
-        <div class="entry-field" style="width:40px;" id="<%= entry.food %>">
-          <input name="delete" class = "delete-<%= i %>" type="checkbox">
-        </div>
-      </div>
-      <br />
+
+  <% i = 0 %>
+  <ul id="days-nav">
+    <% for key in @days %>
+      <li class="day-nav-button" id="day-button-<%= i %>" onclick="displayDay(<%= i %>)">
+        <span id="day-<%= i %>"><%= key.split('-')[1] %></span>/<span id="day-<%= i %>"><%= key.split('-')[2] %></span> (<span id="count-<%= i %>"><%= @entries[key].length%></span>)
+      </li>
+      <% i = i + 1 %>
     <% end %>
+  </ul>
+
+  <br>
+
+  <% i = 0 %>
+  <% for key in @days %>
+  <!--
+    <div class="day-entries" onclick="displayMenu(<%= i %>)">
+      <span id="day-<%= i %>"><%= key %></span>: <span id="count-<%= i %>"><%= @entries[key].length%></span> entries
     </div>
-    <form class="food-entry-form" action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
-      <input id="food-<%= i %>" class="food-entry-input" name="food" type="text" style="margin-left:35px;">
-      <input class="food-entry-input" type="submit" value="Add Food" style="margin-left:10px;">
-    </form>
-    <div class="food-entry-form">
-      <input class="food-entry-input" type="submit" value="Delete selected entries" style="margin-left:110px;" onclick='delete_entries(<%= i %>, "<%= key %>")'>
+  -->
+
+    <div class="entry<%= i %>" style="width:100%;">
+      <div class="entry-wrapper">
+        <div class="field-title" style="width:320px;">Food</div>
+        <div class="field-title" style="width:100px;">Calories</div>
+        <div class="field-title" style="width:220px;">Serving Size</div>
+        <div class="field-title" style="width:80px;">Servings</div>
+      </div>
+
+      <div class="entry-wrapper">
+      <% for entry in @entries[key] %>
+        <div class="entry-wrapper">
+          <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
+          <div class="entry-field" style="width:80px;"><%= entry.calories %></div>
+          <div class="entry-field" style="width:200px;"><%= entry.serving.gsub("Serving Size ", "") %></div>
+          <div class="entry-field" style="width:60px;"><%= entry.numservings %></div>
+          <div class="entry-field" style="width:40px;" id="<%= entry.food %>">
+            <input name="delete" class = "delete-<%= i %>" type="checkbox">
+          </div>
+        </div>
+      <% end %>
+      </div>
+
+      <br><br>
+
+      <form class="food-entry-form" action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
+        <input id="food-<%= i %>" class="food-entry-input" name="food" placeholder="e.g. 'chicken'" type="text" style="margin-left:35px;">
+        <input class="food-entry-input" type="submit" value="Add Food" style="margin-left:10px;">
+      </form>
+
+      <div class="food-entry-form">
+        <input class="food-entry-input" type="submit" value="Delete selected entries" style="margin-left:110px;" onclick='delete_entries(<%= i %>, "<%= key %>")'>
+      </div>
+
+      <div class="entry-field" style="width:780px;text-align:center;border:2px solid #505050;margin-top:10px">
+        <p class="report">Intake: <%= @intake[key] %> cal</p>
+        <p class="report"> Burned: <%= @burned[key] %> cal</p>
+        <p class="report">Net Intake: <%= @intake[key] - @burned[key] %> cal</p>
+      </div>
+
     </div>
-    <div class="entry-field" style="width:780px; text-align:center;">
-      <p class="report">Intake: <%= @intake[key] %> cal</p>
-      <p class="report"> Burned: <%= @burned[key] %> cal</p>
-      <p class="report">Net Intake: <%= @intake[key] - @burned[key] %> cal</p>
-    </div>
-  </div>
-  <% i = i + 1 %>
-<% end %>
+    <% i = i + 1 %>
+  <% end %>
+
 </div>
 
 <script type="text/javascript">
@@ -158,6 +205,7 @@ function setMenu() {
     $(".entry"+i).hide();
   }
   $(".entry0").show();
+  $(document.getElementById("day-button-0")).css("border-bottom", "thin solid #505050");
 }
 
 function displayMenu(day) {
@@ -169,6 +217,20 @@ function displayMenu(day) {
     }
   }
 }
+
+function displayDay(day) {
+  for (var i=0; i<7; i++) {
+    if (i != day) {
+      $(".entry"+i).hide();
+      $(document.getElementById("day-button-"+i)).css("border-bottom", "");
+    } else {
+      $(".entry"+i).show();
+      $(document.getElementById("day-button-"+i)).css("border-bottom", "thin solid #505050");
+    }
+  }
+
+}
+
 
 </script>
 

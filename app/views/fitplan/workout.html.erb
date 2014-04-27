@@ -2,7 +2,7 @@
 
 <div id="reports">
   <div id="today">
-  <i><b>Today's Stats:</b></i><br><br>
+  <div style="padding-bottom:7px"><i><b>Today's Stats:</b></i></div>
   Caloric intake: <span id="intake"><%= @workout["intake"] %></span><br>
   Calories burned: <span id="burned"><%= @workout["burned"] %></span><br>
   Net caloric intake: <span id="net_intake"><%= @workout["intake"] - @workout["burned"] %></span>
@@ -10,8 +10,22 @@
 
   <hr />
 
+  <div style="text-align:left"><i><b>Add workout:</b></i></div>
+  <form id="add-workout" action="" method="post">
+    <select id="activity" name="activity" style="width: 200px">
+    <% for i in 0..@activities.length-1 %>
+      <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
+    <% end %></select>
+    <input id="minutes" name="minutes" placeholder="minutes" style="width:55px;height:23px;margin-left: 10px;">
+    <input id="add_workout_entry" type="submit" value="Add" style="height:30px;margin-left:10px">
+  </form>
+
+</div>
+
+
+<div id="recommendations">
   <div id="suggested">
-  <i><b>Suggested activity:</b></i><br><br>
+  <i><b>Suggested activity:</b></i>&nbsp;&nbsp;&nbsp;&nbsp;
       <select id="rec_activity" name="rec_activity" onchange="getRecommended()">
       <% for i in 0..@activities.length-1 %>
         <% if @activities[i] == @defaultActivity %>
@@ -25,51 +39,43 @@
 
   <hr />
 
-  <div id="desired">
-    <i><b>To reach desired weight:</b></i><br><br>
-      Target (cal/day):
-        <% if @workout["target"] == -1 %>
+  <div id="desired-current-wrapper">
+    <div id="desired">
+      <i><b>To reach desired weight:</b></i><br><br>
+        Target calories/day:
+          <% if @workout["target"] == -1 %>
+            <br><i>Complete your profile form to find out!</i><br>
+          <% else %>
+            <span id="target"><%= @workout["target"] %></span>
+          <% end %><br>
+        Suggested workout time:
+          <% if @workout["rec_target"] == -1 %>
+            <br><i>Complete your profile form to find out!</i><br>
+          <% else %>
+            <span id="rec_target"><%= @workout["rec_target"] %></span>
+          <% end %>
+    </div>
+
+    <div id="current">
+      <i><b>To maintain current weight:</b></i><br><br>
+      Target calories/day:
+        <% if @workout["normal"] == -1 %>
           <br><i>Complete your profile form to find out!</i><br>
         <% else %>
-          <span id="target"><%= @workout["target"] %></span>
+          <span id="normal"><%= @workout["normal"] %></span>
         <% end %><br>
-      Suggested workout (minutes):
-        <% if @workout["rec_target"] == -1 %>
+      Suggested workout time:
+        <% if @workout["rec_normal"] == -1 %>
           <br><i>Complete your profile form to find out!</i><br>
         <% else %>
-          <span id="rec_target"><%= @workout["rec_target"] %></span>
+          <span id="rec_normal"><%= @workout["rec_normal"] %></span>
         <% end %>
-  </div>
+    </div>
 
-  <hr />
-
-  <div id="current">
-    <i><b>To maintain current weight:</b></i><br><br>
-    Target (cal/day):
-      <% if @workout["normal"] == -1 %>
-        <br><i>Complete your profile form to find out!</i><br>
-      <% else %>
-        <span id="normal"><%= @workout["normal"] %></span>
-      <% end %><br>
-    Suggested workout (minutes):
-      <% if @workout["rec_normal"] == -1 %>
-        <br><i>Complete your profile form to find out!</i><br>
-      <% else %>
-        <span id="rec_normal"><%= @workout["rec_normal"] %></span>
-      <% end %>
   </div>
 
 </div>
 
-
-<form id="add-workout" action="" method="post">
-  <div id="workout-activity"><select id="activity" name="activity">
-  <% for i in 0..@activities.length-1 %>
-    <option value="<%= @activities[i] %>"><%= @activities[i] %></option>
-  <% end %></select></div>
-  <div id="workout-duration">Duration: <input id="minutes" name="minutes"></div>
-  <input id="add_workout_entry" type="submit" value="Add Workout">
-</form>
 
 <script type="text/javascript">
   function getRecommended() {

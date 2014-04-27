@@ -11,7 +11,7 @@
 
       <% options.each do |key, value|
         if request.fullpath.split("?")[0] == key %>
-          <li class="navbar-option" style="background-color:#dcdcdc;"><a href=<%= key %>><%= value %></a></li>
+          <li class="navbar-option" style="border-bottom: thin solid #505050"><a href=<%= key %>><%= value %></a></li>
         <% else %>
           <li class="navbar-option"><a href=<%= key %>><%= value %></a></li>
         <% end %>

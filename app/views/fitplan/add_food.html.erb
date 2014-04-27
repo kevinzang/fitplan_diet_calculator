@@ -3,8 +3,7 @@
 <%= render '/layouts/navbar' %>
 
   <div id="food-listings">
-  <i>Search results for <%= @food %>:</i>
-  <h1><%= @day %></h1>
+  <i>Search results for <%= @food %> (<%= @day.split('-')[1] %>/<%= @day.split('-')[2] %>/<%= @day.split('-')[0] %></i>):
   <hr />
     <% for i in 0..@results.length-1 %>
       <div id="food-container-<%= i %>" class="foodContainer">
@@ -26,7 +25,7 @@ function displayCalorie(selected_id, reply) {
         $(element).show();
     } else if (reply.calorie != -1) {
 		var serving_id = "serving"+selected_id;
-		$(element).html("<br><div class='info'>&nbsp;&nbsp;&nbsp;&nbsp;1 serving: "+reply.calorie+
+		$(element).html("<div class='info'>&nbsp;&nbsp;&nbsp;&nbsp;1 serving: "+reply.calorie+
         " calories&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serving size: "
 		+reply.serving.split("Serving Size")[1]+"</div>"+
 		"<div class='input'>Servings: <input id='"+serving_id+"' value='1' style='width:35px;'>"+
@@ -37,8 +36,9 @@ function displayCalorie(selected_id, reply) {
 	}
     for (var i=0;i<30;i++) {
         var previous_selection = document.getElementById(i);
-        if (previous_selection.hasChildNodes() && i!=selected_id) {
+        if ($(previous_selection).is(':visible') && i!=selected_id) {
             $(previous_selection).hide();
+            break;
         }
     }
 	return false;
