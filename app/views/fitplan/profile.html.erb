@@ -37,13 +37,20 @@
 
   <div id="friend-requests">
   <i><b>Friend Requests</b></i><br><br>
-  friends requests yay
+  <form id="friend_request_form" action="/profile/create_request" method="post">
+  <input id="friend_request" name="username" type="text">
+  <input id="submit_request" type="submit" value="Send Friend Request">
+</form>
   </div>
   <hr />
 
-  <div id="friend-search">
-  <i><b>Friend Search</b></i><br><br>
-  search for friends
+  <div id="friend-with-same-goal">
+  <i><b>Find Friend With Same Goal</b></i><br><br>
+  <form id="friend_request_form" action="/profile/create_request" method="post">
+  <!-- change this route and stuff -->
+  <input id="submit_request" type="submit" value="Find New Friend">
+</form>
+  
   </div>
 
 </div>

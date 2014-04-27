@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140426172306) do
+ActiveRecord::Schema.define(version: 20140427224245) do
 
   create_table "food_entries", force: true do |t|
     t.string   "username"
@@ -34,6 +34,17 @@ ActiveRecord::Schema.define(version: 20140426172306) do
     t.string   "date"
     t.string   "serving"
     t.string   "calories"
+  end
+
+  create_table "friend_requests", force: true do |t|
+    t.string  "usernameFrom"
+    t.string  "usernameTo"
+    t.boolean "friendStatus"
+  end
+
+  create_table "friendships", force: true do |t|
+    t.string "usernameFrom"
+    t.string "usernameTo"
   end
 
   create_table "user_foods", force: true do |t|
@@ -63,6 +74,7 @@ ActiveRecord::Schema.define(version: 20140426172306) do
   end
 
   add_index "user_profiles", ["remember_token"], name: "index_user_profiles_on_remember_token"
+  add_index "user_profiles", ["username"], name: "index_user_profiles_on_username"
 
   create_table "weight_entries", force: true do |t|
     t.string   "username"
