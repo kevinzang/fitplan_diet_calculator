@@ -1,20 +1,16 @@
-<div class="overall">
-
 <%= render '/layouts/navbar' %>
 
-  <div id="food-listings">
+<div id="food-listings">
   <i>Search results for <%= @food %> (<%= @day.split('-')[1] %>/<%= @day.split('-')[2] %>/<%= @day.split('-')[0] %></i>):
   <hr />
-    <% for i in 0..@results.length-1 %>
-      <div id="food-container-<%= i %>" class="foodContainer">
-        <div id="food-title-<%= i %>" class="foodTitle" onclick='getCalories(<%= i %>); return false;'><a href="#" id="food-button"><%= raw @results[i] %></a></div>
-        <div id="<%= i %>" class="foodData"></div>
-      </div>
-      <hr />
-    <% end %>
-  <div>
-
-</div>
+  <% for i in 0..@results.length-1 %>
+    <div id="food-container-<%= i %>" class="foodContainer">
+      <div id="food-title-<%= i %>" class="foodTitle" onclick='getCalories(<%= i %>); return false;'><a href="#" id="food-button"><%= raw @results[i] %></a></div>
+      <div id="<%= i %>" class="foodData"></div>
+    </div>
+    <hr />
+  <% end %>
+<div>
 
 <script type="text/javascript">
 $(".foodData").hide();

@@ -6,14 +6,14 @@ require File.expand_path("../../../app/models/workout_entry", __FILE__)
 require 'date'
 
 describe "Fitplan Unit Tests" do
-  puts "***begin fitplan_unit_spec.rb"
+	puts "***begin fitplan_unit_spec.rb"
 	before(:each) {
 		UserProfile.reset()
-    WeightEntry.delete_all()
+		WeightEntry.delete_all()
 	}
 	after(:each) {
 		UserProfile.reset()
-    WeightEntry.delete_all()
+		WeightEntry.delete_all()
 	}
 	describe "add new user" do
 		it "should not have a blank username" do
@@ -56,19 +56,19 @@ describe "Fitplan Unit Tests" do
 		it "should fail if fields contain negative values" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"-20", "gender"=>"female",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should fail if fields contain words" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"twenty", "gender"=>"female",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should_not == UserProfile::SUCCESS
 		end
 		it "should work if all fields are either blank or non-negative integers" do
 			fields = {"feet"=>"5", "inches"=>"0", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 		end
 	end
@@ -91,14 +91,14 @@ describe "Fitplan Unit Tests" do
 		it "should remember the defaults" do
 			fields = {"feet"=>"5", "inches"=>"7", "weight"=>"155",
 				"desired_weight"=>"150", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields).should == UserProfile::SUCCESS
 			defaults = UserProfile.getDefaults("kevin")
 			for key in defaults.keys
 				defaults[key].should == fields[key]
 			end
 		end
-    end
+	end
 	describe "search for food to add" do
 		it "should return the search results" do
 			results = FoodSearch.search("mashed potatoes")
@@ -110,20 +110,20 @@ describe "Fitplan Unit Tests" do
 			results.length.should > 0
 			results[0].should == "No Results Found"
 		end
-    end
-    describe "get calorie for food" do
+	end
+	describe "get calorie for food" do
 		it "should return the calorie" do
 			results = FoodSearch.search("mashed potatoes")
 			results.length.should > 5
 			results[5].should == "Potatoes, Mashed, Dehydrated, Prepared From Flakes "+
-			"- Without Milk, Whole Milk And Butter Add"
+				"- Without Milk, Whole Milk And Butter Add"
 			entry = FoodSearch.getCalorie(5)
 			entry.calories.should == "204"
 			entry.serving.should == "Serving Size 1 cup (210 g)"
 			entry.searched.should == true
 		end
-    end
-    describe "add food" do
+	end
+	describe "add food" do
 		it "should fail if user is not registered" do
 			UserProfile.addFood("kevin", "chicken", "150",
 				"2014-01-01", "10 bells", "2").should_not == UserProfile::SUCCESS
@@ -192,6 +192,81 @@ describe "Fitplan Unit Tests" do
 			todays_entries[0].date.should == Date.today.to_s
 		end
 	end
+	describe "getting the Profile gauge level" do
+		it "should increment for each consecutive day" do
+			UserProfile.signup("kevin", "secret", "0")
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.last_login.should == Date.today.to_s
+			kevin.gauge_level.should == 0
+			UserProfile.signout("0")
+			for _ in 1..10
+				kevin = UserProfile.find_by(username:"kevin")
+				kevin.last_login = (Date.today-1).to_s
+				kevin.save()
+				UserProfile.login("kevin", "secret", "0")
+				UserProfile.signout("0")
+			end
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.gauge_level.should == 10
+			kevin.last_login.should == Date.today.to_s
+		end
+		it "should not increment past 30" do
+			UserProfile.signup("kevin", "secret", "0")
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.last_login.should == Date.today.to_s
+			kevin.gauge_level.should == 0
+			UserProfile.signout("0")
+			for _ in 1..31
+				kevin = UserProfile.find_by(username:"kevin")
+				kevin.last_login = (Date.today-1).to_s
+				kevin.save()
+				UserProfile.login("kevin", "secret", "0")
+				UserProfile.signout("0")
+			end
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.gauge_level.should == 30
+			kevin.last_login.should == Date.today.to_s
+		end
+		it "should decrement by 2 for every skipped day" do
+			UserProfile.signup("kevin", "secret", "0")
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.gauge_level = 30
+			kevin.last_login = (Date.today-3).to_s
+			kevin.save()
+			UserProfile.signout("0")
+			UserProfile.login("kevin", "secret", "0")
+			UserProfile.signout("0")
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.gauge_level.should == 26
+			kevin.last_login.should == Date.today.to_s
+		end
+		it "should not decrement past 0" do
+			UserProfile.signup("kevin", "secret", "0")
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.gauge_level = 2
+			kevin.last_login = (Date.today-3).to_s
+			kevin.save()
+			UserProfile.signout("0")
+			UserProfile.login("kevin", "secret", "0")
+			UserProfile.signout("0")
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.gauge_level.should == 0
+			kevin.last_login.should == Date.today.to_s
+		end
+		it "should not do anything if user logs in twice on same day" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.signout("0")
+			UserProfile.login("kevin", "secret", "0")
+			UserProfile.signout("0")
+			UserProfile.login("kevin", "secret", "0")
+			UserProfile.signout("0")
+			kevin = UserProfile.find_by(username:"kevin")
+			kevin.gauge_level.should == 0
+			kevin.last_login.should == Date.today.to_s
+		end
+	end
+
+
 	describe "getting the workout plan" do
 		it "should report the intake" do
 			UserProfile.signup("kevin", "secret", "0")
@@ -207,7 +282,7 @@ describe "Fitplan Unit Tests" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
 				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			UserProfile.addFood("kevin", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -227,7 +302,7 @@ describe "Fitplan Unit Tests" do
 			UserProfile.signup("kevin", "secret", "0")
 			fields = {"feet"=>"", "inches"=>"", "weight"=>"165",
 				"desired_weight"=>"", "age"=>"", "gender"=>"",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("kevin", fields.keys, fields)
 			rec = UserProfile.getRecommended("kevin", 2000, 1500,
 				"Running, 6 mph (10 min mile)")
@@ -236,269 +311,269 @@ describe "Fitplan Unit Tests" do
 		end
 	end
 	describe "getting workout activities" do
-	  	it "should retrieve activities" do
-	  		activities = WorkoutEntry.getActivities
-	  		activities.include?("Aerobics, general").should == true
-				activities.include?("Ballet, twist, jazz, tap").should == true
-				activities.include?("Canoeing, camping trip").should == true
-	  	end
-	  	it "should look up rates for activities" do
-	  		WorkoutEntry.getRate("Aerobics, general").should == 2.95
-				WorkoutEntry.getRate("Ballet, twist, jazz, tap").should == 2.04
-				WorkoutEntry.getRate("Canoeing, camping trip").should == 1.81
-	  	end
+		it "should retrieve activities" do
+			activities = WorkoutEntry.getActivities
+			activities.include?("Aerobics, general").should == true
+			activities.include?("Ballet, twist, jazz, tap").should == true
+			activities.include?("Canoeing, camping trip").should == true
+		end
+		it "should look up rates for activities" do
+			WorkoutEntry.getRate("Aerobics, general").should == 2.95
+			WorkoutEntry.getRate("Ballet, twist, jazz, tap").should == 2.04
+			WorkoutEntry.getRate("Canoeing, camping trip").should == 1.81
+		end
 	end
 	describe "adding workout entries" do
-	  	it "should return error for nonexistant user" do
-	  		result = UserProfile.addWorkoutEntry("phantom",
-	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-	  		result.should == UserProfile::ERR_USER_NOT_FOUND
-	  	end
-	  	it "should return error for nonexistant activity" do
-	  		UserProfile.signup("a", "secret", "0")
-	  		result = UserProfile.addWorkoutEntry("a",
-	  			"underwater basket weaving", "30", Date.today.to_s)
-	  		result.should == UserProfile::ERR_ACTIVITY_NOT_FOUND
-	  	end
-	  	it "should return error if user has no weight" do
-	  		UserProfile.signup("a", "secret", "0")
-	  		result = UserProfile.addWorkoutEntry("a",
-	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-	  		result.class.should == String
-	  	end
-	  	it "should add entry for valid entry" do
-	  		UserProfile.signup("a", "secret", "0")
-	  		fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
-				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-	      "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
-			UserProfile.setProfile("a", fields.keys, fields)
-	  		result = UserProfile.addWorkoutEntry("a",
-	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-	  		result.should == 363
-	  		result = UserProfile.addWorkoutEntry("a",
-	  			"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
-	  		result.should == 726
-	  	end
+		it "should return error for nonexistant user" do
+			result = UserProfile.addWorkoutEntry("phantom",
+				"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+			result.should == UserProfile::ERR_USER_NOT_FOUND
+		end
+		it "should return error for nonexistant activity" do
+			UserProfile.signup("a", "secret", "0")
+			result = UserProfile.addWorkoutEntry("a",
+				"underwater basket weaving", "30", Date.today.to_s)
+			result.should == UserProfile::ERR_ACTIVITY_NOT_FOUND
+		end
+		it "should return error if user has no weight" do
+			UserProfile.signup("a", "secret", "0")
+			result = UserProfile.addWorkoutEntry("a",
+				"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+			result.class.should == String
+		end
+		it "should add entry for valid entry" do
+			UserProfile.signup("a", "secret", "0")
+			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
+			"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
+			"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+		UserProfile.setProfile("a", fields.keys, fields)
+			result = UserProfile.addWorkoutEntry("a",
+				"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+			result.should == 363
+			result = UserProfile.addWorkoutEntry("a",
+				"Running, 6 mph (10 min mile)", "30", Date.today.to_s)
+			result.should == 726
+		end
 	end
 	describe "user authentication" do
-	  	it "should set the remember token" do
-	  		UserProfile.signup("kevin", "secret", "0")
-	  		username = UserProfile.getUsername("0")
-	  		username.should == "kevin"
-	  	end
-	  	it "should sign out" do
-	  		UserProfile.signup("kevin", "secret", "0")
-	  		UserProfile.signout("0")
-	  		user = UserProfile.find_by(username:"kevin")
-	  		user.remember_token.should == nil
-	  	end
+		it "should set the remember token" do
+			UserProfile.signup("kevin", "secret", "0")
+			username = UserProfile.getUsername("0")
+			username.should == "kevin"
+		end
+		it "should sign out" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.signout("0")
+			user = UserProfile.find_by(username:"kevin")
+			user.remember_token.should == nil
+		end
 	end
-  describe "getting calorie intake chart data" do
-    it "should return nil if user does not exist" do
-      UserProfile.calorieIntakeChartData("derp", 12).should == nil
-    end
-    it "should return {} if range_in_months < 0" do
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
-      UserProfile.addFood("kevin", "french fries", "700", Date.today.to_s, "serving", "1")
-      UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
-      chartData = UserProfile.calorieIntakeChartData("kevin", -1)
-      chartData.should == {}
-    end
-    it "should set range_in_months to 12 if range_in_months > 12" do
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addFood("kevin", "french fries", "700", (Date.today - 11.months).to_s, "serving", "1")
-      UserProfile.addFood("kevin", "pho", "700", (Date.today - 19.months).to_s, "serving", "1")
-      chartData = UserProfile.calorieIntakeChartData("kevin", 20)
-      chartData.has_key?((Date.today - 11.months).to_s).should == true
-      chartData[(Date.today - 11.months).to_s].should == 700
-      chartData.has_key?((Date.today - 19.months).to_s).should == false
-    end
-    it "should combine foods in the same day" do
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
-      UserProfile.addFood("kevin", "french fries", "700", Date.today.to_s, "serving", "1")
-      UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
-      chartData = UserProfile.calorieIntakeChartData("kevin", 12)
-      chartData[Date.today.to_s].should == 2700
-    end
-    it "should multiply calories by number of servings" do
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "7")
-      chartData = UserProfile.calorieIntakeChartData("kevin", 12)
-      chartData[Date.today.to_s].should == 7000
-    end
-    it "should ignore entries outside of search range" do
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addFood("kevin", "ice cream", "1000", (Date.today - 4.months).to_s, "serving", "7")
-      chartData = UserProfile.calorieIntakeChartData("kevin", 3)
-      chartData.has_key?(Date.today - 4.months).should == false
-      chartData = UserProfile.calorieIntakeChartData("kevin", 5)
-      chartData.has_key?((Date.today - 4.months).to_s).should == true
-    end
-  end
-  describe "UserProfile.addWeightEntry(...)" do
-    before(:each) {
-      UserProfile.reset()
-      WeightEntry.delete_all()
-    }
-    it "should error for invalid user" do
-      result = UserProfile.addWeightEntry("kevin", "1", Date.today.to_s)
-      result.should == "Error: user not found"
-    end
-    it "should error for weight < 0" do
-      UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addWeightEntry("kevin", "-1", Date.today.to_s)
-      result.should == "Error: weight must be positive"
-      WeightEntry.find_by(username: "kevin").should == nil
-    end
-    it "should error for weight > 1000" do
-      UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addWeightEntry("kevin", "1001", Date.today.to_s)
-      result.should == "Error: weight must be <= 1000"
-      WeightEntry.find_by(username: "kevin").should == nil
-    end
-    it "should succeed if weight and user are valid" do
-      date = Date.today
-      UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addWeightEntry("kevin", "211", date.to_s)
-      result.should == "SUCCESS"
-      entry = WeightEntry.find_by(username: "kevin")
-      entry.should_not == nil
-      entry.username.should == "kevin"
-      entry.weight.should == 211
-      entry.date.should == date.to_s
-    end
-  end
-  describe "UserProfile.getWeightEntries(...)" do
-    it "should return all weight entries, lowest weight for each day" do
-      date = Date.today
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addWeightEntry("kevin", "211", date.to_s)
-      UserProfile.addWeightEntry("kevin", "210", date.to_s)
-      UserProfile.addWeightEntry("kevin", "209", (date + 1.days).to_s)
-      entries = UserProfile.getWeightEntries("kevin")
-      entries.length.should == 2
-      entries[0].weight.should == 210
-      entries[1].weight.should == 209
-    end
-  end
-  describe "UserProfile.getWeightEntriesInRange(...)" do
-    it "should return only weight entries in range" do
-      current_date = Date.today
-      out_of_range_date = current_date - 5.months
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addWeightEntry("kevin", "211", (current_date - 5.days).to_s)
-      UserProfile.addWeightEntry("kevin", "5", out_of_range_date.to_s)
-      entries = UserProfile.getWeightEntriesInRange("kevin", 3)
-      entries.length.should == 1
-      entries[0].weight.should == 211
-    end
-  end
-  describe "UserProfile.weightChartData(...)" do
-    it "should return all weight entries in range, in format requested by chartkick gem" do
-      date = Date.today
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.addWeightEntry("kevin", "211", date.to_s)
-      UserProfile.addWeightEntry("kevin", "212", (date - 3.days).to_s)
-      UserProfile.addWeightEntry("kevin", "216", (date - 10.days).to_s)
-      UserProfile.addWeightEntry("kevin", "999", (date - 5.months).to_s)
-      chartData = UserProfile.weightChartData("kevin", 3)
-      chartData.size.should == 3
-      chartData[date.to_s].should == 211
-      chartData[(date - 3.days).to_s].should == 212
-      chartData[(date - 10.days).to_s].should == 216
-      chartData[(date - 5.months).to_s].should == nil
-    end
-  end
-  describe "UserProfile.recommendedCalorieIntake(...)" do
-    it "should return the correct number of calories" do
-      UserProfile.signup("kevin", "secret", "0")
-      user = UserProfile.find_by(username: "kevin")
-      for height in 66..67
-        for weight in 130..131
-          for age in 23..24
-            for gender in ["male", "female"]
-              for activity_level in [0, 1, 2, 3, 4]
-                for weight_change_per_week_goal in [0.0, 0.5, 1.0, 1.5, 2.0]
-                  # expected
-                  bmr = nil
-                  if gender == "male"
-                    bmr = (65 + 13.8*weight/2.2 + 5*height*2.54 - 6.8*age).round(-1)
-                  else # gender == "female"
-                    bmr = (655 + 9.6*weight/2.2 + 1.8*height*2.54 - 4.7*age).round(-1)
-                  end
-                  scale_factor = 1.2 + 0.175 * activity_level
-                  calorie_change_per_week = 3500 * weight_change_per_week_goal
-                  calorie_change_per_day = calorie_change_per_week / 7
-                  expected = scale_factor * bmr + calorie_change_per_day
-                  # actual
-                  user.height = height
-                  user.weight = weight
-                  user.age = age
-                  user.gender = gender
-                  user.activity_level = activity_level
-                  user.weight_change_per_week_goal = weight_change_per_week_goal
-                  user.save()
-                  actual = UserProfile.recommendedCalorieIntake("kevin")
-                  actual.should == expected
-                end
-              end
-            end
-          end
-        end
-      end
-    end
-  end
-  describe "UserProfile.addUserFood(...)" do
-    it "should return ERR_USER_NOT_FOUND if user doesn't exist" do
-      result = UserProfile.addUserFood("derp", "derp", "derp", "derp")
-      result.should == UserProfile::ERR_USER_NOT_FOUND
-    end
-    it "should not add foods with nonpositive calories" do
-      UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addUserFood("kevin", "ice cream yum", "0", "serving")
-      result.should == "Calories must be positive"
-    end
-    it "should not add foods with nonnumeric calories" do
-      UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addUserFood("kevin", "ice cream yum", "derp", "serving")
-      result.should == "Calories must be an integer"
-    end
-    it "should add user food if no errors" do
-      UserProfile.signup("kevin", "secret", "0")
-      result = UserProfile.addUserFood("kevin", "ice cream yum", "120", "serving")
-      result.should == UserProfile::SUCCESS
-      entries = UserProfile.getUserFoods("kevin", "")
-      entries.length.should == 1
-      entries[0].username.should == "kevin"
-      entries[0].food.should == "ice cream yum"
-      entries[0].calories.should == 120
-      entries[0].serving.should == "serving"
-    end
-    it "should overwrite preexisting user foods with same username, food, serving" do
-      UserProfile.signup("kevin", "secret", "0")
-      UserProfile.signup("not kevin", "secret", "1")
-      UserProfile.addUserFood("kevin", "ice cream yum", "120", "serving")
-      UserProfile.addUserFood("kevin", "ice cream", "121", "serving")
-      UserProfile.addUserFood("kevin", "ice cream yum", "122", "serving 2")
-      UserProfile.addUserFood("kevin", "ice cream yum", "123", "serving")
-      UserProfile.addUserFood("not kevin", "ice cream yum", "124", "serving")
-      entries = UserProfile.getUserFoods("kevin", "").sort!{|a, b| a.calories <=> b.calories}
-      entries.length.should == 3
-      entries[0].username.should == "kevin"
-      entries[0].food.should == "ice cream"
-      entries[0].calories.should == 121
-      entries[0].serving.should == "serving"
-      entries[1].username.should == "kevin"
-      entries[1].food.should == "ice cream yum"
-      entries[1].calories.should == 122
-      entries[1].serving.should == "serving 2"
-      entries[2].username.should == "kevin"
-      entries[2].food.should == "ice cream yum"
-      entries[2].calories.should == 123
-      entries[2].serving.should == "serving"
-    end
-  end
-  puts "***end fitplan_unit_spec.rb"
+	describe "getting calorie intake chart data" do
+		it "should return nil if user does not exist" do
+			UserProfile.calorieIntakeChartData("derp", 12).should == nil
+		end
+		it "should return {} if range_in_months < 0" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
+			UserProfile.addFood("kevin", "french fries", "700", Date.today.to_s, "serving", "1")
+			UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
+			chartData = UserProfile.calorieIntakeChartData("kevin", -1)
+			chartData.should == {}
+		end
+		it "should set range_in_months to 12 if range_in_months > 12" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addFood("kevin", "french fries", "700", (Date.today - 11.months).to_s, "serving", "1")
+			UserProfile.addFood("kevin", "pho", "700", (Date.today - 19.months).to_s, "serving", "1")
+			chartData = UserProfile.calorieIntakeChartData("kevin", 20)
+			chartData.has_key?((Date.today - 11.months).to_s).should == true
+			chartData[(Date.today - 11.months).to_s].should == 700
+			chartData.has_key?((Date.today - 19.months).to_s).should == false
+		end
+		it "should combine foods in the same day" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
+			UserProfile.addFood("kevin", "french fries", "700", Date.today.to_s, "serving", "1")
+			UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "1")
+			chartData = UserProfile.calorieIntakeChartData("kevin", 12)
+			chartData[Date.today.to_s].should == 2700
+		end
+		it "should multiply calories by number of servings" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addFood("kevin", "ice cream", "1000", Date.today.to_s, "serving", "7")
+			chartData = UserProfile.calorieIntakeChartData("kevin", 12)
+			chartData[Date.today.to_s].should == 7000
+		end
+		it "should ignore entries outside of search range" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addFood("kevin", "ice cream", "1000", (Date.today - 4.months).to_s, "serving", "7")
+			chartData = UserProfile.calorieIntakeChartData("kevin", 3)
+			chartData.has_key?(Date.today - 4.months).should == false
+			chartData = UserProfile.calorieIntakeChartData("kevin", 5)
+			chartData.has_key?((Date.today - 4.months).to_s).should == true
+		end
+	end
+	describe "UserProfile.addWeightEntry(...)" do
+		before(:each) {
+			UserProfile.reset()
+			WeightEntry.delete_all()
+		}
+		it "should error for invalid user" do
+			result = UserProfile.addWeightEntry("kevin", "1", Date.today.to_s)
+			result.should == "Error: user not found"
+		end
+		it "should error for weight < 0" do
+			UserProfile.signup("kevin", "secret", "0")
+			result = UserProfile.addWeightEntry("kevin", "-1", Date.today.to_s)
+			result.should == "Error: weight must be positive"
+			WeightEntry.find_by(username: "kevin").should == nil
+		end
+		it "should error for weight > 1000" do
+			UserProfile.signup("kevin", "secret", "0")
+			result = UserProfile.addWeightEntry("kevin", "1001", Date.today.to_s)
+			result.should == "Error: weight must be <= 1000"
+			WeightEntry.find_by(username: "kevin").should == nil
+		end
+		it "should succeed if weight and user are valid" do
+			date = Date.today
+			UserProfile.signup("kevin", "secret", "0")
+			result = UserProfile.addWeightEntry("kevin", "211", date.to_s)
+			result.should == "SUCCESS"
+			entry = WeightEntry.find_by(username: "kevin")
+			entry.should_not == nil
+			entry.username.should == "kevin"
+			entry.weight.should == 211
+			entry.date.should == date.to_s
+		end
+	end
+	describe "UserProfile.getWeightEntries(...)" do
+		it "should return all weight entries, lowest weight for each day" do
+			date = Date.today
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addWeightEntry("kevin", "211", date.to_s)
+			UserProfile.addWeightEntry("kevin", "210", date.to_s)
+			UserProfile.addWeightEntry("kevin", "209", (date + 1.days).to_s)
+			entries = UserProfile.getWeightEntries("kevin")
+			entries.length.should == 2
+			entries[0].weight.should == 210
+			entries[1].weight.should == 209
+		end
+	end
+	describe "UserProfile.getWeightEntriesInRange(...)" do
+		it "should return only weight entries in range" do
+			current_date = Date.today
+			out_of_range_date = current_date - 5.months
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addWeightEntry("kevin", "211", (current_date - 5.days).to_s)
+			UserProfile.addWeightEntry("kevin", "5", out_of_range_date.to_s)
+			entries = UserProfile.getWeightEntriesInRange("kevin", 3)
+			entries.length.should == 1
+			entries[0].weight.should == 211
+		end
+	end
+	describe "UserProfile.weightChartData(...)" do
+		it "should return all weight entries in range, in format requested by chartkick gem" do
+			date = Date.today
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.addWeightEntry("kevin", "211", date.to_s)
+			UserProfile.addWeightEntry("kevin", "212", (date - 3.days).to_s)
+			UserProfile.addWeightEntry("kevin", "216", (date - 10.days).to_s)
+			UserProfile.addWeightEntry("kevin", "999", (date - 5.months).to_s)
+			chartData = UserProfile.weightChartData("kevin", 3)
+			chartData.size.should == 3
+			chartData[date.to_s].should == 211
+			chartData[(date - 3.days).to_s].should == 212
+			chartData[(date - 10.days).to_s].should == 216
+			chartData[(date - 5.months).to_s].should == nil
+		end
+	end
+	describe "UserProfile.recommendedCalorieIntake(...)" do
+		it "should return the correct number of calories" do
+			UserProfile.signup("kevin", "secret", "0")
+			user = UserProfile.find_by(username: "kevin")
+			for height in 66..67
+				for weight in 130..131
+					for age in 23..24
+						for gender in ["male", "female"]
+							for activity_level in [0, 1, 2, 3, 4]
+								for weight_change_per_week_goal in [0.0, 0.5, 1.0, 1.5, 2.0]
+									# expected
+									bmr = nil
+									if gender == "male"
+										bmr = (65 + 13.8*weight/2.2 + 5*height*2.54 - 6.8*age).round(-1)
+									else # gender == "female"
+										bmr = (655 + 9.6*weight/2.2 + 1.8*height*2.54 - 4.7*age).round(-1)
+									end
+									scale_factor = 1.2 + 0.175 * activity_level
+									calorie_change_per_week = 3500 * weight_change_per_week_goal
+									calorie_change_per_day = calorie_change_per_week / 7
+									expected = scale_factor * bmr + calorie_change_per_day
+									# actual
+									user.height = height
+									user.weight = weight
+									user.age = age
+									user.gender = gender
+									user.activity_level = activity_level
+									user.weight_change_per_week_goal = weight_change_per_week_goal
+									user.save()
+									actual = UserProfile.recommendedCalorieIntake("kevin")
+									actual.should == expected
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	describe "UserProfile.addUserFood(...)" do
+		it "should return ERR_USER_NOT_FOUND if user doesn't exist" do
+			result = UserProfile.addUserFood("derp", "derp", "derp", "derp")
+			result.should == UserProfile::ERR_USER_NOT_FOUND
+		end
+		it "should not add foods with nonpositive calories" do
+			UserProfile.signup("kevin", "secret", "0")
+			result = UserProfile.addUserFood("kevin", "ice cream yum", "0", "serving")
+			result.should == "Calories must be positive"
+		end
+		it "should not add foods with nonnumeric calories" do
+			UserProfile.signup("kevin", "secret", "0")
+			result = UserProfile.addUserFood("kevin", "ice cream yum", "derp", "serving")
+			result.should == "Calories must be an integer"
+		end
+		it "should add user food if no errors" do
+			UserProfile.signup("kevin", "secret", "0")
+			result = UserProfile.addUserFood("kevin", "ice cream yum", "120", "serving")
+			result.should == UserProfile::SUCCESS
+			entries = UserProfile.getUserFoods("kevin", "")
+			entries.length.should == 1
+			entries[0].username.should == "kevin"
+			entries[0].food.should == "ice cream yum"
+			entries[0].calories.should == 120
+			entries[0].serving.should == "serving"
+		end
+		it "should overwrite preexisting user foods with same username, food, serving" do
+			UserProfile.signup("kevin", "secret", "0")
+			UserProfile.signup("not kevin", "secret", "1")
+			UserProfile.addUserFood("kevin", "ice cream yum", "120", "serving")
+			UserProfile.addUserFood("kevin", "ice cream", "121", "serving")
+			UserProfile.addUserFood("kevin", "ice cream yum", "122", "serving 2")
+			UserProfile.addUserFood("kevin", "ice cream yum", "123", "serving")
+			UserProfile.addUserFood("not kevin", "ice cream yum", "124", "serving")
+			entries = UserProfile.getUserFoods("kevin", "").sort!{|a, b| a.calories <=> b.calories}
+			entries.length.should == 3
+			entries[0].username.should == "kevin"
+			entries[0].food.should == "ice cream"
+			entries[0].calories.should == 121
+			entries[0].serving.should == "serving"
+			entries[1].username.should == "kevin"
+			entries[1].food.should == "ice cream yum"
+			entries[1].calories.should == 122
+			entries[1].serving.should == "serving 2"
+			entries[2].username.should == "kevin"
+			entries[2].food.should == "ice cream yum"
+			entries[2].calories.should == 123
+			entries[2].serving.should == "serving"
+		end
+	end
+	puts "***end fitplan_unit_spec.rb"
 end

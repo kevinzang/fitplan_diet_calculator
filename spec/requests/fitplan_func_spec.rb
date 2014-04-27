@@ -5,14 +5,14 @@ require 'date'
 require 'json'
 
 describe "Fitplan Functional Tests" do
-  puts "***begin fitplan_func_spec.rb"
+	puts "***begin fitplan_func_spec.rb"
 	before(:each) {
 		UserProfile.reset()
-    WeightEntry.delete_all()
+		WeightEntry.delete_all()
 	}
 	after(:each) {
 		UserProfile.reset()
-    WeightEntry.delete_all()
+		WeightEntry.delete_all()
 	}
 	session = {'CONTENT_TYPE'=>'application/json',
 		'ACCEPT' => 'application/json'}
@@ -41,7 +41,7 @@ describe "Fitplan Functional Tests" do
 			UserProfile.signup("dragon", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
 				"desired_weight"=>"140", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			resp = {"result"=>UserProfile::SUCCESS}
 			post '/profile_form/submit', req.to_json, session
 			response.body.should == resp.to_json
@@ -59,7 +59,7 @@ describe "Fitplan Functional Tests" do
 			UserProfile.signup("a", "secret", "0")
 			req = {"feet"=>"5", "inches"=>"0", "weight"=>"150",
 				"desired_weight"=>"140", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("a", req.keys, req).should == UserProfile::SUCCESS
 			get '/profile_form'
 			defaults = assigns(:defaults)
@@ -67,7 +67,7 @@ describe "Fitplan Functional Tests" do
 				defaults[key].should == req[key]
 			end
 		end
-  end
+	end
 	describe "search for food to add" do
 		it "should set @food and @results" do
 			cookies[:remember_token] = "0"
@@ -81,8 +81,8 @@ describe "Fitplan Functional Tests" do
 			assigns(:results)[0].should ==
 			"Potatoes, Mashed, Home-prepared, Whole Milk And Margarine Added"
 		end
-    end
-    describe "get calorie for food" do
+	end
+	describe "get calorie for food" do
 		it "should return the calorie" do
 			FoodSearch.search("mashed potatoes")
 			req = {"num"=>"5"}
@@ -90,8 +90,8 @@ describe "Fitplan Functional Tests" do
 			post '/profile/get_calorie', req.to_json, session
 			response.body.should == resp.to_json
 		end
-    end
-    describe "add food" do
+	end
+	describe "add food" do
 		it "should add the food entry" do
 			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
@@ -105,7 +105,7 @@ describe "Fitplan Functional Tests" do
 			entries = UserProfile.getEntriesByDate("a", "04-19-2014")
 			entries.length.should == 1
 			entries[0].food.should == "Potatoes, Mashed, Dehydrated, Prepared From Flakes "+
-			"- Without Milk, Whole Milk And Butter Add"
+				"- Without Milk, Whole Milk And Butter Add"
 			entries[0].calories.should == 204
 			entries[0].date.should == "04-19-2014"
 			entries[0].serving.should == "Serving Size 1 cup (210 g)"
@@ -171,7 +171,7 @@ describe "Fitplan Functional Tests" do
 			UserProfile.signup("a", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
 				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("a", fields.keys, fields)
 			UserProfile.addFood("a", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -195,15 +195,15 @@ describe "Fitplan Functional Tests" do
 			activities.include?("Aerobics, general").should == true
 			activities.include?("Ballet, twist, jazz, tap").should == true
 			activities.include?("Canoeing, camping trip").should == true
-        end
-    end
-    describe "getting a recommendation" do
-    	it "should get a recommendation" do
-    		cookies[:remember_token] = "0"
+		end
+	end
+	describe "getting a recommendation" do
+		it "should get a recommendation" do
+			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
 				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("a", fields.keys, fields)
 			UserProfile.addFood("a", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -221,13 +221,13 @@ describe "Fitplan Functional Tests" do
 			response.body.should == resp.to_json
 		end
 	end
-    describe "adding workout entries" do
-    	it "should add workout entry" do
-    		cookies[:remember_token] = "0"
+	describe "adding workout entries" do
+		it "should add workout entry" do
+			cookies[:remember_token] = "0"
 			UserProfile.signup("a", "secret", "0")
 			fields = {"feet"=>"5", "inches"=>"8", "weight"=>"160",
 				"desired_weight"=>"155", "age"=>"20", "gender"=>"male",
-        "activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
+				"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 			UserProfile.setProfile("a", fields.keys, fields)
 			UserProfile.addFood("a", "chicken", "266",
 				Date.today.to_s, "10 bells", "10")
@@ -241,9 +241,8 @@ describe "Fitplan Functional Tests" do
 			# workout["rec_normal"].should == 71
 			workout["burned"].should == 0
 
-			# add a WorkoutEntry
-			req = {"activity" => "Bird watching", # rate=1.14
-				"minutes" => "30"}
+			# add a WorkoutEntry. rate=1.14
+			req = {"activity" => "Bird watching", "minutes" => "30"}
 			resp = {"result" => UserProfile::SUCCESS, "burned" => 91}
 			post '/profile/workout/add_entry', req.to_json, session
 			response.body.should == resp.to_json
@@ -258,89 +257,89 @@ describe "Fitplan Functional Tests" do
 			workout["rec_normal"].should == 8
 			workout["burned"].should == 91
 		end
-    end
-    describe "user authentication" do
-    	it "should remember the user" do
-    		cookies[:remember_token] = "blastoise"
-    		UserProfile.signup("squirtle", "wartortle", "blastoise")
-    		get '/profile'
-    		assigns(:user).should == "squirtle"
-    	end
-    	it "should sign the user out" do
-    		cookies[:remember_token] = "blastoise"
-    		UserProfile.signup("squirtle", "wartortle", "blastoise")
-    		req = {}
+	end
+	describe "user authentication" do
+		it "should remember the user" do
+			cookies[:remember_token] = "blastoise"
+			UserProfile.signup("squirtle", "wartortle", "blastoise")
+			get '/profile'
+			assigns(:user).should == "squirtle"
+		end
+		it "should sign the user out" do
+			cookies[:remember_token] = "blastoise"
+			UserProfile.signup("squirtle", "wartortle", "blastoise")
+			req = {}
 			resp = {"result"=>UserProfile::SUCCESS}
 			post '/signout_submit', req.to_json, session
 			response.body.should == resp.to_json
-    		get '/profile'
-    		assigns(:user).should == nil
-    	end
-    end
-  describe "getting calorie intake chart data" do
-    it "should set @calorieIntakeChartData" do
-      cookies[:remember_token] = "0"
-      UserProfile.signup("a", "secret", "0")
-      start_date = Date.today
-      (0..20).each do |offset|
-        key = (start_date - offset.days).to_s
-        UserProfile.addFood("a", "cereal", "156", key, "serving", "2")
-        UserProfile.addFood("a", "salad", "483", key, "serving", "1")
-        UserProfile.addFood("a", "snack", "92", key, "serving", "3")
-        UserProfile.addFood("a", "pho", "855", key, "serving", "1")
-      end
-      get '/progress'
-      chartData = assigns(:calorieIntakeChartData)
-      (0..20).each do |offset|
-        key = (start_date - offset.days).to_s
-        chartData.has_key?(key).should == true
-        chartData[key].should == 2 * 156 + 483 + 3 * 92 + 855
-      end
-    end
-  end
-  describe "fitplan_controller.add_weight()" do
-    it "should successfully add valid weight entry" do
-      cookies[:remember_token] = "0"
-      UserProfile.signup("kevin", "secret", "0")
-      date = Date.today
-      req = {"weight" => "117"}
-      resp = {"result"=>"success", "message" => "Weight successfully added"}
-      post '/profile/add_weight', req.to_json, session
-      response.body.should == resp.to_json
-      entries = UserProfile.getWeightEntries("kevin")
-      entries.length.should == 1
-      entry = entries[0]
-      entry.should_not == nil
-      entry.username.should == "kevin"
-      entry.weight.should == 117
-      entry.date.should == date.to_s
-    end
-  end
-  describe "fitplan_controller.create_new_food()" do
-    it "should successfully add valid user food" do
-      cookies[:remember_token] = "0"
-      UserProfile.signup("kevin", "secret", "0")
-      req = {"username" => "kevin", "food" => "ice cream", "calories" => 9000, "serving" => "a lot"}
-      resp = {"result" => UserProfile::SUCCESS}
-      post '/profile/create_new_food', req.to_json, session
-      response.body.should == resp.to_json
-    end
-    it "should error if calories is nonpositive" do
-      cookies[:remember_token] = "0"
-      UserProfile.signup("kevin", "secret", "0")
-      req = {"username" => "kevin", "food" => "ice cream", "calories" => 0, "serving" => "a lot"}
-      resp = {"result" => "Calories must be positive"}
-      post '/profile/create_new_food', req.to_json, session
-      response.body.should == resp.to_json
-    end
-    it "should error if calories is not a number" do
-      cookies[:remember_token] = "0"
-      UserProfile.signup("kevin", "secret", "0")
-      req = {"username" => "kevin", "food" => "ice cream", "calories" => "derp", "serving" => "a lot"}
-      resp = {"result" => "Calories must be an integer"}
-      post '/profile/create_new_food', req.to_json, session
-      response.body.should == resp.to_json
-    end
-  end
-  puts "***end fitplan_func_spec.rb"
+			get '/profile'
+			assigns(:user).should == nil
+		end
+	end
+	describe "getting calorie intake chart data" do
+		it "should set @calorieIntakeChartData" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "secret", "0")
+			start_date = Date.today
+			(0..20).each do |offset|
+				key = (start_date - offset.days).to_s
+				UserProfile.addFood("a", "cereal", "156", key, "serving", "2")
+				UserProfile.addFood("a", "salad", "483", key, "serving", "1")
+				UserProfile.addFood("a", "snack", "92", key, "serving", "3")
+				UserProfile.addFood("a", "pho", "855", key, "serving", "1")
+			end
+			get '/progress'
+			chartData = assigns(:calorieIntakeChartData)
+			(0..20).each do |offset|
+				key = (start_date - offset.days).to_s
+				chartData.has_key?(key).should == true
+				chartData[key].should == 2 * 156 + 483 + 3 * 92 + 855
+			end
+		end
+	end
+	describe "fitplan_controller.add_weight()" do
+		it "should successfully add valid weight entry" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("kevin", "secret", "0")
+			date = Date.today
+			req = {"weight" => "117"}
+			resp = {"result"=>"success", "message" => "Weight successfully added"}
+			post '/profile/add_weight', req.to_json, session
+			response.body.should == resp.to_json
+			entries = UserProfile.getWeightEntries("kevin")
+			entries.length.should == 1
+			entry = entries[0]
+			entry.should_not == nil
+			entry.username.should == "kevin"
+			entry.weight.should == 117
+			entry.date.should == date.to_s
+		end
+	end
+	describe "fitplan_controller.create_new_food()" do
+		it "should successfully add valid user food" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("kevin", "secret", "0")
+			req = {"username" => "kevin", "food" => "ice cream", "calories" => 9000, "serving" => "a lot"}
+			resp = {"result" => UserProfile::SUCCESS}
+			post '/profile/create_new_food', req.to_json, session
+			response.body.should == resp.to_json
+		end
+		it "should error if calories is nonpositive" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("kevin", "secret", "0")
+			req = {"username" => "kevin", "food" => "ice cream", "calories" => 0, "serving" => "a lot"}
+			resp = {"result" => "Calories must be positive"}
+			post '/profile/create_new_food', req.to_json, session
+			response.body.should == resp.to_json
+		end
+		it "should error if calories is not a number" do
+			cookies[:remember_token] = "0"
+			UserProfile.signup("kevin", "secret", "0")
+			req = {"username" => "kevin", "food" => "ice cream", "calories" => "derp", "serving" => "a lot"}
+			resp = {"result" => "Calories must be an integer"}
+			post '/profile/create_new_food', req.to_json, session
+			response.body.should == resp.to_json
+		end
+	end
+	puts "***end fitplan_func_spec.rb"
 end
