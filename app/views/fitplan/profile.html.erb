@@ -34,13 +34,13 @@
   <% if @pending_in.length > 4 %>
     <div class="friends-display" id="received-requests">
       <% for friend in @pending_in %>
-        <div class="grey-image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
       <% end %>
     </div>
   <% elsif @pending_in.length > 0 %>
     <div class="single-row-friends-display" id="received-requests">
       <% for friend in @pending_in %>
-        <div class="grey-image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
       <% end %>
     </div>
   <% else %>
@@ -66,19 +66,15 @@
   <% if @pending_out.length > 4 %>
     <div class="friends-display" id="sent-requests">
       <% for friend in @pending_out %>
-        <div class="grey-image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
       <% end %>
-
     </div>
   <% elsif @pending_out.length > 0 %>
-    <div class="single-row-friends-display" id="received-requests">
+    <div class="single-row-friends-display" id="sent-requests">
       <% for friend in @pending_out %>
-        <div class="grey-image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo%></div>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
       <% end %>
-
     </div>
-
-
   <% else %>
     You have sent no requests.
   <% end %>
