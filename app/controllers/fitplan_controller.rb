@@ -320,6 +320,6 @@ class FitplanController < ApplicationController
 			return render(:json=>{"nrFailed"=>0, "output"=>"Unexpected error",
 				"totalTests"=>10}, status:200)
 		end
-	end	
+	end
 
 end

@@ -29,23 +29,72 @@
   </div>
   <hr />
 
-  <i><b>Friends</b></i><br><br>
+  <i><b>Received Requests</b></i><br><br>
 
-  <div id="friends-display">
-    Requests from:<br><br>
-    <% for friend in @pending_in %>
-      <div class="request-from-image" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div><br>
+  <% if @pending_in.length > 4 %>
+    <div class="friends-display" id="received-requests">
+      <% for friend in @pending_in %>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% end %>
+
+    </div>
+  <% elsif @pending_in.length > 0 %>
+    <div class="single-row-friends-display" id="received-requests">
+      <% for friend in @pending_in %>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% end %>
+
+    </div>
+
+  <% else %>
+    You have received no requests.
+  <% end %>
+
+  <hr />
+
+  <div style="float:left"><i><b>Friends</b></i><br><br></div>
+  <div style="float:right"><%= @accepted.length %> friends</div><br><br>
+
+  <div class="friends-display" id="accepted-friends">
+    <% for friend in @accepted %>
+      <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
     <% end %>
+
   </div>
 
   <hr />
 
+  <i><b>Sent Requests</b></i><br><br>
+
+  <% if @pending_out.length > 4 %>
+    <div class="friends-display" id="sent-requests">
+      <% for friend in @pending_out %>
+        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
+      <% end %>
+
+    </div>
+  <% elsif @pending_in.length > 0 %>
+    <div class="single-row-friends-display" id="received-requests">
+      <% for friend in @pending_in %>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% end %>
+
+    </div>
+
+
+  <% else %>
+    You have sent no requests.
+  <% end %>
+
+  <hr />
+
+
   <div id="friend-requests">
 
-    <i><b>Friend Requests</b></i><br><br>
+    <i><b>Send a Friend Request</b></i><br><br>
     <form id="friend_request_form" action="" method="post">
       <input id="friend_request" name="username" type="text">
-      <input id="submit_request" type="submit" value="Send Friend Request">
+      <input id="submit_request" type="submit" value="Send">
     </form>
 
   </div>
@@ -58,12 +107,6 @@
   </div>
 
 </div>
-
-<!--
-<div>
-    <p id="add_weight_response"></p>
-</div>
--->
 
 <div id="weight-chart">
   <b>Weight Progress</b>
@@ -81,12 +124,6 @@
   </div>
   <!--<div id="gauge_transbox"></div>-->
 </div>
-
-<!--
-<div id="zach-community-stuff">
-  &nbsp;
-</div>
--->
 
 <div id="all-entries-container">
 
@@ -247,9 +284,7 @@ function find_friend() {
   send_json("/profile/find_friend",
     {},
     function(reply) {
-      alert("WTF");
-      return;
-      // location.reload(false);
+      location.reload(false);
     },
     show_error
   );

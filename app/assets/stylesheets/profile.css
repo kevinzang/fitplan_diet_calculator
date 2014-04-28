@@ -11,18 +11,23 @@
   float: right;
 }
 
-#friends-display {
+.friends-display {
   overflow-y: scroll;
-  height: 100px;
+  height: 85px;
+  font-size: 10px;
 }
 
-.request-from-image {
+.single-row-friends-display {
+  height: 85px;
+  font-size: 10px;
+}
+
+.image {
   float: left;
   margin: 5px;
-  position: relative;
   text-align: center;
-  cursor: pointer;
 }
+
 
 #weight_form {
   float: right;
@@ -35,16 +40,6 @@
   padding: 1%;
   margin: 1%;
 }
-
-/*
-#zach-community-stuff {
-  clear:both;
-  float: left;
-  width: 30%;
-  padding:0;
-  margin:0;
-}
-*/
 
 #all-entries-container {
   background-color: #F0FFFF;
