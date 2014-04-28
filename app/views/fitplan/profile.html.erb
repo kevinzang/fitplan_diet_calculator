@@ -31,16 +31,18 @@
 
   <div id="friends-display">
   <i><b>Friends</b></i><br><br>
-  friends yay
+  <% for friend in @friends %>
+    <div><%= friend.usernameFrom %></div><br>
+  <% end %>
   </div>
   <hr />
 
   <div id="friend-requests">
   <i><b>Friend Requests</b></i><br><br>
-  <form id="friend_request_form" action="/profile/create_request" method="post">
-  <input id="friend_request" name="username" type="text">
-  <input id="submit_request" type="submit" value="Send Friend Request">
-</form>
+  <form id="friend_request_form" action="" method="post">
+    <input id="friend_request" name="username" type="text">
+    <input id="submit_request" type="submit" value="Send Friend Request">
+  </form>
   </div>
   <hr />
 
@@ -204,6 +206,20 @@ $("#weight_form").submit(function(event) {
             alert(responseData.message);
         }
     })
+});
+
+$("#friend_request_form").submit(function(event) {
+  var user = document.getElementById("friend_request").value;
+  send_json("/profile/create_request",
+  {"username":user},
+  function(reply) {
+    if (reply.result != "SUCCESS") {
+      alert(reply.result);
+    }
+  },
+  show_error
+  );
+  return false;
 });
 
 function setMenu() {

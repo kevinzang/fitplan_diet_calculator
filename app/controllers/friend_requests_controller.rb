@@ -1,21 +1,25 @@
+require 'json'
+
 class FriendRequestsController < ApplicationController
-include ApplicationHelper
+	include ApplicationHelper
 
 	def create_request()
+		if !valid_json?(["username"])
+			return render(:json=>{}, status:500)
+		end
 		@username = params[:username] #this is from the form
 		@usernameFrom = getUser(cookies[:remember_token])
-
 		if @username == @usernameFrom
-			flash.now[:alert] = 'Cannot Friend Yourself'
-			redirect_to '/profile'
+			puts "case to = from"
+			return render(:json=>{"result"=>'Cannot Friend Yourself'}, status:200)
 		elsif (UserProfile.find_by(username: @username))
+			puts "case all green"
 			FriendRequest.find_or_create_by(usernameTo: @username, usernameFrom: @usernameFrom, friendStatus: false)
+			return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
 		else
-			flash.now[:alert] = 'User Does Not Exist'
-		end 
-
-		redirect_to '/profile'
-		#either render or redirect
+			puts "case user not existant"
+			return render(:json=>{"result"=>'User Does Not Exist'}, status:200)
+		end
 	end
 
 	def accept_request()
