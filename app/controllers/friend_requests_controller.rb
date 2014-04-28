@@ -23,13 +23,15 @@ class FriendRequestsController < ApplicationController
 	end
 
 	def accept_request()
-		usernameTo = params[:username] #this is from the URL
-		usernameFrom = getUser(cookies[:remember_token])
+		if !valid_json?(["friend"])
+			return render(:json=>{}, status:500)
+		end
+		usernameFrom = params[:friend] #this is from the URL
+		usernameTo = getUser(cookies[:remember_token])
 		returnedUserMatch = FriendRequest.where(usernameTo:  usernameTo, usernameFrom:  usernameFrom).first
 		returnedUserMatch.friendStatus = true
 		returnedUserMatch.save()
-		redirect_to '/profile'
-		#either render or redirect
+		return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
 	end
 
 	def hot_button_create_request()

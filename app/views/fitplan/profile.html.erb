@@ -215,12 +215,29 @@ $("#friend_request_form").submit(function(event) {
   function(reply) {
     if (reply.result != "SUCCESS") {
       alert(reply.result);
+    } else {
+      alert("FRIEND REQUEST SUCCESSFUL");
     }
   },
   show_error
   );
   return false;
 });
+
+function accept_request(friend) {
+  send_json("/profile/accept_request",
+  {"friend":friend},
+  function(reply) {
+    if (reply.result != "SUCCESS") {
+      alert(reply.result);
+    } else {
+      alert("OMG YOU ACCEPTED A FRIEND");
+    }
+  },
+  show_error
+  );
+  return false;
+}
 
 function setMenu() {
   for (var i=1; i<7; i++) {
