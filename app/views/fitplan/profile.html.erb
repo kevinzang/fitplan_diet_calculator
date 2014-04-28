@@ -34,18 +34,15 @@
   <% if @pending_in.length > 4 %>
     <div class="friends-display" id="received-requests">
       <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+        <div class="grey-image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
       <% end %>
-
     </div>
   <% elsif @pending_in.length > 0 %>
     <div class="single-row-friends-display" id="received-requests">
       <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+        <div class="grey-image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
       <% end %>
-
     </div>
-
   <% else %>
     You have received no requests.
   <% end %>
@@ -69,14 +66,14 @@
   <% if @pending_out.length > 4 %>
     <div class="friends-display" id="sent-requests">
       <% for friend in @pending_out %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
+        <div class="grey-image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
       <% end %>
 
     </div>
-  <% elsif @pending_in.length > 0 %>
+  <% elsif @pending_out.length > 0 %>
     <div class="single-row-friends-display" id="received-requests">
-      <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <% for friend in @pending_out %>
+        <div class="grey-image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo%></div>
       <% end %>
 
     </div>
@@ -93,7 +90,7 @@
 
     <i><b>Send a Friend Request</b></i><br><br>
     <form id="friend_request_form" action="" method="post">
-      <input id="friend_request" name="username" type="text">
+      <input id="friend_request" name="username" type="text" placeholder="Enter a friend's name">
       <input id="submit_request" type="submit" value="Send">
     </form>
 
