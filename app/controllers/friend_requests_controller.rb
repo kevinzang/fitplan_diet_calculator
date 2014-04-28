@@ -11,11 +11,13 @@ class FriendRequestsController < ApplicationController
 		@usernameFrom = getUser(cookies[:remember_token])
 		if @username == @usernameFrom
 			return render(:json=>{"result"=>'Cannot Friend Yourself'}, status:200)
-		elsif (UserProfile.find_by(username: @username))
+		elsif Friendship.find_by(usernameTo:@username, usernameFrom:@usernameFrom)
+			return render(:json=>{"result"=>"#{@username} is already your friend"}, status:200)
+		elsif FriendRequest.find_by(usernameTo:@usernameFrom, usernameFrom:@username)
+			return render(:json=>{"result"=>"#{@username} has already sent a request to you"}, status:200)
+		elsif UserProfile.find_by(username:@username)
 			FriendRequest.find_or_create_by(usernameTo: @username, usernameFrom: @usernameFrom, friendStatus: false)
 			return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
-		elsif Friendship.find_by(usernameTo:@username, usernameFrom:@usernameFrom)
-			return render(:json=>{"result"=>"#{@usernameFrom} is already your friend"}, status:200)
 		else
 			return render(:json=>{"result"=>'User Does Not Exist'}, status:200)
 		end
