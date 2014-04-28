@@ -5,6 +5,7 @@ require 'date'
 require 'json'
 
 class FitplanController < ApplicationController
+	include ApplicationHelper
 
 	def index
 		# home page
@@ -112,6 +113,8 @@ class FitplanController < ApplicationController
 		@userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
 		@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
 		@weightChartData = UserProfile.weightChartData(@user, 3)
+
+		@friends = FriendRequest.where(usernameTo:@user)
 	end
 
 	def add_food
@@ -315,31 +318,6 @@ class FitplanController < ApplicationController
 			return render(:json=>{"nrFailed"=>0, "output"=>"Unexpected error",
 				"totalTests"=>10}, status:200)
 		end
-	end
-
-	private
-	def valid_json?(args)
-		type = request.headers["Content-Type"].split(";")
-		if !request.post?() || !(type.include?("application/json"))
-			return false
-		end
-		for arg in args
-			if !params.keys.include?(arg)
-				return false
-			end
-		end
-		return true
-	end
-
-	private
-	def getUser(token)
-		user = UserProfile.getUsername(token)
-		if user == nil
-			render('not_signed_in')
-			return nil
-		else
-			return user
-		end
-	end
+	end	
 
 end
