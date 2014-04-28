@@ -64,7 +64,7 @@ class FriendRequestsController < ApplicationController
 		end
 
 		if (@closest_match != nil)
-			FriendRequest.find_or_create_by(usernameTo: @closest_match, usernameFrom: @mainuser, friendStatus: false)
+			FriendRequest.find_or_create_by(usernameTo: @closest_match.username, usernameFrom: @mainuser.username, friendStatus: false)
 		end 
 		return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
 	end
