@@ -114,7 +114,7 @@ class FitplanController < ApplicationController
 		@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
 		@weightChartData = UserProfile.weightChartData(@user, 3)
 
-		@friends = FriendRequest.where(usernameTo:@user)
+		@pending_in = FriendRequest.where(usernameTo:@user)
 	end
 
 	def add_food

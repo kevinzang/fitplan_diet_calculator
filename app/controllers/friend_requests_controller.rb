@@ -26,7 +26,8 @@ class FriendRequestsController < ApplicationController
 		if !valid_json?(["friend"])
 			return render(:json=>{}, status:500)
 		end
-		usernameFrom = params[:friend] #this is from the URL
+		puts "JSON VALID"
+		usernameFrom = params[:friend] #this is from the picture
 		usernameTo = getUser(cookies[:remember_token])
 		returnedUserMatch = FriendRequest.where(usernameTo:  usernameTo, usernameFrom:  usernameFrom).first
 		returnedUserMatch.friendStatus = true
