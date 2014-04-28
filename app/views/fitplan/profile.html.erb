@@ -29,16 +29,39 @@
   </div>
   <hr />
 
-  <i><b>Friends</b></i><br><br>
+  <i><b>Received Requests</b></i><br><br>
 
-  <div id="friends-display">
-    Requests from:<br><br>
+  <div class="friends-display" id="received-requests">
     <% for friend in @pending_in %>
-      <div class="request-from-image" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div><br>
+      <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
     <% end %>
+
   </div>
 
   <hr />
+
+  <i><b>Friends</b></i><br><br>
+
+  <div class="friends-display" id="accepted-friends">
+    <% for friend in @accepted %>
+      <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+    <% end %>
+
+  </div>
+
+  <hr />
+
+  <i><b>Sent Requests</b></i><br><br>
+
+  <div class="friends-display" id="sent-requests">
+    <% for friend in @pending_out %>
+      <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameTo %></div>
+    <% end %>
+
+  </div>
+
+  <hr />
+
 
   <div id="friend-requests">
 
