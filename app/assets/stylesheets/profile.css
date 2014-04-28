@@ -11,6 +11,18 @@
   float: right;
 }
 
+#friends-display {
+  overflow-y: scroll;
+  height: 100px;
+}
+
+.image {
+  float: left;
+  margin: 5px;
+  position: relative;
+  text-align: center;
+}
+
 #weight_form {
   float: right;
 }
