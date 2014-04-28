@@ -54,12 +54,12 @@ class FriendRequestsController < ApplicationController
 		end
 		all_users = UserProfile.all
 		for user in all_users
-			if ((user.username != @mainuser.username) 
-				&& (user.desired_weight != nil) 
-				&& (user.weight != nil)
-				&& Friendship.find_by(usernameTo: @mainuser, usernameFrom: user)
-				&& FriendRequest.find_by(usernameTo:user, usernameFrom:@mainuser)
-				&& FriendRequest.find_by(usernameTo:@mainuser, usernameFrom:user))			
+			if user.username != @mainuser.username &&
+				user.desired_weight != nil &&
+				user.weight != nil &&
+				Friendship.find_by(usernameTo:@mainuser, usernameFrom: user) == nil &&
+				FriendRequest.find_by(usernameTo:user, usernameFrom:@mainuser) == nil &&
+				FriendRequest.find_by(usernameTo:@mainuser, usernameFrom:user) == nil	
 				cur_loss = user.weight - user.desired_weight
 				if ((user_weight_loss - cur_loss).abs < tempDif)
 					tempDif = (user_weight_loss - cur_loss).abs
