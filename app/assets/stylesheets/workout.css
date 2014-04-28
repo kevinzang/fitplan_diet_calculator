@@ -66,3 +66,22 @@
 #activity, #minutes, #add-workout-entry {
   float: left;
 }
+
+#workout-tips {
+  background-color: #F0FFFF;
+  padding: 1%;
+  width:94%;
+  margin-left: 2%;
+  height: 275px;
+  margin-top: 300px;
+  margin-bottom: 20px;
+}
+
+.tip-container {
+  font-size: 12px;
+  float: left;
+  height: 125px;
+  width: 33%;
+  border: thin solid #dcdcdc;
+}
+

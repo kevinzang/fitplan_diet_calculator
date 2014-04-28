@@ -3,7 +3,7 @@
 
 <div id="profile-sidebar">
 
-  <div id="profile-pic">User's picture goes here</div>
+  <div id="profile-pic"><img src="/anon_user.jpg" height="100" width="350"></div>
   <hr />
 
   <i><b><%= @user %>'s Profile</b></i>
@@ -29,20 +29,25 @@
   </div>
   <hr />
 
-  <div id="friends-display">
   <i><b>Friends</b></i><br><br>
-  <% for friend in @friends %>
-    <div><%= friend.usernameFrom %></div><br>
-  <% end %>
+
+  <div id="friends-display">
+    Requests from:<br><br>
+    <% for friend in @friends %>
+      <div class="request-from-image" onclick="accept_request(friend.usernameFrom)"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div><br>
+    <% end %>
   </div>
+
   <hr />
 
   <div id="friend-requests">
-  <i><b>Friend Requests</b></i><br><br>
-  <form id="friend_request_form" action="" method="post">
-    <input id="friend_request" name="username" type="text">
-    <input id="submit_request" type="submit" value="Send Friend Request">
-  </form>
+
+    <i><b>Friend Requests</b></i><br><br>
+    <form id="friend_request_form" action="" method="post">
+      <input id="friend_request" name="username" type="text">
+      <input id="submit_request" type="submit" value="Send Friend Request">
+    </form>
+
   </div>
   <hr />
 
@@ -52,7 +57,7 @@
   <!-- change this route and stuff -->
   <input id="submit_request" type="submit" value="Find New Friend">
 </form>
-  
+
   </div>
 
 </div>

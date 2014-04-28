@@ -6,8 +6,7 @@
       <% options = Hash['/profile' => 'Profile',
                         '/profile/workout' => 'Workout Plan',
                         '/about' => 'About',
-                        '/faq' => 'FAQ',
-                        '/tips' => 'Workout Tips'] %>
+                        '/faq' => 'FAQ'] %>
 
       <% options.each do |key, value|
         if request.fullpath.split("?")[0] == key %>
