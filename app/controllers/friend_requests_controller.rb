@@ -28,27 +28,32 @@ class FriendRequestsController < ApplicationController
 		returnedUserMatch = FriendRequest.where(usernameTo:  usernameTo, usernameFrom:  usernameFrom).first
 		returnedUserMatch.friendStatus = true
 		returnedUserMatch.save()
+		FriendRequest.delete(usernameTo: userTo, username: userFrom)
+
 		return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
 	end
 
 	def hot_button_create_request()
-		@username = getUser(cookies[:remember_token])
-		#don't worry about dynamic goal weight()
-		@closest_match = nil
-		tempDif = 1000000
-		user_weight_loss = @username.weight - @username.desired_weight 
-		all_user_count = UserProfile.all.count
-		all_users = UserProfile.all
-		for user in all_users
-			cur_loss = user.weight - user.desired_weight
-			if ((user_weight_loss - cur_loss).abs < tempDif)
-				tempDif = (user_weight_loss - cur_loss).abs
-				@closest_match = user
-			end
-			all_user_count -= 1
-		end
-		return render(:json=>{"result"=>user.username}, status:200)
-	end
-			
+		puts "THE WORLD HAS ENDED"
+		# @username = getUser(cookies[:remember_token])
+		# #don't worry about dynamic goal weight()
+		# @closest_match = nil
+		# tempDif = 1000000
+		# user_weight_loss = @username.weight - @username.desired_weight 
+		# all_users = UserProfile.all
+		# for user in all_users
+		# 	if ((user.username != @username) && (user.desired_weight != nil) && (user.weight != nil))
+		# 		cur_loss = user.weight - user.desired_weight
+		# 		if ((user_weight_loss - cur_loss).abs < tempDif)
+		# 			tempDif = (user_weight_loss - cur_loss).abs
+		# 			@closest_match = user
+		# 		end
+		# 	end
+		# end
 
+		# if (@closest_match != nil)
+		# 	FriendRequest.find_or_create_by(usernameTo: @closest_match, usernameFrom: @username, friendStatus: false)
+		# end 
+		return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
+	end
 end

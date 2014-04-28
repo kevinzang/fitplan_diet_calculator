@@ -52,12 +52,9 @@
   <hr />
 
   <div id="friend-with-same-goal">
-  <i><b>Find Friend With Same Goal</b></i><br><br>
-  <form id="friend_request_form" action="/profile/create_request" method="post">
-  <!-- change this route and stuff -->
-  <input id="submit_request" type="submit" value="Find New Friend" onclick='find_friend()'>
-</form>
-
+    <i><b>Find Friend With Same Goal</b></i><br><br>
+    <!-- change this route and stuff -->
+    <input id="submit_request" type="submit" value="Find New Friend" onclick="find_friend()">
   </div>
 
 </div>
@@ -246,12 +243,15 @@ function accept_request(friend) {
 }
 
 function find_friend() {
-  send_json("/profile/find_request",
-  {},
-  function(reply) {
-    location.reload(false);
-  },
-  show_error
+  alert("find friend");
+  send_json("/profile/find_friend",
+    {},
+    function(reply) {
+      alert("WTF");
+      return;
+      // location.reload(false);
+    },
+    show_error
   );
   return false;
 }
