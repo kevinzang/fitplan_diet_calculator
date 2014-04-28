@@ -40,7 +40,7 @@ class FriendRequestsController < ApplicationController
 		#don't worry about dynamic goal weight()
 		@closest_match = nil
 		tempDif = 1000000
-		user_weight_loss = @username.weight - @username.desired_weight 
+		user_weight_loss = @username.weight - @username.desired_weight
 		all_user_count = UserProfile.all.count
 		all_users = UserProfile.all
 		for user in all_users
@@ -49,10 +49,10 @@ class FriendRequestsController < ApplicationController
 				tempDif = (user_weight_loss - cur_loss).abs
 				@closest_match = user
 			end
-			all_user_count--
+			all_user_count -= 1
 		end
 		return render(:json=>{"result"=>user.username}, status:200)
 	end
-			
+
 
 end

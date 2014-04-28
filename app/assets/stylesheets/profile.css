@@ -17,6 +17,11 @@
   font-size: 10px;
 }
 
+.single-row-friends-display {
+  height: 85px;
+  font-size: 10px;
+}
+
 .image {
   float: left;
   margin: 5px;
@@ -35,16 +40,6 @@
   padding: 1%;
   margin: 1%;
 }
-
-/*
-#zach-community-stuff {
-  clear:both;
-  float: left;
-  width: 30%;
-  padding:0;
-  margin:0;
-}
-*/
 
 #all-entries-container {
   background-color: #F0FFFF;
