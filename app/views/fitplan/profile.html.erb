@@ -94,12 +94,9 @@
   <hr />
 
   <div id="friend-with-same-goal">
-  <i><b>Find Friend With Same Goal</b></i><br><br>
-  <form id="friend_request_form" action="/profile/create_request" method="post">
-  <!-- change this route and stuff -->
-  <input id="submit_request" type="submit" value="Find New Friend">
-</form>
-
+    <i><b>Find Friend With Same Goal</b></i><br><br>
+    <!-- change this route and stuff -->
+    <input id="submit_request" type="submit" value="Find New Friend" onclick="find_friend()">
   </div>
 
 </div>
@@ -252,7 +249,7 @@ $("#friend_request_form").submit(function(event) {
     if (reply.result != "SUCCESS") {
       alert(reply.result);
     } else {
-      alert("FRIEND REQUEST SUCCESSFUL");
+      location.reload(false);
     }
   },
   show_error
@@ -261,17 +258,28 @@ $("#friend_request_form").submit(function(event) {
 });
 
 function accept_request(friend) {
-  alert("ACCEPT FRIEND CLICKED "+friend);
   send_json("/profile/accept_request",
   {"friend":friend},
   function(reply) {
     if (reply.result != "SUCCESS") {
       alert(reply.result);
     } else {
-      alert("OMG YOU ACCEPTED A FRIEND");
+      location.reload(false);
     }
   },
   show_error
+  );
+  return false;
+}
+
+function find_friend() {
+  alert("find friend");
+  send_json("/profile/find_friend",
+    {},
+    function(reply) {
+      location.reload(false);
+    },
+    show_error
   );
   return false;
 }

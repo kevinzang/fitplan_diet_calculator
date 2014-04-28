@@ -10,14 +10,13 @@ class FriendRequestsController < ApplicationController
 		@username = params[:username] #this is from the form
 		@usernameFrom = getUser(cookies[:remember_token])
 		if @username == @usernameFrom
-			puts "case to = from"
 			return render(:json=>{"result"=>'Cannot Friend Yourself'}, status:200)
 		elsif (UserProfile.find_by(username: @username))
-			puts "case all green"
 			FriendRequest.find_or_create_by(usernameTo: @username, usernameFrom: @usernameFrom, friendStatus: false)
 			return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
+		elsif Friendship.find_by(usernameTo:@username, usernameFrom:@usernameFrom)
+			return render(:json=>{"result"=>"#{@usernameFrom} is already your friend"}, status:200)
 		else
-			puts "case user not existant"
 			return render(:json=>{"result"=>'User Does Not Exist'}, status:200)
 		end
 	end
@@ -26,39 +25,45 @@ class FriendRequestsController < ApplicationController
 		if !valid_json?(["friend"])
 			return render(:json=>{}, status:500)
 		end
-		puts "JSON VALID"
 		usernameFrom = params[:friend] #this is from the picture
 		usernameTo = getUser(cookies[:remember_token])
 		returnedUserMatch = FriendRequest.where(usernameTo:  usernameTo, usernameFrom:  usernameFrom).first
 		returnedUserMatch.friendStatus = true
 		returnedUserMatch.save()
-		FriendRequest.delete(usernameTo: userTo, username: userFrom)
+		toDelete = FriendRequest.find_by(usernameTo:  usernameTo, usernameFrom:  usernameFrom)
+		toDelete.delete()
 
 		return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
 	end
 
 	def hot_button_create_request()
-		@username = getUser(cookies[:remember_token])
+		puts "THE WORLD HAS ENDED"
+		username = getUser(cookies[:remember_token])
+		if username == nil
+			return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
+		end
+		@mainuser = UserProfile.find_by(username:username)
 		#don't worry about dynamic goal weight()
 		@closest_match = nil
 		tempDif = 1000000
-		user_weight_loss = @username.weight - @username.desired_weight
-		all_user_count = UserProfile.all.count
+		user_weight_loss = 2000000
+		if @mainuser.weight != nil && @mainuser.desired_weight != nil
+			user_weight_loss = @mainuser.weight - @mainuser.desired_weight
+		end
 		all_users = UserProfile.all
 		for user in all_users
-			if ((user.username != @username) && (user.desired_weight != nil) && (user.weight != nil))
+			if ((user.username != @mainuser.username) && (user.desired_weight != nil) && (user.weight != nil))
 				cur_loss = user.weight - user.desired_weight
 				if ((user_weight_loss - cur_loss).abs < tempDif)
 					tempDif = (user_weight_loss - cur_loss).abs
 					@closest_match = user
 				end
-				all_user_count -= 1
 			end
 		end
 
 		if (@closest_match != nil)
-			FriendRequest.find_or_create_by(usernameTo: @closest_match, usernameFrom: @username, friendStatus: false)
-		end
-			return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
+			FriendRequest.find_or_create_by(usernameTo: @closest_match, usernameFrom: @mainuser, friendStatus: false)
+		end 
+		return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
 	end
 end
