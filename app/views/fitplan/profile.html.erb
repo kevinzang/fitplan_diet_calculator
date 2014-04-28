@@ -206,6 +206,7 @@ $("#weight_form").submit(function(event) {
         data: $("#weight_form").serializeArray(),
         success: function(responseData) {
             alert(responseData.message);
+            location.reload(false);
         },
         error: function(responseData) {
             alert(responseData.message);
