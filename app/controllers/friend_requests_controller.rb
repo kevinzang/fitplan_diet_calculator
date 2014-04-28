@@ -36,9 +36,22 @@ class FriendRequestsController < ApplicationController
 	end
 
 	def hot_button_create_request()
-		@username = params[:username] #this is from the form ???
-		@usernameFrom = getUser(cookies[:remember_token])
-		#create a difference in the Db first!!!
+		@username = getUser(cookies[:remember_token])
+		#don't worry about dynamic goal weight()
+		@closest_match = nil
+		tempDif = 1000000
+		user_weight_loss = @username.weight - @username.desired_weight 
+		all_user_count = UserProfile.all.count
+		all_users = UserProfile.all
+		for user in all_users
+			cur_loss = user.weight - user.desired_weight
+			if ((user_weight_loss - cur_loss).abs < tempDif)
+				tempDif = (user_weight_loss - cur_loss).abs
+				@closest_match = user
+			end
+			all_user_count--
+		end
+		return render(:json=>{"result"=>user.username}, status:200)
 	end
 			
 
