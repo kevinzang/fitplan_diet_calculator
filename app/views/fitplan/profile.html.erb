@@ -54,13 +54,13 @@
   <% if @accepted.length > 4 %>
     <div class="friends-display" id="accepted-friends">
       <% for friend in @accepted %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+        <div class="image" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
       <% end %>
     </div>
   <% elsif @accepted.length > 0 %>
     <div class="single-row-friends-display" id="accepted-friends">
       <% for friend in @accepted %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+        <div class="image" tyle="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
       <% end %>
     </div>
   <% end %>
@@ -266,6 +266,22 @@ $("#friend_request_form").submit(function(event) {
 function accept_request(friend) {
   send_json("/profile/accept_request",
   {"friend":friend},
+  function(reply) {
+    if (reply.result != "SUCCESS") {
+      alert(reply.result);
+    } else {
+      location.reload(false);
+    }
+  },
+  show_error
+  );
+  return false;
+}
+
+function delete_friend(friend) {
+  alert("deleting friend");
+  send_json("/profile/delete_friend",
+    {"friend":friend},
   function(reply) {
     if (reply.result != "SUCCESS") {
       alert(reply.result);

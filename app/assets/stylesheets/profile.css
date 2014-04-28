@@ -28,6 +28,26 @@
   text-align: center;
 }
 
+.image:hover {
+  opacity:0.5;
+  float: left;
+  margin: 5px;
+  text-align: center;
+}
+
+.backimage{
+  float: left;
+  margin: 5px;
+  text-align: center;
+}
+
+.backimage:hover {
+  z-index:2;
+  float: left;
+  margin: 5px;
+  text-align: center;
+}
+
 #weight_form {
   float: right;
 }
