@@ -23,6 +23,27 @@ class FriendRequestsController < ApplicationController
 		end
 	end
 
+	def delete_friend()
+		if !valid_json?(["friend"])
+			return render(:json=>{}, status:500)
+		end
+			@usernameDel = params[:friend] #this is from the Picture onClick!!!!
+			@username = getUser(cookies[:remember_token])
+			way1 = Friendship.find_by(usernameTo:@username, usernameFrom:@usernameDel)
+			way2 = Friendship.find_by(usernameTo:@usernameDel, usernameFrom:@username)
+			pending = FriendRequest.find_by(usernameTo: @username, usernameFrom:  @usernameDel)
+		if (pending != nil)
+			pending.delete #this should be redundant
+		elsif (way1 || way2)
+			way1.delete()
+			way2.delete()
+			return render(:json=>{"result"=>UserProfile::SUCCESS}, status:200)
+		end
+		return render(:json=>{"result"=>'User Does Not Exist'}, status:200)
+	end
+
+
+
 	def accept_request()
 		if !valid_json?(["friend"])
 			return render(:json=>{}, status:500)
@@ -30,7 +51,7 @@ class FriendRequestsController < ApplicationController
 		usernameFrom = params[:friend] #this is from the picture
 		usernameTo = getUser(cookies[:remember_token])
 		returnedUserMatch = FriendRequest.where(usernameTo:  usernameTo, usernameFrom:  usernameFrom).first
-		returnedUserMatch.friendStatus = true
+		returnedUserMatch.friendStatus = true #check this
 		returnedUserMatch.save()
 		toDelete = FriendRequest.find_by(usernameTo:  usernameTo, usernameFrom:  usernameFrom)
 		toDelete.delete()

@@ -17,6 +17,7 @@ Fitplan::Application.routes.draw do
   post '/profile/create_request' => 'friend_requests#create_request'
   post '/profile/accept_request' => 'friend_requests#accept_request'
   post '/profile/find_friend' => 'friend_requests#hot_button_create_request'
+  post '/profile/delete_friend' => 'friend_requests#delete_friend'
 
   get '/profile/workout' => 'fitplan#workout'
   post '/profile/workout/get_recommended' => 'fitplan#get_recommended'
