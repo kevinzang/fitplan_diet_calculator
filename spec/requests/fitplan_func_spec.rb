@@ -1,8 +1,4 @@
 require 'spec_helper'
-require File.expand_path("../../../app/models/user_profile", __FILE__)
-require File.expand_path("../../../app/models/food_search", __FILE__)
-require 'date'
-require 'json'
 
 describe "Fitplan Functional Tests" do
 	puts "***begin fitplan_func_spec.rb"
