@@ -12,19 +12,20 @@
 }
 
 #desired {
-  width: 40%;
+  width: 45%;
   text-align: left;
+  padding-left: 2%;
+  padding-right: 2%;
   float: left;
-  padding-left: 35px;
-  padding-right: 40px;
   padding-bottom: 6px;
 }
 
 #current {
-  width: 40%;
+  width: 45%;
   text-align: left;
   float: left;
-  padding-left: 40px;
+  padding-left: 2%;
+  padding-right: 2%;
   padding-bottom: 6px;
   border-left: thin solid #dcdcdc;
 }
@@ -70,18 +71,28 @@
 #workout-tips {
   background-color: #F0FFFF;
   padding: 1%;
-  width:94%;
-  margin-left: 2%;
-  height: 275px;
+  width:70%;
+  margin-left: 15%;
+  height: 150;
   margin-top: 300px;
   margin-bottom: 20px;
 }
 
-.tip-container {
-  font-size: 12px;
-  float: left;
-  height: 125px;
-  width: 33%;
-  border: thin solid #dcdcdc;
+#tips-nav li {
+  display: inline;
+  list-style-type: none;
+  padding: 2px;
+  margin: 8px;
 }
 
+.tip-nav-button:hover {
+  border-bottom: thin solid #505050;
+  cursor: pointer;
+}
+
+.tip {
+  width: 75%;
+  margin-left: 100px;
+  margin-top: 15px;
+  border: thin solid #505050;
+}

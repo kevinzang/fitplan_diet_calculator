@@ -3,9 +3,9 @@
 <div id="reports">
   <div id="today">
   <div style="padding-bottom:7px"><i><b>Today's Stats:</b></i></div>
-  Caloric intake: <span id="intake"><%= @workout["intake"] %></span><br>
-  Calories burned: <span id="burned"><%= @workout["burned"] %></span><br>
-  Net caloric intake: <span id="net_intake"><%= @workout["intake"] - @workout["burned"] %></span>
+  Caloric intake: <span id="intake"><%= @workout["intake"].round(0) %></span><br>
+  Calories burned: <span id="burned"><%= @workout["burned"].round(0) %></span><br>
+  Net caloric intake: <span id="net_intake"><%= (@workout["intake"] - @workout["burned"]).round(0) %></span>
   </div>
 
   <hr />
@@ -42,33 +42,33 @@
   <div id="desired-current-wrapper">
     <div id="desired">
       <i><b>To reach desired weight:</b></i><br><br>
-        Target calories/day:
+        Target cal/day:
           <% if @workout["target"] == -1 %>
-            <br><i>Complete your profile form to find out!</i><br>
+            <div style="float:right"><i>Complete profile form!</i></div>
           <% else %>
-            <span id="target"><%= @workout["target"] %></span>
-          <% end %><br>
-        Suggested workout time:
+            <span id="target"><%= @workout["target"].round(0) %></span><br>
+          <% end %>
+        Suggested duration:
           <% if @workout["rec_target"] == -1 %>
-            <br><i>Complete your profile form to find out!</i><br>
+            <div style="float:right"><i>Complete profile form!</i></div>
           <% else %>
-            <span id="rec_target"><%= @workout["rec_target"] %></span>
+            <span id="rec_target"><%= @workout["rec_target"].round(0) %></span>
           <% end %>
     </div>
 
     <div id="current">
       <i><b>To maintain current weight:</b></i><br><br>
-      Target calories/day:
+      Target cal/day:
         <% if @workout["normal"] == -1 %>
-          <br><i>Complete your profile form to find out!</i><br>
+            <div style="float:right"><i>Complete profile form!</i></div>
         <% else %>
-          <span id="normal"><%= @workout["normal"] %></span>
-        <% end %><br>
-      Suggested workout time:
+          <span id="normal"><%= @workout["normal"].round(0) %></span><br>
+        <% end %>
+      Suggested duration:
         <% if @workout["rec_normal"] == -1 %>
-          <br><i>Complete your profile form to find out!</i><br>
+            <div style="float:right"><i>Complete profile form!</i></div>
         <% else %>
-          <span id="rec_normal"><%= @workout["rec_normal"] %></span>
+          <span id="rec_normal"><%= @workout["rec_normal"].round(0) %></span>
         <% end %>
     </div>
 
@@ -77,23 +77,41 @@
 </div>
 
 <div id="workout-tips">
-  <div style="text-align: center; margin:2px"><b><i>Workout tips:</i></b></div>
-  <div class="tip-container"><u>Consistency is key:</u> the best way to guarantee consistent fitness progress is to workout on a consistent schedule and not skipping out unless you have to. In the world of fitness, effort and reward are directly correlated
+
+  <div style="text-align: center; margin-bottom:10px"><b><i>Workout tips:</i></b></div>
+
+  <ul id="tips-nav">
+    <li class="tip-nav-button" id="tip-button-1" onclick="displayTip(1)">Consistency is key</li>
+    <li class="tip-nav-button" id="tip-button-2" onclick="displayTip(2)">Nutrition is important</li>
+    <li class="tip-nav-button" id="tip-button-3" onclick="displayTip(3)">Switch it up</li>
+    <li class="tip-nav-button" id="tip-button-4" onclick="displayTip(4)">Stay hydrated</li>
+    <li class="tip-nav-button" id="tip-button-5" onclick="displayTip(5)">Be prepared</li>
+    <li class="tip-nav-button" id="tip-button-6" onclick="displayTip(6)">Keep at it</li>
+  </ul>
+
+
+  <div class="tip" id="tip-1">The best way to guarantee consistent fitness progress is to workout on a consistent schedule and not skipping out unless you have to. In the world of fitness, effort and reward are directly correlated
   </div>
-  <div class="tip-container"><u>Nutrition is important:</u> Having a small healthy snack before and after workouts can boost your effectiveness. Just make sure you stay small and light, lest you eat too much and cancel out the calorie burning you'd otherwise have.
+  <div class="tip" id="tip-2">Having a small healthy snack before and after workouts can boost your effectiveness. Just make sure you stay small and light, lest you eat too much and cancel out the calorie burning you'd otherwise have.
   </div>
-  <div class="tip-container"><u>Switch it up:</u> It's easy to get bored and fall off the wagon if all you're doing is one boring exercise every day. Switch up your routine and try different but equivalent exercises! This will keep your mind and body interested in continuing.
+  <div class="tip" id="tip-3">It's easy to get bored and fall off the wagon if all you're doing is one boring exercise every day. Switch up your routine and try different but equivalent exercises! This will keep your mind and body interested in continuing.
   </div>
-  <div class="tip-container"><u>Stay hydrated:</u> Dehydration is a dangerous thing, and you risk causing permanent damage to your body if you overwork your body while not providing it with sufficient hydration. Drink when you're thirsty and you'll be fine!
+  <div class="tip" id="tip-4">Dehydration is a dangerous thing, and you risk causing permanent damage to your body if you overwork your body while not providing it with sufficient hydration. Drink when you're thirsty and you'll be fine!
   </div>
-  <div class="tip-container"><u>Be prepared:</u> When you go to the gym or start your workout, come in knowing exactly what you want to do and for how long/how many reps. Having an achievable end goal will do wonders for your motivation and it will maximize your workout efficiency, since in working out, as with many other things in life, there exists a point of diminishing returns.
+  <div class="tip" id="tip-5">When you go to the gym or start your workout, come in knowing exactly what you want to do and for how long/how many reps. Having an achievable end goal will do wonders for your motivation and it will maximize your workout efficiency, since in working out, as with many other things in life, there exists a point of diminishing returns.
   </div>
-  <div class="tip-container"><u>Keep at it:</u> Keep going! You got this! We believe in you! :)
+  <div class="tip" id="tip-6">Keep going! You got this! We believe in you! :)
   </div>
 </div>
 
 
 <script type="text/javascript">
+
+  $(document).ready(function() {
+    displayTip(1);
+  });
+
+
   function getRecommended() {
     rec_activity = document.getElementById("rec_activity");
     var net_intake = Number(document.getElementById("net_intake").innerHTML);
@@ -151,4 +169,17 @@
     );
     return false;
   });
+
+  function displayTip(tipId) {
+    for (var i=1; i<7; i++) {
+      if (i != tipId) {
+        $("#tip-"+i).hide();
+        $("#tip-button-"+i).css("border-bottom", "");
+      } else {
+        $("#tip-"+i).show();
+        $("#tip-button-"+i).css("border-bottom", "thin solid #505050");
+      }
+    }
+  }
+
 </script>

@@ -77,6 +77,24 @@
   text-align: center;
 }
 
+#friend_request_form {
+  background-color: #F0FFFF;
+  width: 68%;
+  float: right;
+  margin-right: 1%;
+}
+
+#friend_request {
+  float:left;
+  width:600px;
+  margin:5px;
+}
+
+#submit_request {
+  float:right;
+  margin:5px;
+}
+
 #weight_form {
   float: right;
 }

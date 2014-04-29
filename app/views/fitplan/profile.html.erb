@@ -4,13 +4,13 @@
 <div id="profile-sidebar">
 
   <div>
-    <div id="profile-pic" style="float:left"><img src="/anon_user.jpg" height="30" width="60"></div>
+    <div id="profile-pic" style="float:left"><img src="/anon_user.jpg" height="50" width="100"></div>
     <div style="float:right"><i><b><%= @user %>'s Profile</b></i></div><br>
     <a href="/profile_form" style="float:right">Edit Profile</a>
-  </div><br><br>
+  </div><br><br><br><br>
   <hr />
 
-  <i><b>Profile details</b></i><div style="float:right;cursor:pointer" onclick="displayElement('#profile-details')">+</div>
+  <i><b>Profile details</b></i><div id="expand-details" style="float:right;cursor:pointer" onclick="displayElement('#profile-details', '#expand-details')">+</div>
   <div id="profile-details">
     <br>
     Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
@@ -34,7 +34,7 @@
   <hr />
 
   <div style="float:left"><i><b>Requests (<%= @pending_in.length %>)</b></i></div>
-  <div style="float:right;cursor:pointer" onclick="displayElement('#requests')">+</div><br>
+  <div id="expand-requests" style="float:right;cursor:pointer" onclick="displayElement('#requests', '#expand-requests')">+</div><br>
 
   <div id="requests">
     <br>
@@ -69,25 +69,24 @@
 
   <hr />
 
-  <div id="friend-requests">
-
-    <i><b>Send a Friend Request</b></i><br><br>
-    <form id="friend_request_form" action="" method="post">
-      <input id="friend_request" name="username" type="text" style="float:left;width:230px;" placeholder="Enter a friend's name">
-      <input id="submit_request" type="submit" value="Send" style="float:right"><br>
-    </form>
-
-  </div>
-
-  <hr />
-
   <div id="friend-with-same-goal">
     <i><b>Find Friend With Same Goal</b></i><br><br>
     <!-- change this route and stuff -->
-    <input id="submit_request" type="submit" value="Find New Friend" style="width:200px;margin-left:50px" onclick="find_friend()">
+    <input id="submit_request" type="submit" value="Find New Friend" style="width:200px;float:left;margin-left:50px" onclick="find_friend()">
   </div>
 
 </div>
+
+<div id="friend-requests">
+
+  <form id="friend_request_form" action="" method="post">
+    <input id="friend_request" name="username" type="text" placeholder="Enter a friend's name">
+    <input id="submit_request" type="submit" value="Send Friend Request" ><br>
+  </form>
+
+</div>
+
+
 
 <div id="weight-chart">
   <b>Weight Progress</b>
@@ -132,16 +131,25 @@
       </div>
 
       <div class="entry-wrapper">
-      <% for entry in @entries[key] %>
-        <div class="entry-wrapper">
-          <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
-          <div class="entry-field" style="width:80px;"><%= entry.calories %></div>
-          <div class="entry-field" style="width:200px;"><%= entry.serving.gsub("Serving Size ", "") %></div>
-          <div class="entry-field" style="width:60px;"><%= entry.numservings %></div>
-          <div class="entry-field" style="width:40px;" id="<%= entry.food %>">
-            <input name="delete" class = "delete-<%= i %>" type="checkbox">
+      <% if @entries[key].length == 0 %>
+          <div class="entry-wrapper">
+            <div class="entry-field" style="width:300px;">-</div>
+            <div class="entry-field" style="width:80px;">-</div>
+            <div class="entry-field" style="width:200px;">-</div>
+            <div class="entry-field" style="width:60px;">-</div>
           </div>
-        </div>
+      <% else %>
+        <% for entry in @entries[key] %>
+          <div class="entry-wrapper">
+            <div class="entry-field" style="width:300px;"><%= raw entry.food %></div>
+            <div class="entry-field" style="width:80px;"><%= entry.calories %></div>
+            <div class="entry-field" style="width:200px;"><%= entry.serving.gsub("Serving Size ", "") %></div>
+            <div class="entry-field" style="width:60px;"><%= entry.numservings %></div>
+            <div class="entry-field" style="width:40px;" id="<%= entry.food %>">
+              <input name="delete" class = "delete-<%= i %>" type="checkbox">
+            </div>
+          </div>
+        <% end %>
       <% end %>
       </div>
 
@@ -175,6 +183,7 @@ window.onpageshow = function(event) {
     location.reload();
   }
 };
+
 $(document).ready(function() {
   setMenu();
   $("#profile-details").hide();
@@ -306,11 +315,13 @@ function displayDay(day) {
 
 }
 
-function displayElement(elementId) {
+function displayElement(elementId, currentElementId) {
   if ($(elementId).is(':visible')) {
     $(elementId).hide();
+    $(currentElementId).html('+')
   } else {
     $(elementId).show();
+    $(currentElementId).html('-')
   }
 }
 
