@@ -122,4 +122,15 @@ describe "Friends Functional Tests" do
 			assigns[:accepted][0].usernameFrom.should == "b"
 		end
 	end
+	describe "deleting a friend" do
+		it "should delete friend" do
+			Friendship.create(usernameTo:"a", usernameFrom:"b")
+			Friendship.create(usernameTo:"b", usernameFrom:"a")
+			cookies[:remember_token] = "0"
+			UserProfile.signup("a", "", "0")
+			req = {"friend"=>"b"}
+			post '/profile/delete_friend', req.to_json, session
+			ActiveSupport::JSON.decode(response.body)["result"].should == UserProfile::SUCCESS
+		end
+	end
 end
