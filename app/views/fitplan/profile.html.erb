@@ -10,7 +10,7 @@
   </div><br><br><br><br>
   <hr />
 
-  <i><b>Profile details</b></i><div id="expand-details" style="float:right;cursor:pointer" onclick="displayElement('#profile-details', '#expand-details')">+</div>
+  <i><b>Profile details</b></i><div id="expand-details" onclick="displayElement('#profile-details', '#expand-details')">+</div>
   <div id="profile-details">
     <br>
     Starting weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).weight %> lbs</div><br>
@@ -34,7 +34,7 @@
   <hr />
 
   <div style="float:left"><i><b>Requests (<%= @pending_in.length %>)</b></i></div>
-  <div id="expand-requests" style="float:right;cursor:pointer" onclick="displayElement('#requests', '#expand-requests')">+</div><br>
+  <div id="expand-requests" onclick="displayElement('#requests', '#expand-requests')">+</div><br>
 
   <div id="requests">
     <br>
@@ -43,7 +43,7 @@
 
     <div id="received-requests">
       <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img class="imageAccept" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
       <% end %>
     </div>
 
@@ -63,16 +63,16 @@
 
   <div class="friends-display" id="accepted-friends">
     <% for friend in @accepted %>
-      <div class="image" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <div class="image" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img class="imageDefriend" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
     <% end %>
   </div>
 
   <hr />
 
   <div id="friend-with-same-goal">
-    <i><b>Find Friend With Same Goal</b></i><br><br>
+    <i><b>Find Friend With Same Goal</b></i><br>
     <!-- change this route and stuff -->
-    <input id="submit_request" type="submit" value="Find New Friend" style="width:200px;float:left;margin-left:50px" onclick="find_friend()">
+    <input id="submit_request" class="specialButton" type="submit" value="Find New Friend" style="width:200px;float:left;margin-left:50px" onclick="find_friend()">
   </div>
 
 </div>
@@ -81,7 +81,7 @@
 
   <form id="friend_request_form" action="" method="post">
     <input id="friend_request" name="username" type="text" placeholder="Enter a friend's name">
-    <input id="submit_request" type="submit" value="Send Friend Request" ><br>
+    <input id="submit_request" class="specialButton" type="submit" value="Send Friend Request"><br>
   </form>
 
 </div>
@@ -92,7 +92,7 @@
   <b>Weight Progress</b>
   <form id="weight_form" action="/profile/add_weight" method="post">
     <input id="weight" name="weight" type="text" placeholder="weight" style="float:left">
-    <input id="submit_weight" type="submit" value="Add" style="height:30px;float:left;margin-left:5px;">
+    <input id="submit_weight" class="specialButton" type="submit" value="Add" style="height:30px;float:left;margin-left:5px;">
   </form><br><br>
   <%= line_chart @weightChartData, discrete: true, height: '150px', name: 'weight_chart' %>
 </div>
@@ -157,11 +157,11 @@
 
       <form class="food-entry-form" action="/profile/add_food/<%= key.gsub("-", "_") %>" method="post">
         <input id="food-<%= i %>" class="food-entry-input" name="food" placeholder="e.g. 'chicken'" type="text" style="margin-left:35px;">
-        <input class="food-entry-input" type="submit" value="Add Food" style="margin-left:10px;">
+        <input class="specialButton" type="submit" value="Add Food" style="margin-left:10px;">
       </form>
 
       <div class="food-entry-form">
-        <input class="food-entry-input" type="submit" value="Delete selected entries" style="margin-left:110px;" onclick='delete_entries(<%= i %>, "<%= key %>")'>
+        <input class="specialButton" type="submit" value="Delete selected entries" style="margin-left:110px;" onclick='delete_entries(<%= i %>, "<%= key %>")'>
       </div>
 
       <div class="entry-field" style="width:780px;text-align:center;border:2px solid #505050;margin-top:10px">
@@ -312,7 +312,6 @@ function displayDay(day) {
       $(document.getElementById("day-button-"+i)).css("border-bottom", "thin solid #505050");
     }
   }
-
 }
 
 function displayElement(elementId, currentElementId) {
@@ -324,6 +323,46 @@ function displayElement(elementId, currentElementId) {
     $(currentElementId).html('-')
   }
 }
+
+$(".imageAccept").hover(function(event){
+  $(this).attr("src", "/accept.jpg");
+  $(this).css("opacity", "0.6");
+  var bckObj = {
+    "background-image": "url(/anon_user.jpg)",
+    "background-size": "55px 55px",
+    "background-repeat": "no-repeat",
+    "opacity": "1"
+  };
+  $(this).parent().css(bckObj);
+}, function(event){
+  $(this).parent().css("background-image", "");
+  $(this).parent().css("background-size", "");
+  $(this).parent().css("background-repeat", "");
+  $(this).parent().css("opacity", "");
+  $(this).attr("src", "/anon_user.jpg"); // "@user.profile_picture_url" or @user.avatar.url
+  $(this).css("opacity", "");
+});
+
+$(".imageDefriend").hover(function(event){
+  $(this).attr("src", "/defriend.jpg");
+  $(this).css("opacity", "0.6");
+  $(this).css("margin-top", "3px");
+  var bckObj = {
+    "background-image": "url(/anon_user.jpg)",
+    "background-size": "55px 55px",
+    "background-repeat": "no-repeat",
+    "opacity": "1"
+  };
+  $(this).parent().css(bckObj);
+}, function(event){
+  $(this).parent().css("background-image", "");
+  $(this).parent().css("background-size", "");
+  $(this).parent().css("background-repeat", "");
+  $(this).parent().css("opacity", "");
+  $(this).attr("src", "/anon_user.jpg"); // "@user.profile_picture_url" or @user.avatar.url
+  $(this).css("opacity", "");
+  $(this).css("margin-top", "");
+});
 
 
 </script>

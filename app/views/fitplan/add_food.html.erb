@@ -25,7 +25,7 @@ function displayCalorie(selected_id, reply) {
         " calories&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serving size: "
 		+reply.serving.split("Serving Size")[1]+"</div>"+
 		"<div class='input'>Servings: <input id='"+serving_id+"' value='1' style='width:35px;'>"+
-		"&nbsp;&nbsp;<button type='button' onclick='addFood("+selected_id+")'>"+
+		"&nbsp;&nbsp;<button type='button' class='specialButton' style='padding:3px 6px' onclick='addFood("+selected_id+")'>"+
 		"Add</button></div>");
         /*$(document.getElementById("food-title-"+selected_id)).css("text-decoration", "underline");*/
 		$(element).show();

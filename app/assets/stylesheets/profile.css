@@ -8,6 +8,15 @@
   font-size: 12px;
 }
 
+#expand-details {
+  float:right;
+  cursor:pointer;
+}
+
+#expand-requests {
+  float:right;
+  cursor:pointer;
+}
 .profile-stat {
   float: right;
 }
@@ -55,44 +64,27 @@
   float: left;
   margin: 5px;
   text-align: center;
-}
-
-.image:hover {
-  opacity:0.5;
-  float: left;
-  margin: 5px;
-  text-align: center;
-}
-
-.backimage{
-  float: left;
-  margin: 5px;
-  text-align: center;
-}
-
-.backimage:hover {
-  z-index:2;
-  float: left;
-  margin: 5px;
-  text-align: center;
+  height: 55px;
+  width: 55px;
 }
 
 #friend_request_form {
   background-color: #F0FFFF;
   width: 68%;
   float: right;
-  margin-right: 1%;
+  margin: 1%
 }
 
 #friend_request {
   float:left;
-  width:600px;
+  width:630px;
   margin:5px;
 }
 
 #submit_request {
   float:right;
-  margin:5px;
+  margin:6px;
+  height: 30px;
 }
 
 #weight_form {
