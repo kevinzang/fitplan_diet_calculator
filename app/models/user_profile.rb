@@ -435,10 +435,9 @@ class UserProfile < ActiveRecord::Base
     friendships = Friendship.where(:usernameFrom => username)
     weights = []
     for friendship in friendships do
-      weights.push({:name => friendship.usernameTo, :data => weightChartData(friendship.usernameTo, range_in_months)})
+      weights.push({"name" => friendship.usernameTo, "data" => weightChartData(friendship.usernameTo, range_in_months)})
     end
-    weights.push({:name => username, :data => weightChartData(username, range_in_months)})
-    p weights
+    weights.push({"name"=> username, "data" => weightChartData(username, range_in_months)})
   end
 
 	def self.calorieIntakeChartData(username, range_in_months)

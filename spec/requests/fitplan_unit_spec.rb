@@ -569,6 +569,33 @@ describe "Fitplan Unit Tests" do
 			entries[2].calories.should == 123
 			entries[2].serving.should == "serving"
 		end
-	end
+  end
+  describe "UserProfile.weightChartDataFriends(...)" do
+    it "should return valid chart data" do
+      UserProfile.signup("kevin0", "", "0")
+      UserProfile.signup("kevin1", "", "0")
+      UserProfile.signup("kevin2", "", "0")
+      UserProfile.signup("kevin3", "", "0")
+      Friendship.delete_all()
+      Friendship.create(:usernameFrom => "kevin0", :usernameTo => "kevin1")
+      Friendship.create(:usernameFrom => "kevin1", :usernameTo => "kevin0")
+      Friendship.create(:usernameFrom => "kevin0", :usernameTo => "kevin3")
+      Friendship.create(:usernameFrom => "kevin3", :usernameTo => "kevin0")
+      UserProfile.addWeightEntry("kevin0", "210", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin0", "211", (Date.today - 1).to_s)
+      UserProfile.addWeightEntry("kevin1", "156", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin2", "9000", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin3", "500", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin3", "505", (Date.today - 2).to_s)
+      chart_data = UserProfile.weightChartDataFriends("kevin0", 3)
+      expected = [{"name" => "kevin0", "data" => {Date.today.to_s => 210, (Date.today - 1).to_s => 211}},
+                  {"name" => "kevin1", "data" => {Date.today.to_s => 156}},
+                  {"name" => "kevin3", "data" => {Date.today.to_s => 500, (Date.today - 2).to_s => 505}}]
+      chart_data.size.should == expected.size
+      chart_data.include?(expected[0]).should == true
+      chart_data.include?(expected[1]).should == true
+      chart_data.include?(expected[2]).should == true
+    end
+  end
 	puts "***end fitplan_unit_spec.rb"
 end

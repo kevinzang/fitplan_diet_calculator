@@ -113,6 +113,7 @@ class FitplanController < ApplicationController
 		@userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
 		@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
 		@weightChartData = UserProfile.weightChartData(@user, 3)
+    @weights = UserProfile.weightChartDataFriends(@user, 3)
 
 		@pending_in = FriendRequest.where(usernameTo:@user, friendStatus:false)
 		@pending_out = FriendRequest.where(usernameFrom:@user, friendStatus:false)
