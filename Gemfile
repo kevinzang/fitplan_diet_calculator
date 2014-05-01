@@ -9,17 +9,17 @@ gem 'bootstrap-sass', '2.3.2.0'
 
 # Use sqlite3 as the database for Active Record
 group :development, :test do
-	gem 'sqlite3', '1.3.8'
+  gem 'sqlite3', '1.3.8'
 end
 
 group :test, :production do
-	gem 'rspec-rails', '2.13.1'
-	gem 'capybara', '2.1.0'
+  gem 'rspec-rails', '2.13.1'
+  gem 'capybara', '2.1.0'
 end
 
 group :test do
-	gem 'simplecov', :require => false
-	gem 'selenium-webdriver', '2.41.0'
+  gem 'simplecov', :require => false
+  gem 'selenium-webdriver', '2.41.0'
 end
 
 # Use SCSS for stylesheets
@@ -47,14 +47,18 @@ gem 'chartkick'
 
 gem 'thin'
 
+gem 'paperclip'
+
+gem 'aws-sdk'
+
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
 end
 
 group :production do
-	gem 'pg', '0.15.1'
-	gem 'rails_12factor', '0.0.2'
+  gem 'pg', '0.15.1'
+  gem 'rails_12factor', '0.0.2'
 end
 
 # Use ActiveModel has_secure_password

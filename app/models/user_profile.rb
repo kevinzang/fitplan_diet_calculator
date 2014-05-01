@@ -142,7 +142,26 @@ class UserProfile < ActiveRecord::Base
 		user.weight_change_per_week_goal = params["weight_change_per_week_goal"].to_f
 		user.save()
 		return valid
-	end
+  end
+
+  def self.setPic(username, pic)
+    user = UserProfile.find_by(:username => username)
+    # validate exists
+    if pic.nil?
+      return "ERROR: Must upload a file"
+    end
+    # validate content type
+    if !["image/jpg", "image/jpeg", "image/png"].include?(pic.content_type)
+      return "ERROR: Invalid file format. jpg or png only."
+    end
+    # validate file size
+    if pic.tempfile.size > 5.megabytes
+      return "ERROR: Maximum file size is 5 MB"
+    end
+    user.update(:pic => pic)
+    user.save()
+    return SUCCESS
+  end
 
 	def self.getEntries(username)
 		user = UserProfile.find_by(username:username)
@@ -410,7 +429,17 @@ class UserProfile < ActiveRecord::Base
 			end
 		end
 		return chartData
-	end
+  end
+
+  def self.weightChartDataFriends(username, range_in_months)
+    friendships = Friendship.where(:usernameFrom => username)
+    weights = []
+    for friendship in friendships do
+      weights.push({:name => friendship.usernameTo, :data => weightChartData(friendship.usernameTo, range_in_months)})
+    end
+    weights.push({:name => username, :data => weightChartData(username, range_in_months)})
+    p weights
+  end
 
 	def self.calorieIntakeChartData(username, range_in_months)
 		foodEntries = UserProfile.getEntries(username)
