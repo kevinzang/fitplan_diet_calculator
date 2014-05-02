@@ -4,7 +4,7 @@
 <div id="profile-sidebar">
 
   <div>
-    <div id="profile-pic" style="float:left"><img src="/anon_user.jpg" height="50" width="100"></div>
+    <div id="profile-pic" style="float:left"><%= image_tag(UserProfile.find_by_username(@user).profile_pic.url, :width => '100px') %></div>
     <div style="float:right"><i><b><%= @user %>'s Profile</b></i></div><br>
     <a href="/profile_form" style="float:right">Edit Profile</a>
   </div><br><br><br><br>
@@ -17,7 +17,7 @@
     Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
     Activity Level:
     <div class="profile-stat">
-      <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%>
+      <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level]%>
     </div><br>
 
     Weekly goal:
@@ -43,14 +43,14 @@
 
     <div id="received-requests">
       <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
+        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><%= image_tag(UserProfile.find_by_username(friend.usernameFrom).profile_pic.url, :width => '55px') %><br><%= friend.usernameFrom %></div>
       <% end %>
     </div>
 
 
     <div id="sent-requests">
       <% for friend in @pending_out %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameTo %></div>
+        <div class="image"><%= image_tag(UserProfile.find_by_username(friend.usernameTo).profile_pic.url, :width => '55px') %><br><%= friend.usernameTo %></div>
       <% end %>
     </div>
 
@@ -63,7 +63,7 @@
 
   <div class="friends-display" id="accepted-friends">
     <% for friend in @accepted %>
-      <div class="image" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img src="/anon_user.jpg" height="30" width="60"><br><%= friend.usernameFrom %></div>
+      <div class="image" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><%= image_tag(UserProfile.find_by_username(friend.usernameFrom).profile_pic.url, :width => '55px') %><br><%= friend.usernameFrom %></div>
     <% end %>
   </div>
 
@@ -94,7 +94,7 @@
     <input id="weight" name="weight" type="text" placeholder="weight" style="float:left">
     <input id="submit_weight" type="submit" value="Add" style="height:30px;float:left;margin-left:5px;">
   </form><br><br>
-  <%= line_chart @weights, discrete: true, height: '200px' %>
+  <%= line_chart @weights, discrete: true, height: '150px', name: 'weight_chart' %>
 </div>
 
 <div id="gauge_container">

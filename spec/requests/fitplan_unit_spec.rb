@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'open-uri'
 
 describe "Fitplan Unit Tests" do
 	puts "***begin fitplan_unit_spec.rb"
@@ -595,6 +596,35 @@ describe "Fitplan Unit Tests" do
       chart_data.include?(expected[0]).should == true
       chart_data.include?(expected[1]).should == true
       chart_data.include?(expected[2]).should == true
+    end
+  end
+  describe "UserProfile.setPic(...)" do
+    it "should error if file is not jpg or png" do
+      UserProfile.signup("kevin", "secret", "0")
+      data = File.open(Dir.pwd + '/spec/requests/files/wrong_content_type.ppt')
+      result = UserProfile.setPic("kevin", data)
+      result.should == "ERROR: Invalid file format. jpg or png only."
+    end
+    it "should error if file is > 5 MB" do
+      UserProfile.signup("kevin", "secret", "0")
+      data = File.open(Dir.pwd + '/spec/requests/files/too_large.jpg')
+      result = UserProfile.setPic("kevin", data)
+      result.should == "ERROR: Maximum file size is 5 MB"
+    end
+    it "should error if file not uploaded" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.setPic("kevin", nil)
+      result.should == "ERROR: Must upload a file"
+    end
+    it "should set pic to uploaded file" do
+      UserProfile.signup("kevin", "secret", "0")
+      data = File.open(Dir.pwd + '/spec/requests/files/pikachu.jpg')
+      result = UserProfile.setPic("kevin", data)
+      result.should == "SUCCESS"
+      user = UserProfile.find_by(:username => "kevin")
+      user.profile_pic.should_not == nil
+      #aws_data = open(user.profile_pic.url)
+      #aws_data.nil?.should == false
     end
   end
 	puts "***end fitplan_unit_spec.rb"

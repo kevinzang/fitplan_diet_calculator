@@ -3,6 +3,20 @@ class UserProfile < ActiveRecord::Base
 	require "workout_entry"
 	require "date"
 
+  has_attached_file :profile_pic,
+                    :default_url => '/anon_user.jpg',
+                    :storage => :s3,
+                    :s3_protocol => 'http',
+                    :bucket => 'cs169_fitplan',
+                    :s3_credentials => {
+                        :bucket => 'cs169_fitplan',
+                        :access_key_id => 'AKIAITJHHIG34RHDCVGA',
+                        :secret_access_key => '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'
+                    }
+
+  validates_attachment_content_type :profile_pic, :content_type => /\Aimage/, :message => "ERROR: Invalid file format. jpg or png only."
+  validates_attachment_file_name :profile_pic, :matches => [/png\Z/, /jpe?g\Z/], :message => "ERROR: Invalid file format. jpg or png only."
+
 	MAX_USERNAME_LENGTH = 128
 	MAX_PASSWORD_LENGTH = 128
 
@@ -150,15 +164,14 @@ class UserProfile < ActiveRecord::Base
     if pic.nil?
       return "ERROR: Must upload a file"
     end
-    # validate content type
-    if !["image/jpg", "image/jpeg", "image/png"].include?(pic.content_type)
-      return "ERROR: Invalid file format. jpg or png only."
-    end
     # validate file size
-    if pic.tempfile.size > 5.megabytes
+    if pic.size > 5.megabytes
       return "ERROR: Maximum file size is 5 MB"
     end
-    user.update(:pic => pic)
+    user.update(:profile_pic => pic)
+    if !user.valid?
+      return user.errors[:profile_pic][0]
+    end
     user.save()
     return SUCCESS
   end
@@ -522,7 +535,12 @@ class UserProfile < ActiveRecord::Base
 			UserProfile.addFood("a", "Irresponsibly long food name for the glorious "+
 				"day that is #{day}", 100, day, "Somewhat long description", "3")
 		end
-	end
+  end
+
+  def self.print(object)
+    p 'printing:'
+    p object
+  end
 
 	private
 	def self.checkProfile(fields, params)
