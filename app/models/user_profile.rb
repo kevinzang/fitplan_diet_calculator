@@ -561,11 +561,11 @@ class UserProfile < ActiveRecord::Base
     WeightEntry.delete_all()
     WorkoutEntry.delete_all()
 
-    date = Date.today - 30.days
+    date = Date.today - 5.days
 
     # main user
-    UserProfile.signup("user0", "user0", "0")
-    curr_user = UserProfile.find_by(:username => "user0")
+    UserProfile.signup("pikachu", "pikachu", "0")
+    curr_user = UserProfile.find_by(:username => "pikachu")
     curr_user.height = 68
     curr_user.weight = 211
     curr_user.desired_weight = 160
@@ -573,36 +573,30 @@ class UserProfile < ActiveRecord::Base
     curr_user.activity_level = 1
     curr_user.weight_change_per_week_goal = -2.0
     curr_user.save()
-    for i in 0...30
-      weight_change = 0
-      nonce = rand(100)
-      if nonce < 5
-        weight_change = 0.25
-      elsif nonce > 30
-        weight_change = -0.50
-      end
-      new_weight = getCurrentWeight("user0") + weight_change
-      WeightEntry.create(:username => "user0", :weight => new_weight, :date => (date + i.days).to_s)
-    end
-
+    WeightEntry.create(:username => "pikachu", :weight => 211, :date => (date + 1.days).to_s)
+    WeightEntry.create(:username => "pikachu", :weight => 210.7, :date => (date + 2.days).to_s)
+    WeightEntry.create(:username => "pikachu", :weight => 210.4, :date => (date + 3.days).to_s)
+    WeightEntry.create(:username => "pikachu", :weight => 209.2, :date => (date + 4.days).to_s)
+    WeightEntry.create(:username => "pikachu", :weight => 208.8, :date => (date + 5.days).to_s)
     # friend 1
-    Friendship.create(:usernameFrom => "user0", :usernameTo => "user1")
-    Friendship.create(:usernameFrom => "user1", :usernameTo => "user0")
-    UserProfile.signup("user1", "user1", "1")
-    curr_user = UserProfile.find_by(:username => "user1")
-    curr_user.weight = 156
-    curr_user.save()
-    for i in 0...30
-      weight_change = 0
-      nonce = rand(100)
-      if nonce < 5
-        weight_change = 0.25
-      elsif nonce > 30
-        weight_change = -0.25
-      end
-      new_weight = getCurrentWeight("user1") + weight_change
-      WeightEntry.create(:username => "user1", :weight => new_weight, :date => (date + i.days).to_s)
-    end
+    Friendship.create(:usernameFrom => "pikachu", :usernameTo => "teemo")
+    Friendship.create(:usernameFrom => "teemo", :usernameTo => "pikachu")
+    UserProfile.signup("teemo", "teemo", "1")
+    WeightEntry.create(:username => "teemo", :weight => 206, :date => (date + 1.days).to_s)
+    WeightEntry.create(:username => "teemo", :weight => 205.5, :date => (date + 2.days).to_s)
+    WeightEntry.create(:username => "teemo", :weight => 205.2, :date => (date + 3.days).to_s)
+    WeightEntry.create(:username => "teemo", :weight => 205, :date => (date + 4.days).to_s)
+    WeightEntry.create(:username => "teemo", :weight => 204.9, :date => (date + 5.days).to_s)
+
+    #friend 2
+    Friendship.create(:usernameFrom => "pikachu", :usernameTo => "michael")
+    Friendship.create(:usernameFrom => "michael", :usernameTo => "pikachu")
+    UserProfile.signup("michael", "michael", "2")
+    WeightEntry.create(:username => "michael", :weight => 200, :date => (date + 1.days).to_s)
+    WeightEntry.create(:username => "michael", :weight => 201.2, :date => (date + 2.days).to_s)
+    WeightEntry.create(:username => "michael", :weight => 199.5, :date => (date + 3.days).to_s)
+    WeightEntry.create(:username => "michael", :weight => 199.3, :date => (date + 4.days).to_s)
+    WeightEntry.create(:username => "michael", :weight => 199.2, :date => (date + 5.days).to_s)
 =begin
     # instantiate users
     for i in 0..10
