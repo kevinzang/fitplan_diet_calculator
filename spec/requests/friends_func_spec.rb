@@ -98,7 +98,6 @@ describe "Friends Functional Tests" do
 			UserProfile.create(username:"b", password:"")
 			FriendRequest.create(usernameFrom:"a", usernameTo:"b", friendStatus:false)
 			get '/profile'
-      UserProfile.print('asdf')
 			assigns[:pending_out][0].usernameTo.should == "b"
 			assigns[:pending_in].length.should == 0
 			assigns[:accepted].length.should == 0
