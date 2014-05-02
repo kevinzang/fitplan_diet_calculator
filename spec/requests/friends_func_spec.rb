@@ -30,7 +30,7 @@ describe "Friends Functional Tests" do
 			post '/profile/create_request', req.to_json, session
 			ActiveSupport::JSON.decode(response.body)["result"].should_not == UserProfile::SUCCESS
 		end
-		it "should not friend a nonexistant user" do
+		it "should not friend a nonexistent user" do
 			UserProfile.signup("a", "secret", "0")
 			cookies[:remember_token] = "0"
 			req = {"username"=>"b"}
