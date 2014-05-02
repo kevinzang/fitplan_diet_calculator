@@ -15,7 +15,7 @@ class UserProfile < ActiveRecord::Base
                     }
 
   validates_attachment_content_type :profile_pic, :content_type => /\Aimage/, :message => "ERROR: Invalid file format. jpg or png only."
-  validates_attachment_file_name :profile_pic, :matches => [/png\Z/, /jpe?g\Z/], :message => "ERROR: Invalid file format. jpg or png only."
+  #validates_attachment_file_name :profile_pic, :matches => [/png\Z/, /jpe?g\Z/], :message => "ERROR: Invalid file format. jpg or png only."
 
 	MAX_USERNAME_LENGTH = 128
 	MAX_PASSWORD_LENGTH = 128
@@ -436,7 +436,7 @@ class UserProfile < ActiveRecord::Base
 		chartData = {}
 		for weightEntry in weightEntries
 			if chartData.has_key?(weightEntry.date)
-				chartData[weightEntry.date] = max chartData[weightEntry.date], weightEntry.weight
+				chartData[weightEntry.date] = [chartData[weightEntry.date], weightEntry.weight].max
 			else
 				chartData[weightEntry.date] = weightEntry.weight
 			end
@@ -543,6 +543,130 @@ class UserProfile < ActiveRecord::Base
   def self.print(object)
     p 'printing:'
     p object
+  end
+
+  def self.setup_for_demo()
+    if Rails.env.production?
+      return
+    end
+
+    # cleanup the dbs
+    UserProfile.destroy_all()
+    FoodEntry.delete_all()
+    FoodSearch.delete_all()
+    FriendRequest.delete_all()
+    Friendship.delete_all()
+    UserFood.delete_all()
+    UserProfile.delete_all()
+    WeightEntry.delete_all()
+    WorkoutEntry.delete_all()
+
+    date = Date.today - 30.days
+
+    # main user
+    UserProfile.signup("user0", "user0", "0")
+    curr_user = UserProfile.find_by(:username => "user0")
+    curr_user.height = 68
+    curr_user.weight = 211
+    curr_user.desired_weight = 160
+    curr_user.gender = "male"
+    curr_user.activity_level = 1
+    curr_user.weight_change_per_week_goal = -2.0
+    curr_user.save()
+    for i in 0...30
+      weight_change = 0
+      nonce = rand(100)
+      if nonce < 5
+        weight_change = 0.25
+      elsif nonce > 30
+        weight_change = -0.50
+      end
+      new_weight = getCurrentWeight("user0") + weight_change
+      WeightEntry.create(:username => "user0", :weight => new_weight, :date => (date + i.days).to_s)
+    end
+
+    # friend 1
+    Friendship.create(:usernameFrom => "user0", :usernameTo => "user1")
+    Friendship.create(:usernameFrom => "user1", :usernameTo => "user0")
+    UserProfile.signup("user1", "user1", "1")
+    curr_user = UserProfile.find_by(:username => "user1")
+    curr_user.weight = 156
+    curr_user.save()
+    for i in 0...30
+      weight_change = 0
+      nonce = rand(100)
+      if nonce < 5
+        weight_change = 0.25
+      elsif nonce > 30
+        weight_change = -0.25
+      end
+      new_weight = getCurrentWeight("user1") + weight_change
+      WeightEntry.create(:username => "user1", :weight => new_weight, :date => (date + i.days).to_s)
+    end
+=begin
+    # instantiate users
+    for i in 0..10
+      username = 'user' + i.to_s
+      password = 'password' + i.to_s
+      height = 60 + i
+      weight = 100 + 15 * i
+      desired_weight = weight - i * 2
+      age = 18 + rand(20)
+      if rand(2) == 0
+        gender = "male"
+      else
+        gender = "female"
+      end
+      remember_token = i.to_s
+      activity_level = rand(5)
+      weight_change_per_week_goal = -0.5 * rand(5)
+      UserProfile.signup(username, password, remember_token)
+      new_user = UserProfile.find_by(:username => username)
+      new_user.height = height
+      new_user.weight = weight
+      new_user.desired_weight = desired_weight
+      new_user.age = age
+      new_user.gender = gender
+      new_user.save()
+    end
+
+    # add weight entries
+    for i in 0..10
+      for j in 0..30
+        username = 'user' + i.to_s
+        date = (Date.today - j).to_s
+        weight = getCurrentWeight(username)
+        choice = rand(100)
+        if choice < 5
+          weight_entry = WeightEntry.new()
+          weight_entry.username = username
+          weight_entry.date = date
+          weight_entry.weight = weight + 1
+          weight_entry.save()
+        elsif choice > 80
+          weight_entry = WeightEntry.new()
+          weight_entry.username = username
+          weight_entry.date = date
+          weight_entry.weight = weight - 1
+          weight_entry.save()
+        end
+      end
+    end
+
+    # assign friends
+    for i in 0..10
+      for j in 0..10
+        if i == j
+          next
+        end
+        choice = rand(3)
+        if choice == 0
+            Friendship.create(:usernameFrom => 'user' + i.to_s, :usernameTo => 'user' + j.to_s)
+            Friendship.create(:usernameFrom => 'user' + j.to_s, :usernameTo => 'user' + i.to_s)
+        end
+      end
+    end
+=end
   end
 
 	private

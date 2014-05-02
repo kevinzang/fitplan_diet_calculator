@@ -28,6 +28,7 @@ Fitplan::Application.routes.draw do
   get '/faq' => 'fitplan#faq'
   get '/about' => 'fitplan#about'
   get '/tips' => 'fitplan#tips'
+  post '/setup_for_demo' => 'fitplan#setup_for_demo'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
