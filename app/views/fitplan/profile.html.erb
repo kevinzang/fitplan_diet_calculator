@@ -100,11 +100,10 @@
 <div id="gauge_container">
   <% if @gauge_level == 30 %>
     <p>Congratulations Swoldier. You have been with us for <%= @gauge_level + 1%> days!</p>
-  <% else if @gauge_level == 0%>
+  <% elsif @gauge_level == 0%>
     <p>Get started with Fitplan!</p>
   <% else %>
     <p>You've been with us for <%= @gauge_level +1%> days.</p>
-    <% end %>
   <% end %>
   <div id="gauge_helper">
     <img src="/habit_gauge_<%=@gauge_level%>.jpg" width="30px" height ="150px" >
@@ -196,9 +195,6 @@ $(document).ready(function() {
   $("#profile-details").hide();
   $("#requests").hide();
 });
-
-var opacityVal = 0.3;
-document.getElementById('gauge_text').style.opacity = opacityVal;
 
 function register(result, index) {
 	if (result.result == "SUCCESS") {
@@ -328,10 +324,10 @@ function displayDay(day) {
 function displayElement(elementId, currentElementId) {
   if ($(elementId).is(':visible')) {
     $(elementId).hide();
-    $(currentElementId).html('+')
+    $(currentElementId).html('+');
   } else {
     $(elementId).show();
-    $(currentElementId).html('-')
+    $(currentElementId).html('-');
   }
 }
 
