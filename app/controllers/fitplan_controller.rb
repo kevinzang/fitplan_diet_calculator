@@ -86,7 +86,7 @@ class FitplanController < ApplicationController
     end
     result = UserProfile.setPic(@user, params[:pic_form][:profile_pic])
     resp = {"result" => result}
-    redirect_to :action => :profile_form
+    return redirect_to :action => :profile_form
     #return render(:json => resp, :status => 200)
   end
 
@@ -125,10 +125,21 @@ class FitplanController < ApplicationController
 			@burned[curr.to_s] = total
 			curr = curr + 1
 		end
-		#@userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
-		#@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
-		#@weightChartData = UserProfile.weightChartData(@user, 3)
+		@userModel = UserProfile.find_by_username(@user)
+		@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
+		@weightChartData = UserProfile.weightChartData(@user, 3)
     @weights = UserProfile.weightChartDataFriends(@user, 3)
+    @min_weight = 9000
+    @max_weight = 0
+    @weights.each do |user|
+      user["data"].each do |entry|
+        p entry[1]
+        @min_weight = [entry[1], @min_weight].min
+        @max_weight = [entry[1], @max_weight].max
+      end
+    end
+    @min_weight = [@min_weight - 5, 0].max
+    @max_weight = @max_weight + 5
 
 		@pending_in = FriendRequest.where(usernameTo:@user, friendStatus:false)
 		@pending_out = FriendRequest.where(usernameFrom:@user, friendStatus:false)
@@ -336,5 +347,10 @@ class FitplanController < ApplicationController
 			return render(:json=>{"nrFailed"=>0, "output"=>"Unexpected error",
 				"totalTests"=>10}, status:200)
 		end
-	end
+  end
+
+  def setup_for_demo
+    UserProfile.setup_for_demo()
+    return render(:json => {"finished" => "true"}, status: 200)
+  end
 end
