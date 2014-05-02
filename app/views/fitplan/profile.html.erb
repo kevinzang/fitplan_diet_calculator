@@ -4,7 +4,7 @@
 <div id="profile-sidebar">
 
   <div>
-    <div id="profile-pic" style="float:left"><img src="/anon_user.jpg" height="50" width="100"></div>
+    <div id="profile-pic" style="float:left"><%= image_tag(UserProfile.find_by_username(@user).profile_pic.url, :width => '100px') %></div>
     <div style="float:right"><i><b><%= @user %>'s Profile</b></i></div><br>
     <a href="/profile_form" style="float:right">Edit Profile</a>
   </div><br><br><br><br>
@@ -17,7 +17,7 @@
     Desired weight: <div class="profile-stat"><%= UserProfile.find_by_username(@user).desired_weight %> lbs</div><br>
     Activity Level:
     <div class="profile-stat">
-      <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level] if !@userModel.nil?%>
+      <%= ["Not Active", "Lightly Active", "Moderately Active", "Very Active", "Extremely Active"][UserProfile.find_by_username(@user).activity_level]%>
     </div><br>
 
     Weekly goal:
@@ -43,14 +43,14 @@
 
     <div id="received-requests">
       <% for friend in @pending_in %>
-        <div class="image" id="accept-<%= friend.usernameFrom %>" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img class="imageAccept" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
+        <div class="image" id="accept-<%= friend.usernameFrom %>" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img class="imageAccept" src="<%= UserProfile.find_by_username(friend.usernameFrom).profile_pic.url %>"><%= friend.usernameFrom %></div>
       <% end %>
     </div>
 
 
     <div id="sent-requests">
       <% for friend in @pending_out %>
-        <div class="image"><img src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameTo %></div>
+        <div class="image"><img class="imageSent" src="<%= UserProfile.find_by_username(friend.usernameTo).profile_pic.url %>"><%= friend.usernameTo %></div>
       <% end %>
     </div>
 
@@ -63,7 +63,7 @@
 
   <div class="friends-display" id="accepted-friends">
     <% for friend in @accepted %>
-      <div class="image" id="delete-<%= friend.usernameFrom %>" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img class="imageDefriend" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
+      <div class="image" id="delete-<%= friend.usernameFrom %>" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img class="imageDefriend" src="<%= UserProfile.find_by_username(friend.usernameFrom).profile_pic.url %>" height="30" width="55"><%= friend.usernameFrom %></div>
     <% end %>
   </div>
 
@@ -94,7 +94,7 @@
     <input id="weight" name="weight" type="text" placeholder="weight" style="float:left">
     <input id="submit_weight" class="specialButton" type="submit" value="Add" style="height:30px;float:left;margin-left:5px;">
   </form><br><br>
-  <%= line_chart @weightChartData, discrete: true, height: '150px', name: 'weight_chart' %>
+  <%= line_chart @weights, discrete: true, height: '150px', name: 'weight_chart' %>
 </div>
 
 <div id="gauge_container">
@@ -325,10 +325,11 @@ function displayElement(elementId, currentElementId) {
 }
 
 $(".imageAccept").hover(function(event){
+  $(this).attr("id", $(this).attr("src"));
   $(this).attr("src", "/accept.jpg");
   $(this).css("opacity", "0.6");
   var bckObj = {
-    "background-image": "url(/anon_user.jpg)",
+    "background-image": "url("+img_src+")",
     "background-size": "55px 55px",
     "background-repeat": "no-repeat",
     "opacity": "1"
@@ -339,16 +340,16 @@ $(".imageAccept").hover(function(event){
   $(this).parent().css("background-size", "");
   $(this).parent().css("background-repeat", "");
   $(this).parent().css("opacity", "");
-  $(this).attr("src", "/anon_user.jpg"); // "@user.profile_picture_url" or @user.avatar.url
+  $(this).attr("src", $(this).attr("id"));
   $(this).css("opacity", "");
 });
 
 $(".imageDefriend").hover(function(event){
+  $(this).attr("id", $(this).attr("src"));
   $(this).attr("src", "/defriend.jpg");
   $(this).css("opacity", "0.6");
-  $(this).css("margin-top", "3px");
   var bckObj = {
-    "background-image": "url(/anon_user.jpg)",
+    "background-image": "url("+img_src+")",
     "background-size": "55px 55px",
     "background-repeat": "no-repeat",
     "opacity": "1"
@@ -359,9 +360,8 @@ $(".imageDefriend").hover(function(event){
   $(this).parent().css("background-size", "");
   $(this).parent().css("background-repeat", "");
   $(this).parent().css("opacity", "");
-  $(this).attr("src", "/anon_user.jpg"); // "@user.profile_picture_url" or @user.avatar.url
+  $(this).attr("src", $(this).attr("id"));
   $(this).css("opacity", "");
-  $(this).css("margin-top", "");
 });
 
 

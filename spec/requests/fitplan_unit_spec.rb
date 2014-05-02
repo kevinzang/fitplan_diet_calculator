@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'open-uri'
 
 describe "Fitplan Unit Tests" do
 	puts "***begin fitplan_unit_spec.rb"
@@ -569,6 +570,62 @@ describe "Fitplan Unit Tests" do
 			entries[2].calories.should == 123
 			entries[2].serving.should == "serving"
 		end
-	end
+  end
+  describe "UserProfile.weightChartDataFriends(...)" do
+    it "should return valid chart data" do
+      UserProfile.signup("kevin0", "", "0")
+      UserProfile.signup("kevin1", "", "0")
+      UserProfile.signup("kevin2", "", "0")
+      UserProfile.signup("kevin3", "", "0")
+      Friendship.delete_all()
+      Friendship.create(:usernameFrom => "kevin0", :usernameTo => "kevin1")
+      Friendship.create(:usernameFrom => "kevin1", :usernameTo => "kevin0")
+      Friendship.create(:usernameFrom => "kevin0", :usernameTo => "kevin3")
+      Friendship.create(:usernameFrom => "kevin3", :usernameTo => "kevin0")
+      UserProfile.addWeightEntry("kevin0", "210", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin0", "211", (Date.today - 1).to_s)
+      UserProfile.addWeightEntry("kevin1", "156", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin2", "9000", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin3", "500", Date.today.to_s)
+      UserProfile.addWeightEntry("kevin3", "505", (Date.today - 2).to_s)
+      chart_data = UserProfile.weightChartDataFriends("kevin0", 3)
+      expected = [{"name" => "kevin0", "data" => {Date.today.to_s => 210, (Date.today - 1).to_s => 211}},
+                  {"name" => "kevin1", "data" => {Date.today.to_s => 156}},
+                  {"name" => "kevin3", "data" => {Date.today.to_s => 500, (Date.today - 2).to_s => 505}}]
+      chart_data.size.should == expected.size
+      chart_data.include?(expected[0]).should == true
+      chart_data.include?(expected[1]).should == true
+      chart_data.include?(expected[2]).should == true
+    end
+  end
+  describe "UserProfile.setPic(...)" do
+    it "should error if file is not jpg or png" do
+      UserProfile.signup("kevin", "secret", "0")
+      data = File.open(Dir.pwd + '/spec/requests/files/wrong_content_type.ppt')
+      result = UserProfile.setPic("kevin", data)
+      result.should == "ERROR: Invalid file format. jpg or png only."
+    end
+    it "should error if file is > 5 MB" do
+      UserProfile.signup("kevin", "secret", "0")
+      data = File.open(Dir.pwd + '/spec/requests/files/too_large.jpg')
+      result = UserProfile.setPic("kevin", data)
+      result.should == "ERROR: Maximum file size is 5 MB"
+    end
+    it "should error if file not uploaded" do
+      UserProfile.signup("kevin", "secret", "0")
+      result = UserProfile.setPic("kevin", nil)
+      result.should == "ERROR: Must upload a file"
+    end
+    it "should set pic to uploaded file" do
+      UserProfile.signup("kevin", "secret", "0")
+      data = File.open(Dir.pwd + '/spec/requests/files/pikachu.jpg')
+      result = UserProfile.setPic("kevin", data)
+      result.should == "SUCCESS"
+      user = UserProfile.find_by(:username => "kevin")
+      user.profile_pic.should_not == nil
+      #aws_data = open(user.profile_pic.url)
+      #aws_data.nil?.should == false
+    end
+  end
 	puts "***end fitplan_unit_spec.rb"
 end

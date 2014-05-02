@@ -6,6 +6,7 @@ Fitplan::Application.routes.draw do
   post '/signout_submit' => 'fitplan#signout_submit'
   get  '/profile_form' => 'fitplan#profile_form'
   post '/profile_form/submit' => 'fitplan#profile_form_submit'
+  post '/profile_form/upload_pic' => 'fitplan#upload_pic'
   get  '/profile' => 'fitplan#profile'
   match '/profile/add_food/:day', to: 'fitplan#add_food', via: [:post]
   post '/profile/get_calorie' => 'fitplan#get_calorie'

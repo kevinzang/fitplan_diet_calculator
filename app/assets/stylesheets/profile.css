@@ -60,11 +60,35 @@
   font-size: 10px;
 }
 
-.image {
+.imageAccept {
   float: left;
   margin: 5px;
   text-align: center;
   height: 55px;
+  width: 55px;
+}
+
+.imageSent {
+  float: left;
+  margin: 5px;
+  text-align: center;
+  height: 55px;
+  width: 55px;
+}
+
+.imageDefriend {
+  float: left;
+  margin: 5px;
+  text-align: center;
+  height: 55px;
+  width: 55px;
+}
+
+.image {
+  float: left;
+  margin: 5px;
+  text-align: center;
+  height: 75px;
   width: 55px;
 }
 
