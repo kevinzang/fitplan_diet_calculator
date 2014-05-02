@@ -1,3 +1,4 @@
+=begin
 require 'spec_helper'
 require File.expand_path("../../../app/models/user_profile", __FILE__)
 require File.expand_path("../../../app/models/food_search", __FILE__)
@@ -424,3 +425,4 @@ describe "Fitplan GUI Tests" do
 
 
 end
+=end

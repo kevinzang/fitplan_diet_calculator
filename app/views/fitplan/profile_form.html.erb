@@ -1,17 +1,25 @@
 <%= render '/layouts/navbar' %>
 
 <div id="input-form">
+  <div id="message"></div>
+  <%= image_tag(UserProfile.find_by(:username => @user).profile_pic.url, :width => '200px') %><br>
+  <button type="button" id="edit_pic">Edit Picture</button><br>
+  <div id="upload_pic_div" style="display:none">
+    <%= form_for(:pic_form, :url => '/profile_form/upload_pic', :html => {:id => "upload_pic_form"}, :multipart => true) do |form| %>
+        <%= form.file_field :profile_pic %>
+        <%= form.submit 'Upload', :id => 'upload_pic_submit'%>
+    <% end %>
+  </div>
   <form id="register" action="" method="POST">
-    <div id="message"></div>
     <hr />
     Feet: <input id="feet" name="feet" type="text" value=<%= @defaults["feet"] %>>
     &nbsp;&nbsp;&nbsp;&nbsp;
     Inches: <input id="inches" name="inches" type="text" value=<%= @defaults["inches"] %>>
     <hr />
-	  <div style="float:left;margin-left:20px">Starting weight: <input id="weight" name="weight" type="text" placeholder="lbs" value=<%= @defaults["weight"] %>></div>
-	  <div style="float:right">Desired weight: <input id="desired_weight" name="desired_weight" type="text" placeholder="lbs" value=<%= @defaults["desired_weight"] %>></div><br>
+    <div style="float:left;margin-left:20px">Starting weight: <input id="weight" name="weight" type="text" placeholder="lbs" value=<%= @defaults["weight"] %>></div>
+    <div style="float:right">Desired weight: <input id="desired_weight" name="desired_weight" type="text" placeholder="lbs" value=<%= @defaults["desired_weight"] %>></div><br>
     <hr />
-	  Age: <input id="age" name="age" type="text" value=<%= @defaults["age"] %>>
+    Age: <input id="age" name="age" type="text" value=<%= @defaults["age"] %>>
     <hr />
     Male <%= radio_button_tag("gender", "male", @defaults["gender"]=="male") %>
     &nbsp;&nbsp;&nbsp;&nbsp;
@@ -75,5 +83,26 @@
                 show_error
         );
         return false;
+    });
+
+    /*$('#upload_pic_form').submit(function(event) {
+     event.preventDefault();
+     var formData = new FormData($('#upload_pic_form')[0]);
+     $.ajax({
+     url: '/profile_form/upload_pic',
+     type: 'POST',
+     data: formData,
+     success: function (responseData) {
+     alert("WHAT");
+     },
+     error: function (responseData) {
+     alert(responseData.message);
+     }
+     });
+
+     });*/
+
+    $('#edit_pic').click(function() {
+        $("#upload_pic_div").show();
     });
 </script>

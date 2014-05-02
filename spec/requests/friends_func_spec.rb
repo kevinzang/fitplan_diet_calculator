@@ -22,7 +22,7 @@ describe "Friends Functional Tests" do
 			req = {"username"=>"a"}
 			post '/profile/create_request', req.to_json, session
 			ActiveSupport::JSON.decode(response.body)["result"].should == UserProfile::SUCCESS
-		end
+    end
 		it "should not friend yourself" do
 			UserProfile.signup("a", "secret", "0")
 			cookies[:remember_token] = "0"
@@ -57,8 +57,8 @@ describe "Friends Functional Tests" do
 			req = {"username"=>"b"}
 			post '/profile/create_request', req.to_json, session
 			ActiveSupport::JSON.decode(response.body)["result"].should_not == UserProfile::SUCCESS
-		end
-	end
+    end
+  end
 	describe "accepting friend requests" do
 		it "should accept a friend request" do
 			UserProfile.signup("b", "secret", "1")
@@ -70,7 +70,7 @@ describe "Friends Functional Tests" do
 			post '/profile/accept_request', req.to_json, session
 			ActiveSupport::JSON.decode(response.body)["result"].should == UserProfile::SUCCESS
 		end
-	end
+  end
 	describe "finding a new friend" do
 		before(:each) {
 			UserProfile.signup("a", "secret", "0")
@@ -87,7 +87,8 @@ describe "Friends Functional Tests" do
 			post '/profile/find_friend', req.to_json, session
 			ActiveSupport::JSON.decode(response.body)["result"].should == UserProfile::SUCCESS
 		end
-	end
+  end
+# error from assigns
 	describe "getting the pending requests and friends in /profile" do
 		it "should have correct @pending_out, @pending_in, and @accepted" do
 			cookies[:remember_token] = "0"
@@ -97,6 +98,7 @@ describe "Friends Functional Tests" do
 			UserProfile.create(username:"b", password:"")
 			FriendRequest.create(usernameFrom:"a", usernameTo:"b", friendStatus:false)
 			get '/profile'
+      UserProfile.print('asdf')
 			assigns[:pending_out][0].usernameTo.should == "b"
 			assigns[:pending_in].length.should == 0
 			assigns[:accepted].length.should == 0
@@ -121,7 +123,7 @@ describe "Friends Functional Tests" do
 			assigns[:accepted].length.should == 1
 			assigns[:accepted][0].usernameFrom.should == "b"
 		end
-	end
+  end
 	describe "deleting a friend" do
 		it "should delete friend" do
 			Friendship.create(usernameTo:"a", usernameFrom:"b")
@@ -132,5 +134,5 @@ describe "Friends Functional Tests" do
 			post '/profile/delete_friend', req.to_json, session
 			ActiveSupport::JSON.decode(response.body)["result"].should == UserProfile::SUCCESS
 		end
-	end
+  end
 end
