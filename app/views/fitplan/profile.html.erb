@@ -99,7 +99,7 @@
 
 <div id="gauge_container">
   <% if @gauge_level == 30 %>
-    <p>Congratulations Swoldier. You have been with us for <%= @gauge_level %> days!</p>
+    <p>Congratulations Swoldier. You have been with us for <%= @gauge_level + 1%> days!</p>
   <% elsif @gauge_level == 0%>
     <p>Get started with Fitplan!</p>
   <% else %>
@@ -195,8 +195,6 @@ $(document).ready(function() {
   $("#profile-details").hide();
   $("#requests").hide();
 });
-
-var opacityVal = 0.3;
 
 function register(result, index) {
 	if (result.result == "SUCCESS") {
@@ -325,10 +323,10 @@ function displayDay(day) {
 function displayElement(elementId, currentElementId) {
   if ($(elementId).is(':visible')) {
     $(elementId).hide();
-    $(currentElementId).html('+')
+    $(currentElementId).html('+');
   } else {
     $(elementId).show();
-    $(currentElementId).html('-')
+    $(currentElementId).html('-');
   }
 }
 

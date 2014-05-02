@@ -572,16 +572,35 @@ class UserProfile < ActiveRecord::Base
     curr_user.gender = "male"
     curr_user.activity_level = 1
     curr_user.weight_change_per_week_goal = -2.0
+    curr_user.gauge_level = 5;
     curr_user.save()
+    data = File.open(Dir.pwd + '/spec/requests/files/pikachu.jpg')
+    UserProfile.setPic("pikachu", data)
     WeightEntry.create(:username => "pikachu", :weight => 211, :date => (date + 1.days).to_s)
     WeightEntry.create(:username => "pikachu", :weight => 210.7, :date => (date + 2.days).to_s)
     WeightEntry.create(:username => "pikachu", :weight => 210.4, :date => (date + 3.days).to_s)
     WeightEntry.create(:username => "pikachu", :weight => 209.2, :date => (date + 4.days).to_s)
     WeightEntry.create(:username => "pikachu", :weight => 208.8, :date => (date + 5.days).to_s)
+    FoodEntry.create(:username => "pikachu", :food => "Apple", :calories => 200, :date => (date + 5.days).to_s, :serving => "Unit", :numservings => 3)
+    FoodEntry.create(:username => "pikachu", :food => "Salad", :calories => 500, :date => (date + 5.days).to_s, :serving => "Bowl", :numservings => 1)
+    #
+    FoodEntry.create(:username => "pikachu", :food => "Inn-N-Out Hamburger", :calories => 500, :date => (date + 4.days).to_s, :serving => "Unit", :numservings => 1)
+    FoodEntry.create(:username => "pikachu", :food => "Inn-N-Out Fries", :calories => 700, :date => (date + 4.days).to_s, :serving => "Large", :numservings => 1)
+    FoodEntry.create(:username => "pikachu", :food => "Orange Soda", :calories => 400, :date => (date + 4.days).to_s, :serving => "Cup", :numservings => 2)
+    WorkoutEntry.create(:username => "pikachu", :date => (date + 4.days).to_s, :burned => 50)
+    #
+    FoodEntry.create(:username => "pikachu", :food => "Grilled Chipotle Chicken Salad", :calories => 600, :date => (date + 3.days).to_s, :serving => "unit", :numservings => 1)
+    FoodEntry.create(:username => "pikachu", :food => "Jamba Juice Strawberry Wild", :calories => 400, :date => (date + 3.days).to_s, :serving => "unit", :numservings => 1)
+    WorkoutEntry.create(:username => "pikachu", :date => (date + 3.days).to_s, :burned => 300)
+    #
+    FoodEntry.create(:username => "pikachu", :food => "House of Curries Vindaloo Chicken", :calories => 400, :date => (date + 2.days).to_s, :serving => "unit", :numservings => 1)
+    WorkoutEntry.create(:username => "pikachu", :date => (date + 2.days).to_s, :burned => 200)
     # friend 1
     Friendship.create(:usernameFrom => "pikachu", :usernameTo => "teemo")
     Friendship.create(:usernameFrom => "teemo", :usernameTo => "pikachu")
     UserProfile.signup("teemo", "teemo", "1")
+    data = File.open(Dir.pwd + '/spec/requests/files/teemo.jpg')
+    UserProfile.setPic("teemo", data)
     WeightEntry.create(:username => "teemo", :weight => 206, :date => (date + 1.days).to_s)
     WeightEntry.create(:username => "teemo", :weight => 205.5, :date => (date + 2.days).to_s)
     WeightEntry.create(:username => "teemo", :weight => 205.2, :date => (date + 3.days).to_s)
@@ -592,6 +611,8 @@ class UserProfile < ActiveRecord::Base
     Friendship.create(:usernameFrom => "pikachu", :usernameTo => "michael")
     Friendship.create(:usernameFrom => "michael", :usernameTo => "pikachu")
     UserProfile.signup("michael", "michael", "2")
+    data = File.open(Dir.pwd + '/spec/requests/files/nike.jpg')
+    UserProfile.setPic("michael", data)
     WeightEntry.create(:username => "michael", :weight => 200, :date => (date + 1.days).to_s)
     WeightEntry.create(:username => "michael", :weight => 201.2, :date => (date + 2.days).to_s)
     WeightEntry.create(:username => "michael", :weight => 199.5, :date => (date + 3.days).to_s)
