@@ -209,14 +209,16 @@ function delete_entries(index, date) {
         obj.checked = false;
     }
   });
-  send_json("/profile/delete_food",
-	{"delete":JSON.stringify(array), "date":date},
-	function(reply) {
-		return register(reply, index);
-	},
-	show_error
-  );
-  return false;
+  if (array.length > 0) {
+    send_json("/profile/delete_food",
+      {"delete":JSON.stringify(array), "date":date},
+      function(reply) {
+      	return register(reply, index);
+      },
+      show_error
+    );
+    return false;
+  }
 }
 
 $("#weight_form").submit(function(event) {
@@ -226,8 +228,11 @@ $("#weight_form").submit(function(event) {
         type : "POST",
         data: $("#weight_form").serializeArray(),
         success: function(responseData) {
-            alert(responseData.message);
-            location.reload(false);
+            if (responseData.result == "failure") {
+                alert(responseData.message);
+            } else {
+                location.reload(false);
+            }
         },
         error: function(responseData) {
             alert(responseData.message);
@@ -267,7 +272,6 @@ function accept_request(friend) {
 }
 
 function delete_friend(friend) {
-  alert("deleting friend");
   send_json("/profile/delete_friend",
     {"friend":friend},
   function(reply) {

@@ -80,6 +80,10 @@ class FitplanController < ApplicationController
     if @user == nil
       return
     end
+    if params[:pic_form] == nil
+      redirect_to :action => :profile_form
+      return
+    end
     result = UserProfile.setPic(@user, params[:pic_form][:profile_pic])
     resp = {"result" => result}
     redirect_to :action => :profile_form
