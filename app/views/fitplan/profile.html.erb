@@ -43,7 +43,7 @@
 
     <div id="received-requests">
       <% for friend in @pending_in %>
-        <div class="image" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img class="imageAccept" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
+        <div class="image" id="accept-<%= friend.usernameFrom %>" style="cursor:pointer" onclick='accept_request("<%= friend.usernameFrom %>")'><img class="imageAccept" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
       <% end %>
     </div>
 
@@ -63,7 +63,7 @@
 
   <div class="friends-display" id="accepted-friends">
     <% for friend in @accepted %>
-      <div class="image" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img class="imageDefriend" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
+      <div class="image" id="delete-<%= friend.usernameFrom %>" style="cursor:pointer" onclick='delete_friend("<%= friend.usernameFrom %>")'><img class="imageDefriend" src="/anon_user.jpg" height="30" width="55"><br><%= friend.usernameFrom %></div>
     <% end %>
   </div>
 
