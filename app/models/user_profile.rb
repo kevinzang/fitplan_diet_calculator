@@ -546,9 +546,9 @@ class UserProfile < ActiveRecord::Base
   end
 
   def self.setup_for_demo()
-    if Rails.env.production?
-      return
-    end
+    # if Rails.env.production?
+    #   return
+    # end
 
     # cleanup the dbs
     UserProfile.destroy_all()
