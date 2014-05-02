@@ -572,7 +572,8 @@ class UserProfile < ActiveRecord::Base
     curr_user.gender = "male"
     curr_user.activity_level = 1
     curr_user.weight_change_per_week_goal = -2.0
-    curr_user.gauge_level = 5;
+    curr_user.gauge_level = 4
+    curr_user.last_login = (Date.today - 1.days).to_s
     curr_user.save()
     data = File.open(Dir.pwd + '/spec/requests/files/pikachu.jpg')
     UserProfile.setPic("pikachu", data)
@@ -618,6 +619,18 @@ class UserProfile < ActiveRecord::Base
     WeightEntry.create(:username => "michael", :weight => 199.5, :date => (date + 3.days).to_s)
     WeightEntry.create(:username => "michael", :weight => 199.3, :date => (date + 4.days).to_s)
     WeightEntry.create(:username => "michael", :weight => 199.2, :date => (date + 5.days).to_s)
+
+    #from_request
+    UserProfile.signup("ash", "ash", "3")
+    FriendRequest.create(:usernameFrom => "ash", :usernameTo => "pikachu", :friendStatus => false)
+    data = File.open(Dir.pwd + '/spec/requests/files/ash.png')
+    UserProfile.setPic("ash", data)
+
+    #to_request
+    UserProfile.signup("godzilla", "godzilla", "4")
+    FriendRequest.create(:usernameFrom => "pikachu", :usernameTo => "godzilla", :friendStatus => false)
+    data = File.open(Dir.pwd + '/spec/requests/files/godzilla.png')
+    UserProfile.setPic("godzilla", data)
 =begin
     # instantiate users
     for i in 0..10

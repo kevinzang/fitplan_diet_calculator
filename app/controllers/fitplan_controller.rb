@@ -94,12 +94,15 @@ class FitplanController < ApplicationController
   end
 
 	def profile
+
+
 		# profile page
 		@user = getUser(cookies[:remember_token])
 		if @user == nil
 			return
 		end
 		@gauge_level = UserProfile.find_by(username:@user).gauge_level
+    p @gauge_level
 		@today = Date.today.to_s
 		curr = Date.today
 		#count = 6
