@@ -82,7 +82,7 @@ class FitplanController < ApplicationController
     end
     result = UserProfile.setPic(@user, params[:pic_form][:profile_pic])
     resp = {"result" => result}
-    redirect_to :action => :profile_form
+    return redirect_to :action => :profile_form
     #return render(:json => resp, :status => 200)
   end
 
@@ -121,10 +121,10 @@ class FitplanController < ApplicationController
 			@burned[curr.to_s] = total
 			curr = curr + 1
 		end
-		#@userModel = UserProfile.find_by_username(getUser(cookies[:remember_token]))
-		#@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
-		#@weightChartData = UserProfile.weightChartData(@user, 3)
-    @weights = UserProfile.weightChartDataFriends(@user, 3)
+		@userModel = UserProfile.find_by_username(@user)
+		@calorieIntakeChartData = UserProfile.calorieIntakeChartData("a", 3)
+		@weightChartData = UserProfile.weightChartData(@user, 3)
+    	@weights = UserProfile.weightChartDataFriends(@user, 3)
 
 		@pending_in = FriendRequest.where(usernameTo:@user, friendStatus:false)
 		@pending_out = FriendRequest.where(usernameFrom:@user, friendStatus:false)

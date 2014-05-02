@@ -508,6 +508,9 @@ class UserProfile < ActiveRecord::Base
 		UserProfile.delete_all()
 		FoodEntry.delete_all()
 		WorkoutEntry.delete_all()
+		WeightEntry.delete_all()
+		Friendship.delete_all()
+		FriendRequest.delete_all()
 	end
 
 	def self.populate()
