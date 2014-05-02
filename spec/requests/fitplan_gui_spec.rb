@@ -575,7 +575,6 @@ describe "Fitplan GUI Tests" do
             fill_in 'desired_weight', :with => '100'
             click_on 'Submit Profile'
             click_on 'Find New Friend'
-            page.driver.browser.switch_to.alert.accept
             find('#expand-requests').click
             page.should have_content 'Friend4a'
             click_on 'Sign out'
