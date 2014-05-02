@@ -80,7 +80,7 @@ class UserProfile < ActiveRecord::Base
 		new_user.activity_level = 0
 		new_user.weight_change_per_week_goal = 0.0
 		new_user.gauge_level = 0
-		new_user.last_login = DateTime.now.to_date.to_s
+		new_user.last_login = Date.today.to_s
 		new_user.save()
 		return SUCCESS
 	end
@@ -96,13 +96,13 @@ class UserProfile < ActiveRecord::Base
 			return ERR_BAD_CREDENTIALS
 		end
 		reg_user.remember_token = UserProfile.hash(token)
-		diff = (DateTime.now.to_date - Date.parse(reg_user.last_login)).to_i
+		diff = (Date.today - Date.parse(reg_user.last_login)).to_i
 		if diff == 1
 			reg_user.gauge_level = [reg_user.gauge_level+1, 30].min
 		elsif diff > 1
 			reg_user.gauge_level = [reg_user.gauge_level-2*(diff-1), 0].max
 		end
-		reg_user.last_login = DateTime.now.to_date.to_s
+		reg_user.last_login = Date.today.to_s
 		reg_user.save()
 		return SUCCESS
 	end
@@ -214,7 +214,7 @@ class UserProfile < ActiveRecord::Base
 	end
 
 	def self.getWeightEntriesInRange(username, range_in_months)
-		return getWeightEntries(username).select{|entry| entry.date.to_date() >= DateTime.now.to_date - range_in_months.months}
+		return getWeightEntries(username).select{|entry| entry.date.to_date() >= Date.today - range_in_months.months}
 	end
 
 	def self.addWeightEntry(username, weight, date)
@@ -466,7 +466,7 @@ class UserProfile < ActiveRecord::Base
 		end
 		chartData = {}
 		for foodEntry in foodEntries
-			if !(foodEntry.date.to_date < DateTime.now.to_date - range_in_months.months)
+			if !(foodEntry.date.to_date < Date.today - range_in_months.months)
 				if chartData.has_key?(foodEntry.date)
 					chartData[foodEntry.date] += foodEntry.calories * foodEntry.numservings
 				else
@@ -522,7 +522,7 @@ class UserProfile < ActiveRecord::Base
 			"activity_level"=>"1", "weight_change_per_week_goal"=>"-1.0"}
 		UserProfile.setProfile("a", fields.keys, fields)
 		week = []
-		curr = DateTime.now.to_date
+		curr = Date.today
 		while curr.wday > 0
 			curr = curr - 1
 		end

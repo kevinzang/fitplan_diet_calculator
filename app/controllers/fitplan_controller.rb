@@ -93,8 +93,8 @@ class FitplanController < ApplicationController
 			return
 		end
 		@gauge_level = UserProfile.find_by(username:@user).gauge_level
-		@today = DateTime.now.to_date.to_s
-		curr = DateTime.now.to_date
+		@today = Date.today.to_s
+		curr = Date.today
 		#count = 6
 		count = curr.wday
 		while (curr.wday > 0)
@@ -197,7 +197,7 @@ class FitplanController < ApplicationController
 		if @user == nil
 			return
 		end
-		result = UserProfile.addWeightEntry(@user, params["weight"], DateTime.now.to_date.to_s)
+		result = UserProfile.addWeightEntry(@user, params["weight"], Date.today.to_s)
 		if result == UserProfile::SUCCESS
 			return render(:json=>{"result"=>"success", "message"=>"Weight successfully added"})
 		else
@@ -225,7 +225,7 @@ class FitplanController < ApplicationController
 		end
 		@activities = WorkoutEntry.getActivities()
 		@defaultActivity = "Running, 6 mph (10 min mile)"
-		@workout = UserProfile.getWorkout(@user, DateTime.now.to_date.to_s)
+		@workout = UserProfile.getWorkout(@user, Date.today.to_s)
 		target_cal = @workout["intake"]-@workout["target"]-@workout["burned"]
 		normal_cal = @workout["intake"]-@workout["normal"]-@workout["burned"]
 		rec = UserProfile.getRecommended(@user, target_cal, normal_cal, @defaultActivity)
@@ -239,7 +239,7 @@ class FitplanController < ApplicationController
 			return
 		end
 		result = UserProfile.addWorkoutEntry(@user,
-			params[:activity], params[:minutes], DateTime.now.to_date.to_s)
+			params[:activity], params[:minutes], Date.today.to_s)
 		d = {}
 		if result.class == String
 			d["result"] = result
