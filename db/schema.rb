@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140501171904) do
+ActiveRecord::Schema.define(version: 20140502102843) do
 
   create_table "food_entries", force: true do |t|
     t.string   "username"
@@ -72,10 +72,6 @@ ActiveRecord::Schema.define(version: 20140501171904) do
     t.integer  "gauge_level"
     t.string   "last_login"
     t.integer  "weight_loss_goal"
-    t.string   "pic_file_name"
-    t.string   "pic_content_type"
-    t.integer  "pic_file_size"
-    t.datetime "pic_updated_at"
     t.string   "profile_pic_file_name"
     t.string   "profile_pic_content_type"
     t.integer  "profile_pic_file_size"
@@ -88,7 +84,7 @@ ActiveRecord::Schema.define(version: 20140501171904) do
   create_table "weight_entries", force: true do |t|
     t.string   "username"
     t.string   "date"
-    t.integer  "weight"
+    t.float    "weight"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -1,4 +1,5 @@
 require 'spec_helper'
+
 describe "Fitplan Functional Tests" do
 	puts "***begin fitplan_func_spec.rb"
 	before(:each) {
