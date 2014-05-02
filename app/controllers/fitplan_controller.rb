@@ -80,12 +80,15 @@ class FitplanController < ApplicationController
     if @user == nil
       return
     end
-    if params[:pic_form] == nil
-      redirect_to :action => :profile_form
-      return
+    if params[:pic_form].nil?
+      flash[:alert] = "Error: File required"
+      return redirect_to :action => :profile_form
     end
     result = UserProfile.setPic(@user, params[:pic_form][:profile_pic])
     resp = {"result" => result}
+    if result != "SUCCESS"
+      flash[:alert] = result
+    end
     return redirect_to :action => :profile_form
     #return render(:json => resp, :status => 200)
   end
@@ -138,8 +141,8 @@ class FitplanController < ApplicationController
         @max_weight = [entry[1], @max_weight].max
       end
     end
-    @min_weight = [@min_weight - 5, 0].max
-    @max_weight = @max_weight + 5
+    #@min_weight = [@min_weight - 5, 0].max
+    #@max_weight = @max_weight + 5
 
 		@pending_in = FriendRequest.where(usernameTo:@user, friendStatus:false)
 		@pending_out = FriendRequest.where(usernameFrom:@user, friendStatus:false)

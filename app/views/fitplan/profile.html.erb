@@ -94,15 +94,15 @@
     <input id="weight" name="weight" type="text" placeholder="weight" style="float:left">
     <input id="submit_weight" class="specialButton" type="submit" value="Add" style="height:30px;float:left;margin-left:5px;">
   </form><br><br>
-  <%= line_chart @weights, height: '150px', name: 'weight_chart', min: @min_weight, max: @max_weight %>
+  <%= line_chart @weights, height: '150px', name: 'weight_chart', min: @min_weight, max: @max_weight, discrete: true %>
 </div>
 
 <div id="gauge_container">
   <p>Your gauge level is <%= @gauge_level %>.</p>
-  <div id="gauge">
-    fitplan
+  <div id="gauge_helper">
+    <img src="/redx.jpg" width="30px" height ="150px" >
+<!--    <div id="gauge_box"></div>-->
   </div>
-  <!--<div id="gauge_transbox"></div>-->
 </div>
 
 <div id="all-entries-container">
@@ -191,7 +191,7 @@ $(document).ready(function() {
 });
 
 var opacityVal = 0.3;
-document.getElementById('gauge').style.opacity = opacityVal;
+document.getElementById('gauge_text').style.opacity = opacityVal;
 
 function register(result, index) {
 	if (result.result == "SUCCESS") {

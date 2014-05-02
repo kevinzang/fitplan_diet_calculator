@@ -1,5 +1,15 @@
 <%= render '/layouts/navbar' %>
 
+<% if flash[:alert] %>
+<script type="text/javascript">
+    function displayAlert() {
+            var msg = "<%= flash[:alert] %>";
+            alert(msg);
+    }
+    window.onload = displayAlert;
+</script>
+<% end %>
+
 <div id="input-form">
   <div id="message"></div>
   <hr />
