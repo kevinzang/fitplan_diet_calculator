@@ -100,11 +100,10 @@
 <div id="gauge_container">
   <% if @gauge_level == 30 %>
     <p>Congratulations Swoldier. You have been with us for <%= @gauge_level %> days!</p>
-  <% else if @gauge_level == 0%>
+  <% elsif @gauge_level == 0%>
     <p>Get started with Fitplan!</p>
   <% else %>
     <p>You've been with us for <%= @gauge_level +1%> days.</p>
-    <% end %>
   <% end %>
   <div id="gauge_helper">
     <img src="/habit_gauge_<%=@gauge_level%>.jpg" width="30px" height ="150px" >
@@ -198,7 +197,6 @@ $(document).ready(function() {
 });
 
 var opacityVal = 0.3;
-document.getElementById('gauge_text').style.opacity = opacityVal;
 
 function register(result, index) {
 	if (result.result == "SUCCESS") {
@@ -294,7 +292,6 @@ function delete_friend(friend) {
 }
 
 function find_friend() {
-  alert("find friend");
   send_json("/profile/find_friend",
     {},
     function(reply) {
