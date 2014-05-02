@@ -3,10 +3,14 @@
 #message,
 #inputForm {
   text-align: center;
+  margin: 10px;
+  margin-left: 40px;
 }
 
 #header h4 {
+  color: #FFFFFF;
   font-style: italic;
+  width:100%;
 }
 
 #info,
@@ -14,16 +18,17 @@
   background-color: #F0FFFF;
   float: left;
   height: 250px;
-  margin-left: 1%;
-  padding: 10px;
-  width: 46%;
+  margin: 2%;
+  padding: 5px;
+  width: 43%;
 }
 
 #new {
   background-color: #F0FFFF;
   float: left;
-  margin: 1%;
-  padding: 1%;
+  margin: 2%;
+  padding: 0;
+  width:96%;
 }
 
 p {
@@ -33,6 +38,7 @@ p {
 
 #sitebody {
   margin-top: 40px;
+  width:100%;
 }
 
 

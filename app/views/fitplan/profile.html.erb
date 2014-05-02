@@ -98,11 +98,18 @@
 </div>
 
 <div id="gauge_container">
-  <p>Your gauge level is <%= @gauge_level %>.</p>
-  <div id="gauge">
-    fitplan
+  <% if @gauge_level == 30 %>
+    <p>Congratulations Swoldier. You have been with us for <%= @gauge_level + 1%> days!</p>
+  <% else if @gauge_level == 0%>
+    <p>Get started with Fitplan!</p>
+  <% else %>
+    <p>You've been with us for <%= @gauge_level +1%> days.</p>
+    <% end %>
+  <% end %>
+  <div id="gauge_helper">
+    <img src="/habit_gauge_<%=@gauge_level%>.jpg" width="30px" height ="150px" >
+<!--    <div id="gauge_box"></div>-->
   </div>
-  <!--<div id="gauge_transbox"></div>-->
 </div>
 
 <div id="all-entries-container">
@@ -191,7 +198,7 @@ $(document).ready(function() {
 });
 
 var opacityVal = 0.3;
-document.getElementById('gauge').style.opacity = opacityVal;
+document.getElementById('gauge_text').style.opacity = opacityVal;
 
 function register(result, index) {
 	if (result.result == "SUCCESS") {
@@ -209,14 +216,16 @@ function delete_entries(index, date) {
         obj.checked = false;
     }
   });
-  send_json("/profile/delete_food",
-	{"delete":JSON.stringify(array), "date":date},
-	function(reply) {
-		return register(reply, index);
-	},
-	show_error
-  );
-  return false;
+  if (array.length > 0) {
+    send_json("/profile/delete_food",
+      {"delete":JSON.stringify(array), "date":date},
+      function(reply) {
+      	return register(reply, index);
+      },
+      show_error
+    );
+    return false;
+  }
 }
 
 $("#weight_form").submit(function(event) {
@@ -226,8 +235,11 @@ $("#weight_form").submit(function(event) {
         type : "POST",
         data: $("#weight_form").serializeArray(),
         success: function(responseData) {
-            alert(responseData.message);
-            location.reload(false);
+            if (responseData.result == "failure") {
+                alert(responseData.message);
+            } else {
+                location.reload(false);
+            }
         },
         error: function(responseData) {
             alert(responseData.message);
@@ -267,7 +279,6 @@ function accept_request(friend) {
 }
 
 function delete_friend(friend) {
-  alert("deleting friend");
   send_json("/profile/delete_friend",
     {"friend":friend},
   function(reply) {

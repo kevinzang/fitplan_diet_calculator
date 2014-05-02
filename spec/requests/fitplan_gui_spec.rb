@@ -1,4 +1,3 @@
-=begin
 require 'spec_helper'
 require File.expand_path("../../../app/models/user_profile", __FILE__)
 require File.expand_path("../../../app/models/food_search", __FILE__)
@@ -22,18 +21,6 @@ describe "Fitplan GUI Tests" do
     WeightEntry.delete_all
 
     UserProfile.create!(username: 'Existing_User', password: '')
-
-    #UserProfile.create!(
-    #  username: username,
-    #  password: '',
-    #  height: 65,
-    #  weight: 135,
-    #  desired_weight: 130,
-    #  age: 21,
-    #  gender: 'male',
-    #  activity_level: 1,
-    #  weight_change_per_week_goal: -1
-    #)
 
     describe "Logging in /Signing up" do
 
@@ -167,6 +154,16 @@ describe "Fitplan GUI Tests" do
             click_on 'Sign up'
             click_on 'Submit Profile'
             page.should have_content 'Profile details'
+        end
+
+        it "should display form for users to upload pictures", js: true do
+            visit '/'
+            fill_in 'username', :with => 'Profile_Form_5'
+            click_on 'Sign up'
+            click_on 'Edit Picture'
+            click_on 'Upload'
+            click_on 'Edit Picture'
+            click_on 'Browse'
         end
 
 
@@ -464,9 +461,9 @@ describe "Fitplan GUI Tests" do
     end
 
 
-    describe "FAQ" do
+    describe "FAQ/About" do
 
-        it "should display none of the answers initially", js: true do
+        it "should display none of the FAQ answers initially", js: true do
             visit '/'
             fill_in 'username', :with => 'FAQ1'
             click_on 'Sign up'
@@ -474,14 +471,23 @@ describe "Fitplan GUI Tests" do
             page.should_not have_content 'FitPlan is a personal food diary'
         end
 
-        it "should display answers when question is clicked", js: true do
+        it "should display FAQ answers when question is clicked", js: true do
             visit '/'
             fill_in 'username', :with => 'FAQ2'
             click_on 'Sign up'
-            find('#question-2').click
+            find('#question1').click
             page.should have_content 'FitPlan is a personal food diary'
             page.should_not have_content 'When you tell FitPlan'
         end
+
+        it "should display About page", js: true do
+            visit '/'
+            fill_in 'username', :with => 'FAQ3'
+            click_on 'Sign up'
+            click_on 'About'
+            page.should have_content 'How it works'
+        end
+
     end
 
     describe "Friends" do
@@ -510,7 +516,6 @@ describe "Fitplan GUI Tests" do
             click_on 'Log in'
             page.should have_content 'Friends (1)'
             find('#delete-Friend1a').click
-            page.driver.browser.switch_to.alert.accept
             page.should have_content 'Friends (0)'
             click_on 'Sign out'
             fill_in 'username', :with => 'Friend1a'
@@ -614,4 +619,3 @@ describe "Fitplan GUI Tests" do
     end
 
 end
-=end

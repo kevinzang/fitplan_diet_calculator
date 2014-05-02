@@ -19,3 +19,30 @@
   width: 90%;
   margin-left:5%;
 }
+
+#browse-container {
+  position: relative;
+  width: 20%;
+  margin-left: 30%;
+}
+
+#upload_pic_submit {
+  width: 20%;
+  margin-left: 30%;
+}
+
+#browse {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+#pic_form_profile_pic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+}

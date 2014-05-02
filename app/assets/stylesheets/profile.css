@@ -100,15 +100,14 @@
 }
 
 #friend_request {
-  float:left;
-  width:630px;
-  margin:5px;
+  width: 76%;
+  margin: 1%;
 }
 
 #submit_request {
-  float:right;
-  margin:6px;
   height: 30px;
+  width: 16%;
+  margin: 1%;
 }
 
 #weight_form {
@@ -117,7 +116,8 @@
 
 #weight-chart {
   float: left;
-  width: 31%;
+  /*width: 31%;*/
+  width: 40%;
   background-color: #F0FFFF;
   padding: 1%;
   margin: 1%;
@@ -133,30 +133,28 @@
 
 #gauge_container {
   background-color: #F0FFFF;
-  width:34%;
-  height:150px;
-  padding:0;
-  margin-top:1%;
-  margin-right:1%;
-  float:left;
+  width: 25%;
+  height: 204px;
+  padding-top: 10px;
+  margin-top: 1%;
+  margin-right: 1%;
+  float: left;
 }
 
-#gauge {
-/*  background-color: red;
-  float: left; */
-  margin-top: 25px;
-  font-size: 35px;
+#gauge_helper {
+/*  vertical-align: middle;*/
+  background-color: #FFFFFF;
+  height: 150px;
+  opacity: 1;
 }
 
-#gauge_transbox {
+#gauge_box {
+  background-color: #FF0000;
   border: 1px solid black;
   border-radius: 10px;
-  top: 0px;
-  left: 0px;
-  position: absolute;
-  height: 40px;
+  height: 150px;
+  margin: auto;
   width: 30px;
-  z-index: 2;
 }
 
 .entry-field {
@@ -164,7 +162,7 @@
   padding: 10px;
   display:inline;
   background-color:#F0FFFF;
-  margin:0 auto;
+  margin: 0 auto;
 }
 
 .day-entries {
