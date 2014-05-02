@@ -15,7 +15,7 @@ class UserProfile < ActiveRecord::Base
                     }
 
   validates_attachment_content_type :profile_pic, :content_type => /\Aimage/, :message => "ERROR: Invalid file format. jpg or png only."
-  validates_attachment_file_name :profile_pic, :matches => [/png\Z/, /jpe?g\Z/], :message => "ERROR: Invalid file format. jpg or png only."
+  #validates_attachment_file_name :profile_pic, :matches => [/png\Z/, /jpe?g\Z/], :message => "ERROR: Invalid file format. jpg or png only."
 
 	MAX_USERNAME_LENGTH = 128
 	MAX_PASSWORD_LENGTH = 128
